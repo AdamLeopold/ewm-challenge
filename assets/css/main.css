@@ -223,12 +223,28 @@ img, video, canvas, iframe { display: block; max-width: 100%; }
 /* ---------- inner pages ---------- */
 .page { position: relative; }
 .page-bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(90% 70% at 50% 0%, var(--deep) 0%, var(--bg) 70%); }
-.page-bg canvas { width: 100%; height: 100%; opacity: .38; }
+.page-bg canvas { width: 100%; height: calc(100% + 170px); opacity: .38; }   /* extra height: it drifts up as the page scrolls */
 .wrap { width: min(1180px, 100% - 32px); margin: 0 auto; }
 
 .hero { position: relative; min-height: 100svh; display: flex; align-items: center; overflow: hidden; padding: 120px 0 80px; }
 .hero video { position: absolute; inset: auto 0 auto auto; top: 50%; transform: translateY(-46%); width: min(74vw, 1180px); height: auto; aspect-ratio: 16 / 9; max-width: 100%; object-fit: cover; opacity: .3; -webkit-mask-image: radial-gradient(70% 70% at 60% 50%, #000 40%, transparent 78%); mask-image: radial-gradient(70% 70% at 60% 50%, #000 40%, transparent 78%); z-index: -1; filter: grayscale(.3) sepia(.3) hue-rotate(220deg) saturate(2) brightness(.65) contrast(1.15); }
 .hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(5,6,8,.2), rgba(5,6,8,.4) 60%, var(--bg)); }
+/* scroll cue at the bottom of a track hero: breathes gently, fades away once the reader scrolls */
+.scroll-cue {
+  position: fixed; z-index: 40; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); translate: -50% 0;   /* pinned to the first screen whatever the hero height */
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  background: color-mix(in srgb, var(--bg) 60%, transparent); backdrop-filter: blur(6px);
+  animation: cue-breathe 2.6s ease-in-out infinite; transition: opacity .6s cubic-bezier(.22,1,.36,1);
+}
+.scroll-cue svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.scroll-cue:hover, .scroll-cue:focus-visible { border-color: var(--accent); }
+.scroll-cue.gone { opacity: 0; pointer-events: none; }
+@keyframes cue-breathe {
+  0%, 100% { transform: translateY(0); opacity: .45; box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
+  50% { transform: translateY(6px); opacity: 1; box-shadow: 0 0 22px -4px color-mix(in srgb, var(--accent) 70%, transparent); }
+}
+section.block[id] { scroll-margin-top: 72px; }
 .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); display: inline-block; line-height: 1.8; }
 .eyebrow::before { content: ""; display: inline-block; vertical-align: middle; width: 26px; height: 1px; margin-right: 10px; background: var(--accent); }
 .hero h1 {

@@ -408,6 +408,38 @@
     // sticky top bar background
     var bar = document.querySelector(".topbar[data-solid]");
     if (bar) { var on = function () { bar.classList.toggle("solid", scrollY > 40); }; on(); addEventListener("scroll", on, { passive: true }); }
+    // scroll cue: fades out once the reader starts scrolling
+    var cue = document.querySelector(".scroll-cue");
+    if (cue) { var hideCue = function () { cue.classList.toggle("gone", scrollY > 60); }; addEventListener("scroll", hideCue, { passive: true }); hideCue(); }
+
+    // light parallax: hero text drifts up slower than the page and fades, the hero clip and the
+    // background move at their own speeds, section headings float a little around the centre line.
+    // Uses the `translate` property so it never fights the transforms elements already have.
+    if (!reduce) {
+      var hero = document.querySelector(".hero"), heroWrap = hero && hero.querySelector(".wrap"), heroMedia = hero && hero.querySelector("video");
+      var bgCanvas = document.querySelector(".page-bg canvas");
+      var heads = Array.prototype.slice.call(document.querySelectorAll(".sec-head h2"));
+      var ticking = false;
+      var frame = function () {
+        ticking = false;
+        var y = scrollY, vh = innerHeight;
+        if (heroWrap && y < vh * 1.3) {
+          heroWrap.style.translate = "0 " + (y * 0.32).toFixed(1) + "px";
+          heroWrap.style.opacity = Math.max(0, 1 - y / (vh * 0.8)).toFixed(3);
+        }
+        if (heroMedia && y < vh * 1.3) heroMedia.style.translate = "0 " + (y * 0.16).toFixed(1) + "px";
+        if (bgCanvas) bgCanvas.style.translate = "0 " + (-Math.min(y * 0.04, 160)).toFixed(1) + "px";
+        heads.forEach(function (h) {
+          var r = h.getBoundingClientRect();
+          if (r.bottom < -120 || r.top > vh + 120) return;
+          h.style.translate = "0 " + (((r.top + r.height / 2) - vh / 2) / vh * 30).toFixed(1) + "px";
+        });
+      };
+      addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
+      addEventListener("resize", frame);
+      frame();
+    }
+
     // background videos: pick the small file on phones, never block
     document.querySelectorAll("video[data-src]").forEach(function (v) {
       v.src = small && v.dataset.srcSmall ? v.dataset.srcSmall : v.dataset.src;
