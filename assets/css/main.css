@@ -115,6 +115,7 @@ img, video, canvas, iframe { display: block; max-width: 100%; }
 .side-holo video.bg-video { filter: grayscale(.4) sepia(.3) hue-rotate(80deg) saturate(2.2); }
 .side-city video.bg-video { filter: grayscale(.3) sepia(.3) hue-rotate(220deg) saturate(2) brightness(.7) contrast(1.15); }
 .side canvas.fx { z-index: -1; }
+.side canvas.fx.flip { transform: scaleY(-1); }   /* Agentic City: the district hangs from the top edge */
 .side::before { /* vignette */
   content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background: linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 35%, transparent 60%, rgba(0,0,0,.8) 100%);
