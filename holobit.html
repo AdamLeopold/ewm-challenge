@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261019000629">
+<link rel="stylesheet" href="assets/css/main.css?v=20261019001354">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 </head>
 <body class="theme-holo">
@@ -55,6 +55,11 @@
     </a>
   </section>
 
+  <div class="marquee" aria-hidden="true"><div class="track">
+    <span><b>◆</b> Uniswap V3</span><span><b>◆</b> Aave v3</span><span><b>◆</b> Digital twin</span><span><b>◆</b> No wallet · No real money</span><span><b>◆</b> Hidden stress tests</span><span><b>◆</b> Survival gate</span><span><b>◆</b> Verifiable results</span><span><b>◆</b> Singapore FinTech Festival</span>
+    <span><b>◆</b> Uniswap V3</span><span><b>◆</b> Aave v3</span><span><b>◆</b> Digital twin</span><span><b>◆</b> No wallet · No real money</span><span><b>◆</b> Hidden stress tests</span><span><b>◆</b> Survival gate</span><span><b>◆</b> Verifiable results</span><span><b>◆</b> Singapore FinTech Festival</span>
+  </div></div>
+
   <!-- scroll scene: statement -->
   <section class="scene-statement" data-scene aria-label="No chain. No wallet. No real money." data-en-aria="No chain. No wallet. No real money." data-zh-aria="不上链。不用钱包。不用真钱。">
     <div class="scene-stick">
@@ -67,10 +72,6 @@
     </div>
   </section>
 
-  <div class="marquee" aria-hidden="true"><div class="track">
-    <span><b>◆</b> Uniswap V3</span><span><b>◆</b> Aave v3</span><span><b>◆</b> Digital twin</span><span><b>◆</b> No wallet · No real money</span><span><b>◆</b> Hidden stress tests</span><span><b>◆</b> Survival gate</span><span><b>◆</b> Verifiable results</span><span><b>◆</b> Singapore FinTech Festival</span>
-    <span><b>◆</b> Uniswap V3</span><span><b>◆</b> Aave v3</span><span><b>◆</b> Digital twin</span><span><b>◆</b> No wallet · No real money</span><span><b>◆</b> Hidden stress tests</span><span><b>◆</b> Survival gate</span><span><b>◆</b> Verifiable results</span><span><b>◆</b> Singapore FinTech Festival</span>
-  </div></div>
 
   <!-- 01 WHAT IS HOLOBIT -->
   <section class="block" id="about">
@@ -198,9 +199,8 @@
   </section>
 
   <!-- 04 SCORING -->
-  <section class="block" id="scoring" style="padding-top:0">
-    <div class="scene-score" data-scene id="score-scene">
-      <div class="scene-stick"><div class="wrap">
+  <section class="block" id="scoring">
+    <div class="wrap">
       <div class="sec-head">
         <div><div class="sec-num">04 / SCORING</div><h2 data-en="Returns matter. Resilience decides.">收益重要，韧性定胜负</h2></div>
         <p data-en="Public market data can be over-fitted. That is why most of the score comes from stress tests generated after the freeze.">公开行情可以被反复调参、过拟合。所以大部分分数来自冻结之后才生成的压力测试。</p>
@@ -215,14 +215,11 @@
           <div class="center"><div><b>80/20</b><span data-en="STRESS / FORWARD">压力 / 前向</span></div></div>
         </div>
         <div class="legend">
-          <div class="row" data-at="0.08"><div class="pct">80%</div><div><h4 data-en="Hidden stress benchmark">隐藏压力基准</h4><p data-en="13 families of extreme scenarios, generated after the freeze from a public randomness beacon. Nobody — including you — sees them before submission.">13 类极端情景，冻结后用公开随机信标生成。提交前任何人都看不到，包括你。</p></div></div>
-          <div class="row" data-at="0.48"><div class="pct">20%</div><div><h4 data-en="Forward window">前向段</h4><p data-en="One week of real market data that happens after the freeze.">冻结之后真实发生的一周行情。</p></div></div>
-          <div class="row" data-at="0.74"><div class="pct" data-en="GATE">门槛</div><div><h4 data-en="Survival gate">生存门</h4><p data-en="Runs that end in liquidation, insolvency, bad debt or too many timeouts fail the gate. Agents that fail too often cannot win a prize or reach the finals.">被清算、破产、留下坏账或超时过多的运行记为失败。失败比例超标的 Agent 不能获奖，也不进决赛。</p></div></div>
+          <div class="row reveal"><div class="pct">80%</div><div><h4 data-en="Hidden stress benchmark">隐藏压力基准</h4><p data-en="13 families of extreme scenarios, generated after the freeze from a public randomness beacon. Nobody — including you — sees them before submission.">13 类极端情景，冻结后用公开随机信标生成。提交前任何人都看不到，包括你。</p></div></div>
+          <div class="row reveal d1"><div class="pct">20%</div><div><h4 data-en="Forward window">前向段</h4><p data-en="One week of real market data that happens after the freeze.">冻结之后真实发生的一周行情。</p></div></div>
+          <div class="row reveal d2"><div class="pct" data-en="GATE">门槛</div><div><h4 data-en="Survival gate">生存门</h4><p data-en="Runs that end in liquidation, insolvency, bad debt or too many timeouts fail the gate. Agents that fail too often cannot win a prize or reach the finals.">被清算、破产、留下坏账或超时过多的运行记为失败。失败比例超标的 Agent 不能获奖，也不进决赛。</p></div></div>
         </div>
       </div>
-      </div></div>
-    </div>
-    <div class="wrap">
       <div class="flow" style="--n:5;margin-top:64px">
         <div class="step reveal"><h4 data-en="Readiness check">准入检查</h4><p data-en="Signature, manifest and interface checks">签名、清单和接口检查</p></div>
         <div class="step reveal d1"><h4 data-en="Hidden stress">隐藏压力基准</h4><p data-en="13 scenario families, two halves">13 类情景，分上下半场</p></div>
@@ -305,22 +302,21 @@
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261019000629"></script>
-<script src="assets/js/i18n.js?v=20261019000629"></script>
-<script src="assets/js/pages.js?v=20261019000629"></script>
-<script src="assets/js/fx.js?v=20261019000629"></script>
+<script src="assets/js/config.js?v=20261019001354"></script>
+<script src="assets/js/i18n.js?v=20261019001354"></script>
+<script src="assets/js/pages.js?v=20261019001354"></script>
+<script src="assets/js/fx.js?v=20261019001354"></script>
 <script>
-  // score ring, drawn by scrolling through the scoring scene: 80% segment, then the 20% segment.
-  // Circumference 2πr ≈ 503 for r = 80.
-  (function () {
-    var sc = document.getElementById("score-scene"), a = sc.querySelector(".ring .a"), b = sc.querySelector(".ring .b");
-    function seg(p, from, to) { return Math.min(1, Math.max(0, (p - from) / (to - from))); }
-    sc.onSceneProgress = function (p) {
-      var la = 400 * seg(p, 0.06, 0.44), lb = 97 * seg(p, 0.48, 0.68);
-      a.setAttribute("stroke-dasharray", la.toFixed(1) + " 503");
-      b.setAttribute("stroke-dasharray", lb.toFixed(1) + " 503"); b.setAttribute("stroke-dashoffset", "-403");
-    };
-  })();
+  // score ring: 80 / 20 of circumference 2πr ≈ 503, drawn once the ring comes into view
+  document.addEventListener("DOMContentLoaded", function () {
+    var ring = document.querySelector(".ring");
+    new IntersectionObserver(function (e, o) {
+      if (!e[0].isIntersecting) return;
+      ring.querySelector(".a").setAttribute("stroke-dasharray", "400 503");
+      var b = ring.querySelector(".b"); b.setAttribute("stroke-dasharray", "97 503"); b.setAttribute("stroke-dashoffset", "-403");
+      o.disconnect();
+    }, { threshold: .4 }).observe(ring);
+  });
 </script>
 </body>
 </html>

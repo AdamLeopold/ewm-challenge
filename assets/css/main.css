@@ -497,14 +497,6 @@ footer a:hover { color: var(--fg); }
   opacity: 0; transition: opacity .8s; }
 .st-sub.on { opacity: 1; }
 
-/* HoloBit · scoring ring drawn by scrolling */
-.scene-score { --len: 260vh; --len-m: 200vh; }
-.scene-score .scene-stick { padding-top: 64px; }
-.scene-score .legend .row { opacity: .28; transform: translateX(-10px); transition: opacity .7s, transform .7s cubic-bezier(.22,1,.36,1), border-color .7s; }
-.scene-score .legend .row.on { opacity: 1; transform: none; border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
-.scene-score .ring .a, .scene-score .ring .b { transition: none; }
-.scene-score .sec-head { margin-bottom: 36px; }
-
 /* Agentic City · builder grows from a card to the stage, then the conversation plays with the scroll */
 .scene-builder { --len: 340vh; --len-m: 260vh; }
 .scene-builder .builder { transform: scale(calc(.62 + min(var(--p) / .28, 1) * .38)); transform-origin: 50% 50%;
@@ -520,6 +512,23 @@ footer a:hover { color: var(--fg); }
 .scene-video .demo-frame video { width: 100%; height: 100%; aspect-ratio: auto; }
 .scene-video .scene-cap { margin-top: 18px; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
   opacity: calc(min(var(--p) / .55, 1)); }
+
+
+/* ---------- organisers (landing) ---------- */
+.organisers { padding-block: clamp(56px, 8vw, 96px); background: linear-gradient(180deg, #000, var(--bg)); border-top: 1px solid var(--line); }
+.organisers .eyebrow { color: var(--muted); }
+.organisers .eyebrow::before { background: var(--muted); }
+.org-grid { list-style: none; margin-top: 28px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+/* a logo wall: every tile is as wide as its logo needs; heights are tuned per logo so they read at a similar size */
+.org { flex: 0 1 auto; height: 108px; border-radius: 14px; background: #f4f4f1; display: grid; place-items: center; padding: 0 22px;
+  transition: transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s; }
+.org:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -18px rgba(255,255,255,.35); }
+.org img { display: block; width: auto; max-width: 100%; height: var(--lh, 48px); object-fit: contain; }
+.org-ntu { --lh: 54px; } .org-cuhk { --lh: 36px; } .org-tongji { --lh: 52px; } .org-holobit { --lh: 26px; }
+.org-text { text-align: center; color: #14161a; line-height: 1.25; }
+.org-text .org-zh { display: block; font-family: "Noto Sans SC", var(--font-body); font-weight: 700; font-size: 20px; letter-spacing: .08em; }
+.org-text .org-en { display: block; margin-top: 4px; font-size: 11px; letter-spacing: .04em; color: #4a4d55; }
+@media (max-width: 560px) { .org { height: 88px; padding: 0 18px; flex: 1 1 calc(50% - 7px); } .org img { height: calc(var(--lh, 48px) * .78); } .org-cuhk, .org-holobit { flex-basis: 100%; } }
 
 /* load choreography: characters and blocks rise out of a soft blur */
 .char { display: inline-block; white-space: pre; }
