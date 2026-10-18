@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261018200636">
+<link rel="stylesheet" href="assets/css/main.css?v=20261018232231">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 <style>
   /* builder mock */
@@ -62,7 +62,7 @@
       <a href="#submit" data-en="Submit">提交</a>
       <a href="#evaluate" data-en="Evaluation">评估</a>
       <a href="#tracks" data-en="Who can play">谁能参加</a>
-      <a href="#wonderecon">WonderEcon</a>
+      <a href="#engine" data-en="Engine">模拟引擎</a>
       <a href="#timeline" data-en="Timeline">日程</a>
       <a href="#faq">FAQ</a>
     </div>
@@ -95,8 +95,8 @@
   </section>
 
   <div class="marquee" aria-hidden="true"><div class="track">
-    <span><b>◆</b> 17.73 km² · 2035</span><span><b>◆</b> Chat-to-build 3D city</span><span><b>◆</b> Zoning · Buildings · Transit</span><span><b>◆</b> Policy design</span><span><b>◆</b> Fixed budget</span><span><b>◆</b> Scenario simulation</span><span><b>◆</b> Powered by WonderEcon</span><span><b>◆</b> Shenzhen–Hong Kong teams welcome</span>
-    <span><b>◆</b> 17.73 km² · 2035</span><span><b>◆</b> Chat-to-build 3D city</span><span><b>◆</b> Zoning · Buildings · Transit</span><span><b>◆</b> Policy design</span><span><b>◆</b> Fixed budget</span><span><b>◆</b> Scenario simulation</span><span><b>◆</b> Powered by WonderEcon</span><span><b>◆</b> Shenzhen–Hong Kong teams welcome</span>
+    <span><b>◆</b> 17.73 km² · 2035</span><span><b>◆</b> Chat-to-build 3D city</span><span><b>◆</b> Zoning · Buildings · Transit</span><span><b>◆</b> Policy design</span><span><b>◆</b> Fixed budget</span><span><b>◆</b> Scenario simulation</span><span><b>◆</b> Economic World Model</span><span><b>◆</b> Shenzhen–Hong Kong teams welcome</span>
+    <span><b>◆</b> 17.73 km² · 2035</span><span><b>◆</b> Chat-to-build 3D city</span><span><b>◆</b> Zoning · Buildings · Transit</span><span><b>◆</b> Policy design</span><span><b>◆</b> Fixed budget</span><span><b>◆</b> Scenario simulation</span><span><b>◆</b> Economic World Model</span><span><b>◆</b> Shenzhen–Hong Kong teams welcome</span>
   </div></div>
 
   <!-- 01 THE SITE -->
@@ -262,26 +262,26 @@
     </div>
   </section>
 
-  <!-- 06 WONDERECON -->
-  <section class="block" id="wonderecon">
+  <!-- 06 ENGINE -->
+  <section class="block" id="engine">
     <div class="wrap">
       <div class="sec-head">
-        <div><div class="sec-num">06 / ENGINE</div><h2 data-en="Meet WonderEcon.">认识 WonderEcon</h2></div>
-        <p data-en="WonderEcon is the economic simulation engine behind the residents of Agentic City. LLM-powered households, firms and banks form beliefs and state their intentions; grounded market rules match them into real transactions.">WonderEcon 是 Agentic City 居民仿真背后的经济模拟引擎。由大模型驱动的家庭、企业和银行形成自己的判断、给出意向；再由基于经济规则的市场撮合成交。</p>
+        <div><div class="sec-num">06 / ENGINE</div><h2 data-en="An economic world model.">经济世界模型</h2></div>
+        <p data-en="Agentic City's scenario simulations run on a simulation engine built on an Economic World Model (EWM). Households, firms, investors and government are modelled as agents with their own beliefs and constraints; their decisions play out in markets and reshape the environment, which in turn shapes their next decisions.">Agentic City 的场景模拟，运行在一个基于经济世界模型（Economic World Model, EWM）的模拟引擎上。家庭、企业、投资机构和政府都是有各自判断与约束的 Agent，它们的决策在市场中相互作用、改变环境，环境又反过来影响下一步决策。</p>
       </div>
       <div class="we-facts reveal">
-        <div><b data-en="5 markets">5 个市场</b><span data-en="Loans, labour, goods, stocks, deposits">贷款、劳动、商品、股票、存款</span></div>
-        <div><b data-en="4-step minds">四步决策</b><span data-en="Observe → believe → bid → act">观察 → 形成判断 → 报价 → 行动</span></div>
-        <div><b data-en="2 modes">2 种模式</b><span data-en="God's-eye observer · step into a household">上帝视角观察 · 亲自接管一户家庭</span></div>
+        <div><b data-en="Diverse agents">异质 Agent</b><span data-en="Households, firms, investors, government">家庭、企业、投资机构、政府</span></div>
+        <div><b data-en="Many markets">多层市场</b><span data-en="Jobs, housing, consumption, venture capital">就业、住房、商业消费、创投</span></div>
+        <div><b data-en="Co-evolution">共同演化</b><span data-en="Decisions change the city; the city changes decisions">决策改变城市，城市再影响决策</span></div>
       </div>
       <div class="grid g2" style="margin-bottom:24px">
         <div class="demo-frame reveal">
           <video controls playsinline preload="none" poster="assets/media/wonderecon-poster.jpg" src="assets/media/wonderecon-demo.mp4"></video>
         </div>
         <div class="card reveal d1">
-          <span class="k" data-en="Try it">动手试试</span>
-          <h3 data-en="Live inside an economy">在一个经济体里生活一回</h3>
-          <p data-en="In player mode you pick a month and a profile, take over a household that matches it, and make its decisions across all five markets. Then compare your outcome with the original AI and its peers — and discover your economic personality.">在玩家模式里，选择进入月份和画像，接管一户与之匹配的家庭，在五个市场替它做决定。之后把你的结果和原 AI、同类群体比一比，看看你的“经济人格”。</p>
+          <span class="k" data-en="Go further">延伸体验</span>
+          <h3 data-en="Try an economic simulation: WonderEcon">试玩一个经济模拟：WonderEcon</h3>
+          <p data-en="WonderEcon is a multi-agent economic simulation demo driven by large language models. Take over a household, make its decisions in the loan, labour, goods, stock and deposit markets, and compare your results with the AI — a quick, hands-on feel for how agents in an economic world model decide.">WonderEcon 是一个由大模型驱动的多智能体经济模拟演示。你可以接管一户家庭，在贷款、劳动、商品、股票和存款市场里替它做决定，再把结果和 AI 比一比，直观感受经济世界模型里的 Agent 是怎样做决策的。</p>
           <div class="cta-row">
             <a class="btn btn-primary" href="https://wonderecon.com" target="_blank" rel="noopener">wonderecon.com ↗</a>
             <a class="btn" href="https://github.com/Planet-300894/WonderEcon" target="_blank" rel="noopener">GitHub ↗</a>
@@ -365,10 +365,10 @@
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261018200636"></script>
-<script src="assets/js/i18n.js?v=20261018200636"></script>
-<script src="assets/js/pages.js?v=20261018200636"></script>
-<script src="assets/js/fx.js?v=20261018200636"></script>
+<script src="assets/js/config.js?v=20261018232231"></script>
+<script src="assets/js/i18n.js?v=20261018232231"></script>
+<script src="assets/js/pages.js?v=20261018232231"></script>
+<script src="assets/js/fx.js?v=20261018232231"></script>
 <script>
 (function () {
   var t = function (zh, en) { return window.SW_t(zh, en); };
