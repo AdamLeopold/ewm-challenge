@@ -374,7 +374,11 @@
     document.querySelectorAll("[data-chars]").forEach(function (el) {
       var base = el.dataset.chars || ".25s", txt = el.textContent;
       el.setAttribute("aria-label", txt);
-      el.innerHTML = txt.split("").map(function (ch, i) { return '<span class="char" aria-hidden="true">' + ch + "</span>"; }).join("");
+      // letters are grouped per word so a wrapped heading breaks between words, never inside one
+      el.innerHTML = txt.split(/(\s+)/).map(function (word) {
+        if (/^\s+$/.test(word)) return " ";
+        return '<span class="char-word" aria-hidden="true">' + word.split("").map(function (ch) { return '<span class="char">' + ch + "</span>"; }).join("") + "</span>";
+      }).join("");
       el.dataset.base = parseFloat(base) * 1000;
     });
     intro();
