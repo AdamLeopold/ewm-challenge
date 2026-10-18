@@ -1,13 +1,13 @@
 /* Bilingual switch. Chinese lives in the markup; English in data-en (HTML allowed).
-   ?lang=en forces English; the choice is remembered per browser. */
+   English is the default; ?lang=zh / ?lang=en force a language, and a visitor's own choice is remembered. */
 (function () {
-  var KEY = "sw-lang";
+  var KEY = "sw-lang-v2";   // new key so earlier saved choices don't override the English default
   function read() {
     var q = new URLSearchParams(location.search).get("lang");
     if (q === "en" || q === "zh") return q;
-    try { return localStorage.getItem(KEY) || "zh"; } catch (e) { return "zh"; }
+    try { return localStorage.getItem(KEY) || "en"; } catch (e) { return "en"; }
   }
-  function apply(lang) {
+  function setText(lang) {
     document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
     document.querySelectorAll("[data-en]").forEach(function (el) {
       if (el.dataset.zh === undefined) el.dataset.zh = el.innerHTML;
@@ -18,6 +18,9 @@
       el.setAttribute("aria-label", lang === "en" ? el.dataset.enAria : el.dataset.zhAria);
     });
     document.querySelectorAll(".lang-toggle").forEach(function (b) { b.textContent = lang === "en" ? "中文" : "EN"; });
+  }
+  function apply(lang) {
+    setText(lang);
     window.SW_LANG = lang;
     document.dispatchEvent(new CustomEvent("sw:lang", { detail: lang }));
     if (lang !== "en") { keepPhrases(); bindTails(); }
@@ -85,6 +88,9 @@
     apply(lang);
   };
   window.SW_t = function (zh, en) { return window.SW_LANG === "en" ? en : zh; };
+  // This script sits at the end of <body>: swap the text now, before the first paint, so English
+  // visitors never see a flash of Chinese. Other scripts get the language event on DOMContentLoaded.
+  window.SW_LANG = read(); setText(window.SW_LANG);
   document.addEventListener("DOMContentLoaded", function () {
     apply(read());
     document.querySelectorAll(".lang-toggle").forEach(function (b) {
