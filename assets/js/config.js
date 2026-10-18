@@ -11,7 +11,7 @@ window.SW_CONFIG = {
     name: "SimuWorld Challenge",
     hostLine: { zh: "HoloBit 赛道由 HoloBit 主办", en: "HoloBit track hosted by HoloBit" },
     timeline: [
-      { date: "2026-10-23T00:00:00Z", zh: "比赛公告 · 开放报名", en: "Announcement · Registration opens",
+      { date: "2026-11-02T00:00:00Z", zh: "比赛公告 · 开放报名", en: "Announcement · Registration opens",
         dzh: "发布规则、接口规格、文档预览与历史数据。", den: "Rules, interface spec, docs preview and historical data released." },
       { date: "2026-11-02T00:00:00Z", end: "2026-11-06T23:59:00Z", label: { zh: "11/02–06", en: "2–6 Nov" },
         zh: "香港金融科技周 · 现场宣讲", en: "Hong Kong FinTech Week · Showcase",
