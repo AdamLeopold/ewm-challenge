@@ -67,7 +67,13 @@ img, video, canvas, iframe { display: block; max-width: 100%; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .nav { display: flex; gap: 26px; align-items: center; font-size: 14px; color: var(--muted); }
 .nav a:hover { color: var(--fg); }
-.nav-links { display: flex; gap: 22px; }
+.nav-links { display: flex; gap: 22px; position: relative; padding: 6px 0; }
+/* reading progress under the section links: fills left to right, reaching each link as its section arrives */
+.nav-links .nav-track, .nav-links .nav-bar { position: absolute; left: 0; bottom: -3px; pointer-events: none; border-radius: 2px; }
+.nav-links .nav-track { right: 0; height: 1px; background: var(--line); }
+.nav-links .nav-bar { height: 2px; width: 0; background: linear-gradient(90deg, var(--accent-2), var(--accent)); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 60%, transparent); }
+.nav-links a { transition: color .3s; }
+.nav-links a.active { color: var(--fg); }
 .lang-toggle {
   font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em;
   border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--fg);

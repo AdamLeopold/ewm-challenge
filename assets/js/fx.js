@@ -408,6 +408,43 @@
     // sticky top bar background
     var bar = document.querySelector(".topbar[data-solid]");
     if (bar) { var on = function () { bar.classList.toggle("solid", scrollY > 40); }; on(); addEventListener("scroll", on, { passive: true }); }
+    // nav progress: a bar under the in-page links grows left to right with the reading position.
+    // It reaches the end of a link as that link's section arrives, and the current link lights up.
+    var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"]'));
+    var navSecs = navLinks.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+    if (navLinks.length && navSecs.every(Boolean)) {
+      var navBox = navLinks[0].parentNode, navTrack = document.createElement("span"), navBar = document.createElement("span");
+      navTrack.className = "nav-track"; navBar.className = "nav-bar";
+      navBox.appendChild(navTrack); navBox.appendChild(navBar);
+      var navTick = false;
+      var navFrame = function () {
+        navTick = false;
+        var line = scrollY + innerHeight * 0.35, boxL = navBox.getBoundingClientRect().left;
+        var ends = navLinks.map(function (a) { return a.getBoundingClientRect().right - boxL; });
+        var tops = navSecs.map(function (el) { return el.getBoundingClientRect().top + scrollY; });
+        var pts = [[innerHeight * 0.35, 0]];                       // page top -> empty bar
+        tops.forEach(function (t, i) { pts.push([t, ends[i]]); });  // section i arrives -> end of link i
+        pts.push([document.documentElement.scrollHeight - innerHeight * 0.65, navBox.clientWidth]);   // page end -> full
+        var x = 0;
+        for (var i = 0; i < pts.length - 1; i++) {
+          var a = pts[i], b = pts[i + 1];
+          if (line <= a[0]) { x = a[1]; break; }
+          if (line <= b[0]) { x = a[1] + (b[1] - a[1]) * (line - a[0]) / Math.max(1, b[0] - a[0]); break; }
+          x = b[1];
+        }
+        navBar.style.width = Math.max(0, x).toFixed(1) + "px";
+        var cur = -1;
+        tops.forEach(function (t, i) { if (line >= t) cur = i; });
+        navLinks.forEach(function (a, i) { a.classList.toggle("active", i === cur); });
+      };
+      addEventListener("scroll", function () { if (!navTick) { navTick = true; requestAnimationFrame(navFrame); } }, { passive: true });
+      addEventListener("resize", navFrame);
+      document.addEventListener("sw:lang", function () { setTimeout(navFrame, 50); });   // link widths change with language
+      addEventListener("load", navFrame);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(navFrame);
+      navFrame();
+    }
+
     // scroll cue: fades out once the reader starts scrolling
     var cue = document.querySelector(".scroll-cue");
     if (cue) { var hideCue = function () { cue.classList.toggle("gone", scrollY > 60); }; addEventListener("scroll", hideCue, { passive: true }); hideCue(); }
