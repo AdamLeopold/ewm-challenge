@@ -181,12 +181,12 @@ img, video, canvas, iframe { display: block; max-width: 100%; }
 }
 @keyframes spark { from { top: -10%; } to { top: 100%; } }
 .center-title {
-  position: absolute; z-index: 6; top: 50%; left: 50%; transform: translate(-50%, -50%);   /* fixed: does not follow the divider */
+  position: absolute; z-index: 6; top: 50%; left: 50%; transform: translate(-50%, -62%);   /* fixed: does not follow the divider */
   pointer-events: none; text-align: center; transition: opacity 1.4s cubic-bezier(.22,1,.36,1);                  /* same timing as the divider (--c) */
 }
 .center-title .word {
   font-family: var(--font-display); font-weight: 700; letter-spacing: -.04em;
-  font-size: clamp(40px, 8vw, 132px); line-height: 1; white-space: nowrap; display: flex;
+  font-size: clamp(40px, 8vw, 132px); line-height: 1; white-space: nowrap; display: flex; justify-content: center;
 }
 .center-title .w-l { color: #fff; text-shadow: 0 0 40px rgba(0,255,136,.55); }
 .center-title .w-r { color: #fff; text-shadow: 0 0 40px rgba(176,107,255,.6); }
@@ -200,7 +200,9 @@ img, video, canvas, iframe { display: block; max-width: 100%; }
   color: rgba(255,255,255,.7);
 }
 .split:has(.side:hover) .center-title { opacity: .22; }
-.center-title .events { margin-top: 12px; font-family: var(--font-mono); font-size: clamp(11px, .95vw, 13px); letter-spacing: .12em; color: rgba(255,255,255,.62); white-space: nowrap; }
+/* event dates sit above the title, two short lines, so they never widen the title or reach the track headings */
+.center-title { display: flex; flex-direction: column; align-items: center; }
+.center-title .events { order: -1; margin: 0 auto 16px; max-width: 30em; font-family: var(--font-mono); font-size: clamp(11px, .95vw, 13px); letter-spacing: .12em; line-height: 1.7; color: rgba(255,255,255,.62); text-wrap: balance; }
 .hint {
   position: absolute; z-index: 6; left: 50%; bottom: 22px; transform: translateX(-50%);
   font-family: var(--font-mono); font-size: 11px; letter-spacing: .25em; color: rgba(255,255,255,.45); text-transform: uppercase;

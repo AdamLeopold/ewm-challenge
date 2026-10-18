@@ -66,7 +66,7 @@
   }
   // small labels like "Track 02 · Agentic City · 香港北部都会区" break only at the dots
   function keepLabelParts() {
-    document.querySelectorAll(".eyebrow, .track-tag, .chip").forEach(function (el) {
+    document.querySelectorAll(".eyebrow, .track-tag, .chip, .events").forEach(function (el) {
       el.querySelectorAll(".ph").forEach(function (p) { p.replaceWith(document.createTextNode(p.textContent)); });
       el.normalize();
       Array.prototype.slice.call(el.childNodes).forEach(function (node) {
