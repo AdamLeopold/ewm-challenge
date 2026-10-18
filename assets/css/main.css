@@ -200,6 +200,7 @@ img, video, canvas, iframe { display: block; max-width: 100%; }
   color: rgba(255,255,255,.7);
 }
 .split:has(.side:hover) .center-title { opacity: .22; }
+.center-title .events { margin-top: 12px; font-family: var(--font-mono); font-size: clamp(11px, .95vw, 13px); letter-spacing: .12em; color: rgba(255,255,255,.62); white-space: nowrap; }
 .hint {
   position: absolute; z-index: 6; left: 50%; bottom: 22px; transform: translateX(-50%);
   font-family: var(--font-mono); font-size: 11px; letter-spacing: .25em; color: rgba(255,255,255,.45); text-transform: uppercase;
