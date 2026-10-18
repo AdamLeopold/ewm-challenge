@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SimuWorld Challenge</title>
+<meta name="description" content="SimuWorld Challenge：用 AI Agent 在仿真世界里竞赛。两条赛道：HoloBit（DeFi 协议仿真）与 Agentic City（城市规划仿真）。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="brand-mark"></span>SimuWorld <span class="brand-sub">Challenge</span></a>
+  <nav class="nav">
+    <div class="nav-links">
+      <a href="holobit.html">HoloBit</a>
+      <a href="agentic-city.html">Agentic City</a>
+    </div>
+    <button class="lang-toggle" type="button" aria-label="Switch language">EN</button>
+  </nav>
+</header>
+
+<main class="split">
+  <!-- LEFT · HoloBit -->
+  <a class="side side-holo" href="holobit.html" aria-label="HoloBit track">
+    <!-- upper footage: code-drawn trading terminal -->
+    <canvas class="fx-top" data-fx="terminal" data-span=".62" aria-hidden="true"></canvas>
+    <canvas class="fx" data-fx="holo" aria-hidden="true"></canvas>
+    <div class="side-content">
+      <div class="track-tag"><span class="dot"></span><span data-en="Track 01 · On-chain finance">Track 01 · 链上金融</span></div>
+      <h2 data-chars=".5s">HoloBit</h2>
+      <p class="lede" data-en="Build AI agents that trade, lend and manage protocol risk inside a full digital twin of Uniswap V3 and Aave v3.">让你的 AI Agent 在 Uniswap V3 与 Aave v3 的数字孪生里做策略、管风险，接受隐藏极端行情的检验。</p>
+      <div class="detail">
+        <div class="meta">
+          <span class="chip" data-en="Strategy agent">策略 Agent</span>
+          <span class="chip" data-en="Protocol risk agent">协议风险 Agent</span>
+          <span class="chip" data-en="Hidden stress tests">隐藏压力测试</span>
+          <span class="chip" data-en="Finals · Singapore FinTech Festival">决赛 · 新加坡金融科技节</span>
+        </div>
+      </div>
+      <span class="enter" data-magnet><span data-en="Enter HoloBit">进入 HoloBit</span><span class="arrow">→</span></span>
+    </div>
+  </a>
+
+  <!-- RIGHT · Agentic City -->
+  <a class="side side-city" href="agentic-city.html" aria-label="Agentic City track">
+    <video class="bg-video" autoplay muted loop playsinline preload="auto" aria-hidden="true"
+      poster="assets/media/city-poster.jpg" data-src="assets/media/city-loop.mp4" data-src-small="assets/media/city-loop-960.mp4"></video>
+    <canvas class="fx" data-fx="city" data-cx=".74" data-cy=".36" data-scale=".72" aria-hidden="true"></canvas>
+    <div class="side-content">
+      <div class="track-tag"><span data-en="Track 02 · Urban planning">Track 02 · 城市规划</span><span class="dot"></span></div>
+      <h2 data-chars=".75s">Agentic City</h2>
+      <p class="lede" data-en="Plan a core district of Hong Kong's Northern Metropolis for 2035 by talking to an AI agent — then see how residents, firms and investors respond in simulation.">和 AI Agent 对话，为香港北部都会区核心区做 2035 年规划；再看居民、企业和投资者在仿真里如何回应。</p>
+      <div class="detail">
+        <div class="meta">
+          <span class="chip" data-en="3D city by chat">对话搭建 3D 城市</span>
+          <span class="chip" data-en="Policy design">政策设计</span>
+          <span class="chip" data-en="Multi-agent residents">多 Agent 居民仿真</span>
+          <span class="chip" data-en="Plan for 2035">面向 2035 规划</span>
+        </div>
+      </div>
+      <span class="enter" data-magnet><span data-en="Enter Agentic City">进入 Agentic City</span><span class="arrow">→</span></span>
+    </div>
+  </a>
+
+  <div class="divider" aria-hidden="true"></div>
+  <div class="center-title" aria-hidden="true">
+    <div class="word"><span class="w-l" data-chars=".1s">Simu</span><span class="w-r" data-chars=".26s">World</span></div>
+    <div class="word-sub" data-chars=".5s">Challenge</div>
+    <div class="sub" data-en="Choose your world">选择你的世界</div>
+  </div>
+  <div class="hint" aria-hidden="true" data-en="Hover to explore · Click to enter">悬停预览 · 点击进入</div>
+</main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/pages.js"></script>
+<script src="assets/js/fx.js"></script>
+</body>
+</html>

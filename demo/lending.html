@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="SimuWorld 借贷 Challenge 教学 Demo：切换规则 Agent，观察还款、清算与评分。纯浏览器模拟，尚未接入真实 HoloBit。" />
+  <title>借贷 Challenge 教学 Demo · SimuWorld</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="lending-demo.css" />
+  <script src="lending-engine.js" defer></script>
+  <script src="lending-demo.js" defer></script>
+</head>
+<body class="lending-page">
+  <a class="skip-link" href="#demo-main">跳到教学 Demo</a>
+  <header class="lab-header"><div class="shell lab-header-inner">
+    <a class="brand" href="../holobit.html"><svg class="brand-mark" viewBox="0 0 34 34" aria-hidden="true"><path d="M5 17 11 7h12l6 10-6 10H11L5 17Z"/><circle cx="17" cy="17" r="4.5"/></svg><span>SIMU<span>WORLD</span></span></a>
+    <span class="lab-header-label">LEARNING LAB / 01</span><a class="back-link" href="../holobit.html">返回项目网站 ↗</a>
+  </div></header>
+  <main id="demo-main" class="shell lab-main">
+    <div class="lab-warning"><span class="warning-dot" aria-hidden="true"></span><strong>教学示例 · 尚未接入真实 HoloBit</strong><span>浏览器本地计算 / 虚拟账户 / 自拟题目与评分 / 两个规则基线，未调用大模型</span></div>
+    <section class="lab-intro" aria-labelledby="lab-title">
+      <div><span class="section-code">A SMALL LOAN. A COMPLETE EXPERIMENT.</span><h1 id="lab-title">一笔借贷。<br><span>两种选择。</span></h1></div>
+      <div class="lab-intro-copy"><p>价格下跌时，Agent 是提前还款，还是继续等待？亲手运行两轮模拟，看看一个决策怎样改变清算、净值和成绩。</p><div class="intro-facts"><span>抵押品 <b>100</b></span><span>债务 <b>50</b></span><span>现金 <b>20</b></span><span>初始净值 <b>70</b></span></div><small>金额均为虚拟记账单位。净值 = 抵押品价值 + 现金 − 债务。</small></div>
+    </section>
+
+    <section class="experiment" aria-labelledby="experiment-title">
+      <aside class="control-panel">
+        <div class="panel-label">01 / 设置实验</div><h2 id="experiment-title">选择你的 Agent</h2>
+        <div class="agent-options" role="group" aria-label="选择 Agent">
+          <button class="agent-option" type="button" data-agent="early" aria-pressed="true"><span class="agent-letter">A</span><span><strong>提前还款</strong><small>债务比例 &gt; 60% 时<br>用现金还款，最多 20。</small></span><span class="selection-mark" aria-hidden="true">●</span></button>
+          <button class="agent-option" type="button" data-agent="wait" aria-pressed="false"><span class="agent-letter">B</span><span><strong>一直等待</strong><small>不还款。保留现金，<br>接受后续市场变化。</small></span><span class="selection-mark" aria-hidden="true">●</span></button>
+        </div>
+        <div class="scenario-control"><label for="final-price">第二轮抵押品市场价值 <output id="price-output" for="final-price">60</output></label><input id="final-price" type="range" min="55" max="100" step="5" value="60" /><div class="range-labels"><span>55 · 下跌更深</span><span>100 · 价格回升</span></div><p>市场路径：100 → 80 → <b id="path-end">60</b>。这是你设置的测试；Agent 看不到未到来的轮次。</p></div>
+        <div class="model-rules"><h3>本题规则</h3><p><b>80% 清算线</b>：债务 ÷ 抵押品价值超过 80% 就清算。</p><p><b>10% 额外成本</b>：教学版一次清偿全部债务，并消耗债务金额 10% 的抵押品。</p><p>Agent 每轮只可还款或等待。先更新价格，再决策，最后检查清算。忽略利息、手续费和真实协议细节。</p></div>
+      </aside>
+
+      <div class="simulation-panel">
+        <div class="simulation-header"><div><span class="panel-label">02 / 本地模拟</span><h2 id="run-title">提前还款 · 初始账户</h2></div><span class="run-state" id="run-state">等待运行</span></div>
+        <div class="round-tabs" role="group" aria-label="查看轮次"><button type="button" data-round="0" aria-pressed="true">00 <span>初始</span></button><button type="button" data-round="1" aria-pressed="false" disabled>01 <span>跌至 80</span></button><button type="button" data-round="2" aria-pressed="false" disabled>02 <span id="round-final-label">跌至 60</span></button></div>
+        <div class="account-metrics"><div><span>抵押品价值</span><strong id="metric-collateral">100.00</strong></div><div><span>债务</span><strong id="metric-debt">50.00</strong></div><div><span>现金</span><strong id="metric-cash">20.00</strong></div><div class="metric-net"><span>账户净值</span><strong id="metric-net">70.00</strong></div></div>
+        <div class="risk-indicator"><div><span>本轮行动后、清算前的债务比例</span><strong id="risk-value">50.0%</strong></div><div class="risk-track"><span id="risk-fill"></span><i aria-hidden="true"></i></div><div class="risk-key"><span>0%</span><span>80% 清算线</span><span>100%</span></div></div>
+        <div class="chart-wrap"><div class="chart-header"><h3>账户净值变化</h3><span><i></i>已运行轮次</span></div><svg id="equity-chart" viewBox="0 0 620 160" role="img" aria-label="账户净值变化图"></svg></div>
+        <div class="event-box" id="event-box" role="status" aria-live="polite"><span class="event-icon" aria-hidden="true">○</span><div><strong id="event-title">准备好了</strong><p id="event-copy">点击“下一轮”，先看抵押品跌到 80 后 Agent 会怎么做。</p></div></div>
+        <div class="run-controls"><button type="button" class="lab-button primary" id="next-round">下一轮 →</button><button type="button" class="lab-button" id="run-all">运行至结束</button><button type="button" class="lab-button reset-button" id="reset-run">↺ 重置</button></div><p class="control-hint">切换 Agent 或修改价格会重置实验。已运行的轮次可点击回看。</p>
+      </div>
+    </section>
+
+    <section class="results-grid" aria-label="决策记录与教学评分">
+      <article class="trace-panel"><span class="panel-label">03 / 决策记录</span><h2>每一步，都有依据。</h2><div id="decision-trace" aria-live="polite"></div><details class="io-details"><summary>查看当前输入与输出 · 教学接口</summary><pre id="io-preview"></pre><p>这是本地示意接口；不是已确认的 HoloBit API。</p></details></article>
+      <article class="score-panel"><div class="score-heading"><div><span class="panel-label">04 / 教学评分</span><h2>收益之外，看风险。</h2></div><div class="total-score"><strong id="total-score">—</strong><span>/ 100</span></div></div><p id="score-status">完成两轮模拟后计算。这里只考风险控制，不代表正式比赛评分。</p><div class="score-breakdown"><div><span>避免清算 <small>未清算 50 分；清算 0 分</small></span><strong id="score-safety">— / 50</strong></div><div><span>保存净值 <small>30 × 最终净值 ÷ 初始净值，最高 30</small></span><strong id="score-preservation">— / 30</strong></div><div><span>正常运行和完整记录 <small>两个内置基线均合法完成时得 20 分</small></span><strong id="score-operation">— / 20</strong></div></div><div class="comparison" id="comparison" hidden><h3>同一场景，比较两个 Agent</h3><div id="comparison-rows"></div><p>这是本地对照结果，不是正式排行榜。还款会降低风险，但不会凭空增加净值。</p></div></article>
+    </section>
+
+    <section class="source-note"><h2>哪些是老师的方向，哪些是本例添加的？</h2><p><b>老师初稿的方向：</b>持续运行的 Agent、统一仿真、压力测试、可追踪记录、同时关注收益和风险。</p><p><b>本教学例自拟：</b>100 / 50 / 20 的账户、60% 提前还款线、80% 清算线、10% 成本、两轮价格、两个规则 Agent、50 / 30 / 20 评分。未获老师确认。它也没有实现初稿提出的 40% 实时评测 / 60% 隐藏压力测试。</p><p>正式落地前需确认：协议与模型精度、动作顺序、AI Agent 资格、允许的仿真调用、评分公式，以及真实 HoloBit 的可用接口。</p></section>
+    <noscript><p class="lab-warning">请启用 JavaScript 运行教学模拟。当前页面没有连接后台服务。</p></noscript>
+  </main>
+  <footer class="lab-footer shell"><span>SIMUWORLD / LEARNING LAB</span><span>教学模拟 · 非正式比赛结果 · 无真实资金</span><a href="../holobit.html">返回项目网站 ↗</a></footer>
+</body>
+</html>
