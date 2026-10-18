@@ -245,7 +245,7 @@ img, video, canvas, iframe { display: block; max-width: 100%; }
 }
 .scroll-cue svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .scroll-cue:hover, .scroll-cue:focus-visible { border-color: var(--accent); }
-.scroll-cue.gone { opacity: 0; pointer-events: none; }
+.scroll-cue.gone { animation: none; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .6s, visibility 0s .6s; }   /* the breathing animation would otherwise keep it visible */
 @keyframes cue-breathe {
   0%, 100% { transform: translateY(0); opacity: .45; box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
   50% { transform: translateY(6px); opacity: 1; box-shadow: 0 0 22px -4px color-mix(in srgb, var(--accent) 70%, transparent); }
@@ -473,6 +473,53 @@ footer a:hover { color: var(--fg); }
 /* cursor glow */
 .cursor-glow { position: fixed; z-index: 60; width: 380px; height: 380px; margin: -190px 0 0 -190px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, color-mix(in srgb, var(--accent) 9%, transparent), transparent 62%); mix-blend-mode: screen; transition: opacity .3s; will-change: transform; }
 @media (hover: none) { .cursor-glow { display: none; } }
+
+
+/* ---------- scroll-driven scenes ---------- */
+[data-scene] { position: relative; height: var(--len, 300vh); --p: 0; }
+.scene-stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+.calm [data-scene] { height: auto; }
+.calm .scene-stick { position: static; height: auto; overflow: visible; padding-block: 80px; }
+@media (max-width: 760px) { [data-scene] { height: var(--len-m, 220vh); } }
+
+/* HoloBit · statement that writes itself, then zooms through the screen */
+.scene-statement { --len: 300vh; --len-m: 240vh; }
+.scene-statement .scene-stick { align-items: center; text-align: center;
+  background: radial-gradient(60% 50% at 50% 55%, color-mix(in srgb, var(--accent) calc(var(--p) * 22%), transparent), transparent 70%); }
+.statement { display: grid; gap: .1em; padding-inline: 16px; transform-origin: 50% 46%;
+  transform: scale(calc(1 + max(0, var(--p) - .72) * 26)); opacity: calc(1 - max(0, var(--p) - .8) * 5); will-change: transform; }
+.st-line { display: block; font-family: var(--font-display); font-weight: 700; letter-spacing: -.045em; line-height: 1.02;
+  font-size: clamp(44px, 9vw, 150px); color: var(--fg); opacity: .08; filter: blur(6px); transform: translateY(.18em);
+  transition: opacity .9s cubic-bezier(.22,1,.36,1), filter .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1); }
+.st-line.on { opacity: 1; filter: none; transform: none; }
+.st-line:last-of-type.on { color: var(--accent); text-shadow: 0 0 60px color-mix(in srgb, var(--accent) 55%, transparent); }
+.st-sub { margin-top: 28px; font-family: var(--font-mono); font-size: clamp(12px, 1.1vw, 15px); letter-spacing: .22em; text-transform: uppercase; color: var(--muted);
+  opacity: 0; transition: opacity .8s; }
+.st-sub.on { opacity: 1; }
+
+/* HoloBit · scoring ring drawn by scrolling */
+.scene-score { --len: 260vh; --len-m: 200vh; }
+.scene-score .scene-stick { padding-top: 64px; }
+.scene-score .legend .row { opacity: .28; transform: translateX(-10px); transition: opacity .7s, transform .7s cubic-bezier(.22,1,.36,1), border-color .7s; }
+.scene-score .legend .row.on { opacity: 1; transform: none; border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.scene-score .ring .a, .scene-score .ring .b { transition: none; }
+.scene-score .sec-head { margin-bottom: 36px; }
+
+/* Agentic City · builder grows from a card to the stage, then the conversation plays with the scroll */
+.scene-builder { --len: 340vh; --len-m: 260vh; }
+.scene-builder .builder { transform: scale(calc(.62 + min(var(--p) / .28, 1) * .38)); transform-origin: 50% 50%;
+  border-radius: calc(36px - min(var(--p) / .28, 1) * 18px); will-change: transform; }
+.scene-builder .msg { transition: opacity .5s, transform .5s cubic-bezier(.22,1,.36,1); }
+.scene-builder .scene-cap { text-align: center; margin-top: 22px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+
+/* Agentic City · demo video opens up from a window to the full stage */
+.scene-video { --len: 240vh; --len-m: 180vh; }
+.scene-video .scene-stick { align-items: center; }
+.scene-video .demo-frame { width: min(1180px, 100vw - 32px); max-height: 82vh; aspect-ratio: 16 / 9; max-width: 100%;
+  transform: scale(calc(.5 + min(var(--p) / .55, 1) * .5)); border-radius: calc(40px - min(var(--p) / .55, 1) * 24px); will-change: transform; }
+.scene-video .demo-frame video { width: 100%; height: 100%; aspect-ratio: auto; }
+.scene-video .scene-cap { margin-top: 18px; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
+  opacity: calc(min(var(--p) / .55, 1)); }
 
 /* load choreography: characters and blocks rise out of a soft blur */
 .char { display: inline-block; white-space: pre; }

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261019000212">
+<link rel="stylesheet" href="assets/css/main.css?v=20261019000629">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 <style>
   /* builder mock */
@@ -33,7 +33,7 @@
   .builder .bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); margin-top: 6px; overflow: hidden; }
   .builder .bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--city), var(--city-2)); transition: width 1s; }
   .builder .typing { display: inline-flex; gap: 4px; } .builder .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: pulse 1s infinite; } .builder .typing i:nth-child(2) { animation-delay: .15s; } .builder .typing i:nth-child(3) { animation-delay: .3s; }
-  @media (max-width: 860px) { .builder { grid-template-columns: 1fr; } .builder .map { min-height: 260px; } .builder .chat { border-left: 0; border-top: 1px solid var(--line); min-height: 320px; } }
+  @media (max-width: 860px) { .builder { grid-template-columns: 1fr; } .builder .map { min-height: 260px; } .builder .chat { border-left: 0; border-top: 1px solid var(--line); min-height: 250px; } }
   .file { display: flex; gap: 18px; align-items: flex-start; }
   .file .ext { flex: none; width: 64px; height: 78px; border-radius: 8px; position: relative; border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent); background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 25%, transparent), transparent); display: grid; place-items: end center; padding-bottom: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--accent); }
   .file .ext::before { content: ""; position: absolute; right: -1px; top: -1px; width: 18px; height: 18px; background: var(--bg); border-left: 1px solid color-mix(in srgb, var(--accent) 50%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--accent) 50%, transparent); border-bottom-left-radius: 6px; }
@@ -124,7 +124,10 @@
         <div><div class="sec-num">02 / HOW TO PLAY</div><h2 data-en="Like a city-builder game. Except you just say it.">像玩城市建造游戏，只是动嘴就行</h2></div>
         <p data-en="No modelling software, no code. The system walks you through each step, and the agent turns what you say into zones, buildings, transit lines and policy documents.">不用学建模软件，也不用写代码。系统会一步步带着你走，Agent 把你说的话变成区域、建筑、交通线路和政策文件。</p>
       </div>
-      <div class="builder reveal" id="builder">
+    </div>
+    <div class="scene-builder" data-scene id="builder-scene">
+      <div class="scene-stick"><div class="wrap">
+      <div class="builder" id="builder">
         <div class="map">
           <div class="zone" data-label="Plot 07"></div>
           <div class="road"></div>
@@ -139,7 +142,10 @@
           <div class="budget"><span data-en="Budget remaining">剩余预算</span> <span id="budget-pct">100%</span><div class="bar"><i id="budget-bar"></i></div></div>
         </div>
       </div>
-      <p class="note" data-en="Illustration of the planned interaction. The demo video and playable demo arrive at the end of October.">示意图，展示计划中的交互方式。演示视频和可体验 Demo 将于 10 月底上线。</p>
+      <p class="scene-cap" data-en="Illustration of the planned interaction · demo arrives end of October">示意图，展示计划中的交互方式 · Demo 将于 10 月底上线</p>
+      </div></div>
+    </div>
+    <div class="wrap">
 
       <div class="flow" style="--n:5;margin-top:64px">
         <div class="step reveal"><h4 data-en="Zone">划分区域</h4><p data-en="Draw areas in words and give each a use: residential, commercial, office, public facilities.">用自然语言划出区域，说明功能：居住、商业、办公、公共设施等。</p></div>
@@ -277,11 +283,18 @@
         <div><b data-en="Many markets">多层市场</b><span data-en="Jobs, housing, consumption, venture capital">就业、住房、商业消费、创投</span></div>
         <div><b data-en="Co-evolution">共同演化</b><span data-en="Decisions change the city; the city changes decisions">决策改变城市，城市再影响决策</span></div>
       </div>
-      <div class="grid g2" style="margin-bottom:24px">
-        <div class="demo-frame reveal">
-          <video controls playsinline preload="none" poster="assets/media/wonderecon-poster.jpg" src="assets/media/wonderecon-demo.mp4"></video>
+    </div>
+    <div class="scene-video" data-scene id="video-scene">
+      <div class="scene-stick">
+        <div class="demo-frame">
+          <video controls playsinline muted preload="metadata" poster="assets/media/wonderecon-poster.jpg" src="assets/media/wonderecon-demo.mp4"></video>
         </div>
-        <div class="card reveal d1">
+        <p class="scene-cap" data-en="WonderEcon · a multi-agent economic simulation demo">WonderEcon · 多智能体经济模拟演示</p>
+      </div>
+    </div>
+    <div class="wrap">
+      <div style="margin-bottom:24px">
+        <div class="card reveal">
           <span class="k" data-en="Go further">延伸体验</span>
           <h3 data-en="Try an economic simulation: WonderEcon">试玩一个经济模拟：WonderEcon</h3>
           <p data-en="WonderEcon is a multi-agent economic simulation demo driven by large language models. Take over a household, make its decisions in the loan, labour, goods, stock and deposit markets, and compare your results with the AI — a quick, hands-on feel for how agents in an economic world model decide.">WonderEcon 是一个由大模型驱动的多智能体经济模拟演示。你可以接管一户家庭，在贷款、劳动、商品、股票和存款市场里替它做决定，再把结果和 AI 比一比，直观感受经济世界模型里的 Agent 是怎样做决策的。</p>
@@ -368,10 +381,10 @@
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261019000212"></script>
-<script src="assets/js/i18n.js?v=20261019000212"></script>
-<script src="assets/js/pages.js?v=20261019000212"></script>
-<script src="assets/js/fx.js?v=20261019000212"></script>
+<script src="assets/js/config.js?v=20261019000629"></script>
+<script src="assets/js/i18n.js?v=20261019000629"></script>
+<script src="assets/js/pages.js?v=20261019000629"></script>
+<script src="assets/js/fx.js?v=20261019000629"></script>
 <script>
 (function () {
   var t = function (zh, en) { return window.SW_t(zh, en); };
@@ -413,23 +426,24 @@
   }
   document.addEventListener("sw:lang", draw);
 
-  // builder mock: replay the chat when it scrolls into view
+  // builder mock: the conversation advances with the scroll through the builder scene
   document.addEventListener("DOMContentLoaded", function () {
-    var b = document.getElementById("builder"), msgs = b.querySelectorAll(".msg"), bar = document.getElementById("budget-bar"), pct = document.getElementById("budget-pct"), running = false;
-    function play() {
-      if (running) return; running = true;
-      msgs.forEach(function (m) { m.classList.remove("show"); }); b.classList.remove("built"); bar.style.width = "100%"; pct.textContent = "100%";
-      var steps = [
-        function () { msgs[0].classList.add("show"); },
-        function () { msgs[1].classList.add("show"); b.classList.add("built"); bar.style.width = "82%"; pct.textContent = "82%"; },
-        function () { msgs[2].classList.add("show"); },
-        function () { msgs[3].classList.add("show"); bar.style.width = "71%"; pct.textContent = "71%"; }
-      ];
-      steps.forEach(function (f, i) { setTimeout(f, 500 + i * 1500); });
-      setTimeout(function () { running = false; }, 9000);
-    }
-    new IntersectionObserver(function (e) { if (e[0].isIntersecting) play(); }, { threshold: .4 }).observe(b);
-    setInterval(function () { var r = b.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) play(); }, 10000);
+    var sc = document.getElementById("builder-scene"), b = document.getElementById("builder"), msgs = b.querySelectorAll(".msg"),
+        bar = document.getElementById("budget-bar"), pct = document.getElementById("budget-pct");
+    var at = [0.3, 0.44, 0.6, 0.74];
+    sc.onSceneProgress = function (p) {
+      msgs.forEach(function (m, i) { m.classList.toggle("show", p >= at[i]); });
+      b.classList.toggle("built", p >= at[1]);
+      var left = p >= at[3] ? 71 : p >= at[1] ? 82 : 100;
+      bar.style.width = left + "%"; pct.textContent = left + "%";
+    };
+    if (window.SW_sceneFrame) window.SW_sceneFrame();
+
+    // demo video: starts playing (muted) once it has opened up; controls let viewers unmute
+    var vs = document.getElementById("video-scene"), vid = vs.querySelector("video"), started = false;
+    vs.onSceneProgress = function (p) {
+      if (!started && p > 0.35 && !document.hidden) { started = true; vid.play().catch(function () {}); }
+    };
 
     // iframe fallback if it never loads
     var em = document.getElementById("we-embed"), fr = em.querySelector("iframe"), ok = false;

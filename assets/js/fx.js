@@ -445,6 +445,31 @@
       navFrame();
     }
 
+    // Scroll-driven scenes (Apple-style): a [data-scene] block is several screens tall and its
+    // .scene-stick child stays pinned while the reader scrolls through it. The script writes the
+    // progress (0 to 1) to --p, switches on [data-at] children once progress passes their value,
+    // and calls el.onSceneProgress(p) for scenes that need custom drawing.
+    var scenes = Array.prototype.slice.call(document.querySelectorAll("[data-scene]"));
+    if (scenes.length) {
+      if (reduce) document.documentElement.classList.add("calm");
+      var sceneTick = false;
+      var sceneFrame = function () {
+        sceneTick = false;
+        scenes.forEach(function (sc) {
+          var r = sc.getBoundingClientRect(), run = r.height - innerHeight;
+          var p = reduce ? 1 : (run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 1);
+          sc.style.setProperty("--p", p.toFixed(4));
+          sc.querySelectorAll("[data-at]").forEach(function (el) { el.classList.toggle("on", p >= parseFloat(el.dataset.at)); });
+          if (sc.onSceneProgress) sc.onSceneProgress(p);
+        });
+      };
+      window.SW_sceneFrame = sceneFrame;
+      addEventListener("scroll", function () { if (!sceneTick) { sceneTick = true; requestAnimationFrame(sceneFrame); } }, { passive: true });
+      addEventListener("resize", sceneFrame);
+      addEventListener("load", sceneFrame);
+      sceneFrame();
+    }
+
     // scroll cue: fades out once the reader starts scrolling
     var cue = document.querySelector(".scroll-cue");
     if (cue) { var hideCue = function () { cue.classList.toggle("gone", scrollY > 60); }; addEventListener("scroll", hideCue, { passive: true }); hideCue(); }
@@ -455,7 +480,7 @@
     if (!reduce) {
       var hero = document.querySelector(".hero"), heroWrap = hero && hero.querySelector(".wrap"), heroMedia = hero && hero.querySelector("video");
       var bgCanvas = document.querySelector(".page-bg canvas");
-      var heads = Array.prototype.slice.call(document.querySelectorAll(".sec-head h2"));
+      var heads = Array.prototype.slice.call(document.querySelectorAll(".sec-head h2")).filter(function (h) { return !h.closest("[data-scene]"); });
       var ticking = false;
       var frame = function () {
         ticking = false;
