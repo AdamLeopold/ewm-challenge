@@ -47,9 +47,39 @@
   /* ---------- HoloBit: candles + a liquidity surface in the lower part of the frame ---------- */
   function holoFX(canvas, opts) {
     opts = opts || {};
-    var quiet = !!opts.quiet;
+    var quiet = !!opts.quiet, risk = opts.variant === "risk";
     var TOP = quiet ? 0.24 : 0.54, SPAN = quiet ? 0.7 : 0.46;   // where the surface lives, as a share of height
     function price(k) { return Math.sin(k * 0.11) * 0.55 + Math.sin(k * 0.037 + 1.3) * 0.9 + Math.sin(k * 0.29) * 0.18 + Math.sin(k * 0.71) * 0.07; }
+    /* Track 2 variant: lending positions drift on a health-factor scale; a market shock pushes them
+       down, and any that cross the liquidation line flash red and are replaced. */
+    function drawRisk(s, dt) {
+      var c = s.ctx, w = s.w, h = s.h, t = s.t;
+      var thr = h * 0.47, topY = h * 0.33;   // above the panel text, below the page heading
+      var hfY = function (hf) { return thr - (hf - 1) / 1.4 * (thr - topY); };
+      var shock = Math.max(0, Math.sin(t * 0.35)) * 0.06;        // a slow wave of market stress
+      c.strokeStyle = "rgba(255,92,120,.55)"; c.setLineDash([6, 6]); c.lineWidth = 1;
+      c.beginPath(); c.moveTo(0, thr); c.lineTo(w, thr); c.stroke(); c.setLineDash([]);
+      c.font = "11px JetBrains Mono, monospace"; c.fillStyle = "rgba(255,140,160,.8)";
+      c.fillText("LIQUIDATION · HEALTH FACTOR 1.00", w * 0.36, thr + 18);
+      c.fillStyle = "rgba(160,255,230,.55)";
+      c.fillText("HF 2.40", w * 0.36, topY - 8);
+      c.globalCompositeOperation = "lighter";
+      s.pos.forEach(function (p) {
+        p.hf += (Math.sin(t * p.f + p.ph) * 0.004 - shock * p.beta) * dt * 60;
+        p.x += p.vx * dt * 60; if (p.x > w + 10) p.x = -10;
+        var y = hfY(p.hf);
+        if (p.hf < 1) { s.flash.push({ x: p.x, y: thr, a: 1 }); p.hf = rnd(1.6, 2.4); p.x = rnd(0, w); return; }
+        var k = Math.min(1, (p.hf - 1) / 0.8);
+        var col = k > 0.5 ? "63,242,200" : k > 0.22 ? "255,200,90" : "255,92,120";
+        c.fillStyle = "rgba(" + col + ",.9)"; c.beginPath(); c.arc(p.x, y, p.r, 0, 7); c.fill();
+      });
+      s.flash = s.flash.filter(function (f) { return (f.a -= dt * 1.2) > 0; });
+      s.flash.forEach(function (f) {
+        c.strokeStyle = "rgba(255,92,120," + f.a + ")"; c.lineWidth = 1.5;
+        c.beginPath(); c.arc(f.x, f.y, (1 - f.a) * 26 + 3, 0, 7); c.stroke();
+      });
+      c.globalCompositeOperation = "source-over";
+    }
     function curve(x, t, i) { return Math.sin(x * 0.0042 + t * 0.32 + i * 0.32) * 0.62 + Math.sin(x * 0.011 - t * 0.21 + i * 0.17) * 0.3 + Math.sin(x * 0.023 + t * 0.6 + i) * 0.08; }
     return stage(canvas, function (s, dt) {
       easePointer(dt);
@@ -59,6 +89,7 @@
       c.fillStyle = "rgba(120,255,200,.06)";
       for (var gx = 24; gx < w; gx += 36) for (var gy = Math.round(h * TOP / 36) * 36 + 24; gy < h; gy += 36) c.fillRect(gx, gy, 1, 1);
 
+      if (risk) drawRisk(s, dt); else {
       // candles: thin, slow, fading at both ends, with a moving average drawn through them
       var cw = small ? 5 : 7, step = cw + (small ? 4 : 6), speed = 16;
       var mid = h * (TOP + SPAN * 0.3), amp = h * SPAN * 0.22;
@@ -93,6 +124,8 @@
         c.fillText("ETH/USDC  " + (2400 + 60 * price(k0 + n - 4)).toFixed(2), Math.min(last[0] + 10, w - 140), last[1] - 9);
       }
 
+      }
+      c.globalCompositeOperation = "lighter";
       // the liquidity surface underneath
       var L = s.L, mx = P.cx - r.left, my = P.cy - r.top, sig = Math.max(140, w * 0.12);
       function yAt(x, i) {
@@ -126,6 +159,8 @@
       c.globalCompositeOperation = "source-over";
     }, function (s) {
       s.L = small ? 20 : (quiet ? 26 : 36);
+      s.flash = []; s.pos = [];
+      if (risk) for (var q = 0; q < (small ? 40 : 90); q++) s.pos.push({ x: rnd(0, s.w), hf: rnd(1.1, 2.4), vx: rnd(0.05, 0.3), f: rnd(0.4, 1.4), ph: rnd(0, 6), beta: rnd(0.6, 1.6), r: rnd(1.4, 2.8) });
       s.bokeh = [];
       for (var i = 0; i < (small ? 10 : 22); i++) s.bokeh.push({ x: rnd(0, s.w), y: rnd(s.h * TOP, s.h), r: rnd(2, 9), v: rnd(0.05, 0.25), a: rnd(0.04, 0.16), ph: rnd(0, 6) });
     });
@@ -301,7 +336,81 @@
     });
   }
 
-  window.SW_FX = { holo: holoFX, city: cityFX, terminal: terminalFX };
+  /* ---------- SimuWorld: a dotted globe (the world model) with agents arcing between places ---------- */
+  function worldFX(canvas, opts) {
+    opts = opts || {};
+    var cxr = parseFloat(canvas.dataset.cx || "0.68"), cyr = parseFloat(canvas.dataset.cy || "0.52");
+    var ICE = "143,214,255", WHITE = "228,243,255", GREEN = "0,255,136", VIOLET = "176,107,255";
+    function sph(lat, lon) { var cl = Math.cos(lat); return [cl * Math.sin(lon), Math.sin(lat), cl * Math.cos(lon)]; }
+    return stage(canvas, function (s, dt) {
+      easePointer(dt);
+      var c = s.ctx, w = s.w, h = s.h, t = s.t;
+      c.clearRect(0, 0, w, h);
+      var R = Math.min(w, h) * (small ? 0.42 : 0.36), cx = w * (small ? 0.5 : cxr), cy = h * (small ? 0.42 : cyr);
+      var ry = t * 0.08 + P.x * 0.35, rx = -0.32 + P.y * 0.12;
+      var cy1 = Math.cos(ry), sy1 = Math.sin(ry), cx1 = Math.cos(rx), sx1 = Math.sin(rx);
+      function pr(v) {   // rotate (y then x), orthographic projection; z > 0 faces the viewer
+        var x = v[0] * cy1 + v[2] * sy1, z = -v[0] * sy1 + v[2] * cy1, y = v[1];
+        var y2 = y * cx1 - z * sx1, z2 = y * sx1 + z * cx1;
+        return [cx + x * R, cy - y2 * R, z2];
+      }
+      // halo and orbit rings
+      var g = c.createRadialGradient(cx, cy, R * 0.6, cx, cy, R * 1.5);
+      g.addColorStop(0, "rgba(" + ICE + ",.16)"); g.addColorStop(1, "rgba(" + ICE + ",0)");
+      var core = c.createRadialGradient(cx - R * 0.3, cy - R * 0.35, R * 0.1, cx, cy, R);   // a faint lit face so it reads as a sphere
+      core.addColorStop(0, "rgba(" + ICE + ",.10)"); core.addColorStop(1, "rgba(" + ICE + ",.015)");
+      c.fillStyle = g; c.fillRect(0, 0, w, h);
+      c.fillStyle = core; c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = "rgba(" + ICE + ",.22)"; c.lineWidth = 1; c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.stroke();
+      [1.18, 1.32].forEach(function (k, i) {
+        c.strokeStyle = "rgba(" + ICE + "," + (0.16 - i * 0.06) + ")";
+        c.beginPath(); c.ellipse(cx, cy, R * k, R * k * 0.28, -0.25 + i * 0.12, 0, Math.PI * 2); c.stroke();
+      });
+      // dotted sphere: back half faint, front half bright
+      s.dots.forEach(function (d) {
+        var q = pr(d);
+        var a = q[2] > 0 ? 0.35 + 0.65 * q[2] : 0.08 + 0.08 * (1 + q[2]);
+        c.fillStyle = "rgba(" + ICE + "," + a.toFixed(3) + ")";
+        var sz = q[2] > 0 ? 1.4 + q[2] * 1.4 : 1.1;
+        c.fillRect(q[0] - sz / 2, q[1] - sz / 2, sz, sz);
+      });
+      // agents travelling along lifted arcs between places; most ice-white, some green / violet
+      c.globalCompositeOperation = "lighter";
+      s.arcs.forEach(function (a) {
+        a.k += dt * a.v;
+        if (a.k > 1.35) { a.from = a.to; a.to = s.dots[Math.floor(Math.random() * s.dots.length)]; a.k = 0; }
+        var trail = 14, col = a.col;
+        for (var i = 0; i < trail; i++) {
+          var u = Math.min(1, Math.max(0, a.k - i * 0.018));
+          if (u <= 0) break;
+          var A = a.from, B = a.to;
+          var m = [A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u, A[2] + (B[2] - A[2]) * u];
+          var len = Math.sqrt(m[0] * m[0] + m[1] * m[1] + m[2] * m[2]) || 1, lift = 1 + Math.sin(Math.PI * u) * 0.22;
+          var q = pr([m[0] / len * lift, m[1] / len * lift, m[2] / len * lift]);
+          if (q[2] < -0.15) continue;
+          var al = (1 - i / trail) * (q[2] > 0 ? 0.9 : 0.35);
+          c.fillStyle = "rgba(" + col + "," + al.toFixed(3) + ")";
+          c.beginPath(); c.arc(q[0], q[1], i === 0 ? 2.4 : 1.4, 0, 7); c.fill();
+        }
+        if (a.k >= 1 && a.k < 1.06) {   // arrival: a small ring where two agents interact
+          var e = pr(a.to);
+          if (e[2] > 0) { c.strokeStyle = "rgba(" + col + ",.7)"; c.beginPath(); c.arc(e[0], e[1], 4 + (a.k - 1) * 120, 0, 7); c.stroke(); }
+        }
+      });
+      c.globalCompositeOperation = "source-over";
+    }, function (s) {
+      var n = small ? 520 : 1100, golden = Math.PI * (3 - Math.sqrt(5));
+      s.dots = [];
+      for (var i = 0; i < n; i++) { var y = 1 - (i / (n - 1)) * 2, r = Math.sqrt(1 - y * y), th = golden * i; s.dots.push([Math.cos(th) * r, y, Math.sin(th) * r]); }
+      s.arcs = [];
+      for (var j = 0; j < (small ? 14 : 30); j++) {
+        var roll = Math.random(), col = roll < 0.15 ? GREEN : roll < 0.3 ? VIOLET : roll < 0.6 ? WHITE : ICE;
+        s.arcs.push({ from: s.dots[Math.floor(Math.random() * n)], to: s.dots[Math.floor(Math.random() * n)], k: Math.random(), v: rnd(0.12, 0.3), col: col });
+      }
+    });
+  }
+
+  window.SW_FX = { holo: holoFX, city: cityFX, terminal: terminalFX, world: worldFX };
 
   /* ---------- interactions ---------- */
   function countUp(el) {
@@ -348,7 +457,7 @@
     // canvases
     document.querySelectorAll("canvas[data-fx]").forEach(function (cv) {
       var kind = cv.dataset.fx, quiet = cv.hasAttribute("data-quiet");
-      if (window.SW_FX[kind]) window.SW_FX[kind](cv, { quiet: quiet });
+      if (window.SW_FX[kind]) window.SW_FX[kind](cv, { quiet: quiet, variant: cv.dataset.variant });
     });
     // reveal on scroll + one-shot effects
     // numbers show their final value at rest; they count up only when seen on a live page

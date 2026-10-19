@@ -13,6 +13,7 @@
 
   function renderTimeline(el) {
     var items = C[el.dataset.timeline].timeline, now = Date.now(), nextFound = false, showTime = el.hasAttribute("data-times");
+    if (el.dataset.limit) items = items.filter(function (it) { return new Date(it.end || it.date).getTime() >= now; }).slice(0, +el.dataset.limit);
     el.innerHTML = items.map(function (it) {
       var end = new Date(it.end || it.date).getTime(), cls = "";
       if (end < now) cls = "done"; else if (!nextFound) { cls = "next"; nextFound = true; }
@@ -51,7 +52,16 @@
     });
   }
 
+  // "Next · 2 Nov · Announcement" for the track cards on the home page
+  function renderNext(el) {
+    var now = Date.now(), it = C[el.dataset.next].timeline.find(function (x) { return new Date(x.end || x.date).getTime() >= now; });
+    if (!it) { el.hidden = true; return; }
+    var date = it.label ? t(it.label.zh, it.label.en) : fmt(it.date);
+    el.innerHTML = t("下一步 · ", "Next · ") + "<b>" + date + "</b> · " + t(it.zh, it.en);
+  }
+
   function all() {
+    document.querySelectorAll("[data-next]").forEach(renderNext);
     document.querySelectorAll("[data-timeline]").forEach(renderTimeline);
     document.querySelectorAll("[data-countdown]").forEach(renderCountdown);
     renderLinks();

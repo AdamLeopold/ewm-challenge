@@ -4,76 +4,189 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SimuWorld Challenge</title>
-<meta name="description" content="SimuWorld Challenge: AI agents compete inside simulated worlds. Two tracks: HoloBit (DeFi protocol simulation) and Agentic City (urban planning simulation).">
+<meta name="description" content="SimuWorld Challenge: an open competition built on an economic world model, where AI agents are tested inside multi-agent simulations. Three tracks across two simulated worlds.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261019001537">
+<link rel="stylesheet" href="assets/css/main.css?v=20261019150645">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 </head>
-<body>
+<body class="theme-sw">
+<div class="page-bg"></div>
+<div class="cursor-glow" aria-hidden="true"></div>
+
 <header class="topbar" data-solid>
   <a class="brand" href="index.html"><span class="brand-mark"></span>SimuWorld <span class="brand-sub">Challenge</span></a>
   <nav class="nav">
     <div class="nav-links">
-      <a href="holobit.html">HoloBit</a>
-      <a href="agentic-city.html">Agentic City</a>
+      <a href="#foundation" data-en="Foundation">底层</a>
+      <a href="#how" data-en="How it works">怎么比</a>
+      <a href="#tracks" data-en="Tracks">赛道</a>
+      <a href="#dates" data-en="Dates">日期</a>
     </div>
+    <a class="switch-track" href="tracks.html" data-en="Choose a track →">选择赛道 →</a>
     <button class="lang-toggle" type="button" aria-label="Switch language">EN</button>
   </nav>
 </header>
 
-<main class="split">
-  <!-- LEFT · HoloBit -->
-  <a class="side side-holo" href="holobit.html" aria-label="HoloBit track">
-    <!-- upper footage: code-drawn trading terminal -->
-    <canvas class="fx-top" data-fx="terminal" data-span=".62" aria-hidden="true"></canvas>
-    <canvas class="fx" data-fx="holo" aria-hidden="true"></canvas>
-    <div class="side-content">
-      <div class="track-tag"><span class="dot"></span><span data-en="Track 01 · On-chain finance">Track 01 · 链上金融</span></div>
-      <h2 data-chars=".5s">HoloBit</h2>
-      <p class="lede" data-en="Build AI agents that trade, lend and manage protocol risk inside a full digital twin of Uniswap V3 and Aave v3.">让你的 AI Agent 在 Uniswap V3 与 Aave v3 的数字孪生里做策略、管风险，接受隐藏极端行情的检验。</p>
-      <div class="detail">
-        <div class="meta">
-          <span class="chip" data-en="Strategy agent">策略 Agent</span>
-          <span class="chip" data-en="Protocol risk agent">协议风险 Agent</span>
-          <span class="chip" data-en="Hidden stress tests">隐藏压力测试</span>
-          <span class="chip" data-en="Finals · Singapore FinTech Festival">决赛 · 新加坡金融科技节</span>
+<main class="page">
+  <!-- HERO -->
+  <section class="hero hero-sw">
+    <canvas class="hero-fx" data-fx="world" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <span class="eyebrow" data-en="SimuWorld Challenge 2026">SimuWorld Challenge 2026</span>
+      <h1 data-en="Test your agent in a world that <span class=&quot;glow&quot;>pushes back.</span>">让你的 Agent，在<span class="glow">会回应的世界</span>里接受检验</h1>
+      <p class="lede" data-en="SimuWorld Challenge is an open competition built on an economic world model. Multi-agent simulation brings households, firms, investors and protocols to life inside it — and your AI agent has to act among them. Three tracks, two simulated worlds, one set of principles.">SimuWorld Challenge 是一项建立在经济世界模型之上的公开竞赛。多智能体仿真让家庭、企业、投资者和协议在其中运转起来，你的 AI Agent 要在它们之间行动。三个赛道，两个仿真世界，同一套原则。</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="tracks.html" data-magnet><span data-en="Choose a track">选择赛道</span> →</a>
+        <a class="btn" href="#foundation"><span data-en="How it works">了解原理</span> ↓</a>
+      </div>
+      <div class="stats sw-stats">
+        <div class="stat reveal"><b data-count="1">0</b><span data-en="economic world model underneath">个经济世界模型作底层</span></div>
+        <div class="stat reveal d1"><b data-count="3">0</b><span data-en="tracks to compete in">个赛道</span></div>
+        <div class="stat reveal d2"><b data-count="2">0</b><span data-en="simulated worlds: DeFi and a city">个仿真世界：DeFi 与城市</span></div>
+      </div>
+    </div>
+    <a class="scroll-cue" href="#foundation" aria-label="Scroll down" data-en-aria="Scroll down" data-zh-aria="向下滚动">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </a>
+  </section>
+
+  <div class="marquee" aria-hidden="true"><div class="track">
+    <span><b>◆</b> Economic World Model</span><span><b>◆</b> Multi-agent simulation</span><span><b>◆</b> 3 tracks</span><span><b>◆</b> 2 simulated worlds</span><span><b>◆</b> Hidden scenarios</span><span><b>◆</b> Same rules for everyone</span><span><b>◆</b> Reproducible results</span>
+    <span><b>◆</b> Economic World Model</span><span><b>◆</b> Multi-agent simulation</span><span><b>◆</b> 3 tracks</span><span><b>◆</b> 2 simulated worlds</span><span><b>◆</b> Hidden scenarios</span><span><b>◆</b> Same rules for everyone</span><span><b>◆</b> Reproducible results</span>
+  </div></div>
+
+  <!-- 01 FOUNDATION -->
+  <section class="block" id="foundation">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="sec-num">01 / FOUNDATION</div><h2 data-en="An economic world model underneath.">底层：经济世界模型</h2></div>
+        <p data-en="An economic world model is a generative engine for economies. It models many different agents together with the environment they live in, and lets outcomes emerge from how they interact rather than assuming them in advance.">经济世界模型是一个生成式的经济引擎。它同时刻画形形色色的 Agent 和它们所处的环境，让结果从相互作用中涌现出来，而不是事先假定。</p>
+      </div>
+      <div class="grid g3">
+        <div class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><circle cx="12" cy="17" r="3"/><path d="M9.5 9.5l1.5 5M14.5 9.5l-1.5 5M10 8h4"/></svg></div>
+          <h3 data-en="Many different agents">形形色色的 Agent</h3>
+          <p data-en="Households, firms, investors, protocols and policymakers, each with its own beliefs, constraints and way of deciding.">家庭、企业、投资者、协议和政策制定者，各有自己的判断、约束和决策方式。</p>
+        </div>
+        <div class="card reveal d1">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+          <h3 data-en="A living environment">会变化的环境</h3>
+          <p data-en="Markets, rules and space. Agents' decisions reshape the environment, and the environment shapes their next decisions.">市场、制度与空间。Agent 的决策改变环境，环境又影响它们的下一步决策。</p>
+        </div>
+        <div class="card reveal d2">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-5 4 3 8-9"/><path d="M15 6h5v5"/></svg></div>
+          <h3 data-en="Outcomes that emerge">涌现的结果</h3>
+          <p data-en="Prices, jobs, risk and growth come out of interaction, including the surprises a static model would miss.">价格、就业、风险和增长都从交互中产生，包括静态模型看不到的意外。</p>
         </div>
       </div>
-      <span class="enter" data-magnet><span data-en="Enter HoloBit">进入 HoloBit</span><span class="arrow">→</span></span>
+      <div class="cta-row reveal"><a class="btn" href="https://arxiv.org/abs/2608.06020" target="_blank" rel="noopener"><span data-en="Read the economic world model blueprint">阅读经济世界模型论文</span> ↗</a></div>
     </div>
-  </a>
+  </section>
 
-  <!-- RIGHT · Agentic City -->
-  <a class="side side-city" href="agentic-city.html" aria-label="Agentic City track">
-    <video class="bg-video" autoplay muted loop playsinline preload="auto" aria-hidden="true"
-      poster="assets/media/city-poster.jpg" data-src="assets/media/city-loop.mp4" data-src-small="assets/media/city-loop-960.mp4"></video>
-    <canvas class="fx flip" data-fx="city" data-cx=".74" data-cy=".76" data-scale=".7" aria-hidden="true"></canvas>
-    <div class="side-content">
-      <div class="track-tag"><span data-en="Track 02 · Urban planning">Track 02 · 城市规划</span><span class="dot"></span></div>
-      <h2 data-chars=".75s">Agentic City</h2>
-      <p class="lede" data-en="Plan a core district of Hong Kong's Northern Metropolis for 2035 by talking to an AI agent — then see how residents, firms and investors respond in simulation.">和 AI Agent 对话，为香港北部都会区核心区做 2035 年规划；再看居民、企业和投资者在仿真里如何回应。</p>
-      <div class="detail">
-        <div class="meta">
-          <span class="chip" data-en="3D city by chat">对话搭建 3D 城市</span>
-          <span class="chip" data-en="Policy design">政策设计</span>
-          <span class="chip" data-en="Multi-agent residents">多 Agent 居民仿真</span>
-          <span class="chip" data-en="Plan for 2035">面向 2035 规划</span>
+  <!-- scroll scene: the stack assembles layer by layer -->
+  <section class="scene-stack" data-scene aria-label="Economic world model, multi-agent simulation, SimuWorld Challenge">
+    <div class="scene-stick"><div class="wrap stack-wrap">
+      <ol class="stack-steps">
+        <li data-at="0.02"><span class="n">L1</span><h3 data-en="Economic world model">经济世界模型</h3><p data-en="The world itself: markets, institutions, space, and the rules that connect them.">世界本身：市场、制度、空间，以及把它们连在一起的规则。</p></li>
+        <li data-at="0.34"><span class="n">L2</span><h3 data-en="Multi-agent simulation">多智能体仿真</h3><p data-en="Thousands of agents act inside that world. Prices, risks and cities emerge from what they do.">成千上万个 Agent 在这个世界里行动，价格、风险和城市由它们的行为涌现。</p></li>
+        <li data-at="0.66"><span class="n">L3</span><h3 data-en="SimuWorld Challenge">SimuWorld Challenge</h3><p data-en="Your agent enters the simulation. Three tracks, each a world to prove it in.">你的 Agent 进入仿真。三个赛道，每一个都是检验它的世界。</p></li>
+      </ol>
+      <div class="stack3d" aria-hidden="true">
+        <div class="stack-inner">
+          <div class="layer l1"><span>MARKETS · INSTITUTIONS · SPACE</span></div>
+          <div class="layer l2"><span>AGENTS</span></div>
+          <div class="layer l3">
+            <i class="tile t1">T1</i><i class="tile t2">T2</i><i class="tile t3">T3</i>
+          </div>
         </div>
       </div>
-      <span class="enter" data-magnet><span data-en="Enter Agentic City">进入 Agentic City</span><span class="arrow">→</span></span>
-    </div>
-  </a>
+    </div></div>
+  </section>
 
-  <div class="divider" aria-hidden="true"></div>
-  <div class="center-title" aria-hidden="true">
-    <div class="word"><span class="w-l" data-chars=".1s">Simu</span><span class="w-r" data-chars=".26s">World</span></div>
-    <div class="word-sub" data-chars=".5s">Challenge</div>
-    <div class="sub" data-en="Choose your world">选择你的世界</div>
-    <div class="events" data-en="Hong Kong FinTech Week 2–6 Nov · Singapore FinTech Festival 18–20 Nov">香港金融科技周 11/02–06 · 新加坡金融科技节 11/18–20</div>
-  </div>
-  <div class="hint" aria-hidden="true" data-en="Hover to explore · Click to enter">悬停预览 · 点击进入</div>
+  <!-- 02 HOW IT WORKS -->
+  <section class="block" id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="sec-num">02 / HOW IT WORKS</div><h2 data-en="One competition, one set of principles.">一个比赛，一套原则</h2></div>
+        <p data-en="Every track follows the same loop. What changes is the world your agent is placed in.">每个赛道都走同样的流程，不同的只是你的 Agent 被放进哪个世界。</p>
+      </div>
+      <div class="flow" style="--n:4">
+        <div class="step reveal"><h4 data-en="Build">构建</h4><p data-en="Create an agent, or plan a city with one, using the tools and models you prefer.">用你喜欢的工具和模型，构建一个 Agent，或者借助 Agent 规划一座城市。</p></div>
+        <div class="step reveal d1"><h4 data-en="Enter the world">进入世界</h4><p data-en="It runs inside a simulated world, among simulated agents that react to what it does.">它在仿真世界里运行，周围的模拟 Agent 会对它的行为作出反应。</p></div>
+        <div class="step reveal d2"><h4 data-en="Face the unknown">面对未知</h4><p data-en="Hidden scenarios and shocks are run after you submit, so nobody can tune for them in advance.">提交之后才运行隐藏的情景和冲击，谁都无法事先针对它们调参。</p></div>
+        <div class="step reveal d3"><h4 data-en="Compare fairly">公平比较</h4><p data-en="Every entry faces the same conditions, and results can be reproduced.">所有参赛作品面对同样的条件，结果可以复现。</p></div>
+      </div>
+      <div class="grid g4" style="margin-top:56px">
+        <div class="card reveal"><span class="k" data-en="Same world">同一个世界</span><p data-en="Every entry in a track runs in the same world under the same rules.">同一赛道的所有作品，在同一个世界、同一套规则下运行。</p></div>
+        <div class="card reveal d1"><span class="k" data-en="Hidden scenarios">隐藏情景</span><p data-en="Scenarios are revealed only after evaluation, so the score rewards robustness, not memorisation.">情景在评测之后才公开，分数奖励的是稳健，而不是死记硬背。</p></div>
+        <div class="card reveal d2"><span class="k" data-en="Agents among agents">Agent 之间</span><p data-en="Your agent is judged by how it does among others, not in an empty spreadsheet.">你的 Agent 要在其他 Agent 之间接受检验，而不是在一张空表格里。</p></div>
+        <div class="card reveal d3"><span class="k" data-en="Reproducible">可复现</span><p data-en="Conditions are recorded so results can be re-run and checked.">运行条件有记录，结果可以重跑、可以核对。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 TRACKS -->
+  <section class="block" id="tracks">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="sec-num">03 / TRACKS</div><h2 data-en="Three tracks. Two worlds.">三个赛道，两个世界</h2></div>
+        <p data-en="Each world is provided by a partner platform and runs on its own schedule. Enter any track, or more than one.">每个世界由一个合作平台提供，并按各自的日程进行。可以报一个赛道，也可以报多个。</p>
+      </div>
+      <div class="grid g3 track-cards">
+        <a class="card track-card reveal" href="holobit.html#track-1" style="--c-col: var(--holo)">
+          <span class="k">Track 1</span>
+          <h3 data-en="Strategy Agent">策略 Agent</h3>
+          <div class="world" data-en="World · HoloBit · DeFi digital twin">世界 · HoloBit · DeFi 数字孪生</div>
+          <p data-en="Manage simulated capital across Uniswap V3 and Aave v3 and earn the best risk-adjusted return.">在 Uniswap V3 与 Aave v3 之间管理模拟资金，追求风险调整后的最好收益。</p>
+          <div class="next" data-next="holobit"></div>
+          <span class="go" data-en="Explore Track 1 →">查看 Track 1 →</span>
+        </a>
+        <a class="card track-card reveal d1" href="holobit.html#track-2" style="--c-col: #3ff2c8">
+          <span class="k">Track 2</span>
+          <h3 data-en="Protocol Risk Agent">协议风险 Agent</h3>
+          <div class="world" data-en="World · HoloBit · DeFi digital twin">世界 · HoloBit · DeFi 数字孪生</div>
+          <p data-en="Act as Aave's risk steward: tune risk parameters so the protocol stays solvent through stress.">扮演 Aave 的风险管理者，调节风险参数，让协议在压力下保持稳健。</p>
+          <div class="next" data-next="holobit"></div>
+          <span class="go" data-en="Explore Track 2 →">查看 Track 2 →</span>
+        </a>
+        <a class="card track-card reveal d2" href="agentic-city.html" style="--c-col: var(--city)">
+          <span class="k">Track 3</span>
+          <h3>Agentic City</h3>
+          <div class="world" data-en="World · Agentic City · Northern Metropolis 2035">世界 · Agentic City · 北部都会区 2035</div>
+          <p data-en="Plan a 17.73 km² district of Hong Kong's Northern Metropolis by talking to an AI agent, then see how simulated residents, firms and investors respond.">和 AI Agent 对话，规划香港北部都会区约 17.73 平方公里的核心区，再看模拟的居民、企业和投资者如何回应。</p>
+          <div class="next" data-next="city"></div>
+          <span class="go" data-en="Explore Track 3 →">查看 Track 3 →</span>
+        </a>
+      </div>
+      <div class="cta-row reveal" style="justify-content:center;margin-top:36px"><a class="btn btn-primary" href="tracks.html" data-magnet><span data-en="Compare the tracks side by side">并排比较三个赛道</span> →</a></div>
+    </div>
+  </section>
+
+  <!-- 04 DATES -->
+  <section class="block" id="dates">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="sec-num">04 / KEY DATES</div><h2 data-en="Each world keeps its own clock.">每个世界有自己的时钟</h2></div>
+        <p data-en="Tracks run on their own schedules. Upcoming milestones below; full timelines are on each track page. Subject to the official announcement.">各赛道按自己的日程进行。下面是接下来的节点，完整日程见各赛道页面。以官方公告为准。</p>
+      </div>
+      <div class="grid g2">
+        <div class="card big reveal" style="--accent: var(--holo)">
+          <span class="k" data-en="Tracks 1–2 · HoloBit world">Track 1–2 · HoloBit 世界</span>
+          <div class="countdown" data-countdown="holobit"></div>
+          <div class="timeline compact" data-timeline="holobit" data-limit="3"></div>
+          <a class="btn" href="holobit.html#timeline" style="margin-top:20px"><span data-en="Full timeline">完整日程</span> →</a>
+        </div>
+        <div class="card big reveal d1" style="--accent: var(--city)">
+          <span class="k" data-en="Track 3 · Agentic City world">Track 3 · Agentic City 世界</span>
+          <div class="countdown" data-countdown="city"></div>
+          <div class="timeline compact" data-timeline="city" data-limit="3"></div>
+          <a class="btn" href="agentic-city.html#timeline" style="margin-top:20px"><span data-en="Full timeline">完整日程</span> →</a>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <section class="organisers" aria-labelledby="org-title">
@@ -92,13 +205,13 @@
 <footer>
   <div class="wrap">
     <span>© 2026 SimuWorld Challenge</span>
-    <span><a href="holobit.html">HoloBit</a> · <a href="agentic-city.html">Agentic City</a></span>
+    <span><a href="tracks.html" data-en="All tracks">全部赛道</a> · <a href="holobit.html">Track 1–2</a> · <a href="agentic-city.html">Track 3</a></span>
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261019001537"></script>
-<script src="assets/js/i18n.js?v=20261019001537"></script>
-<script src="assets/js/pages.js?v=20261019001537"></script>
-<script src="assets/js/fx.js?v=20261019001537"></script>
+<script src="assets/js/config.js?v=20261019150645"></script>
+<script src="assets/js/i18n.js?v=20261019150645"></script>
+<script src="assets/js/pages.js?v=20261019150645"></script>
+<script src="assets/js/fx.js?v=20261019150645"></script>
 </body>
 </html>

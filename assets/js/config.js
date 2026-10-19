@@ -9,7 +9,7 @@ window.SW_CONFIG = {
 
   holobit: {
     name: "SimuWorld Challenge",
-    hostLine: { zh: "HoloBit 赛道由 HoloBit 主办", en: "HoloBit track hosted by HoloBit" },
+    hostLine: { zh: "Track 1–2 · 世界由 HoloBit 提供", en: "Tracks 1–2 · world provided by HoloBit" },
     timeline: [
       { date: "2026-11-02T00:00:00Z", zh: "比赛公告 · 开放报名", en: "Announcement · Registration opens",
         dzh: "发布规则、接口规格、文档预览与历史数据。", den: "Rules, interface spec, docs preview and historical data released." },
@@ -25,7 +25,7 @@ window.SW_CONFIG = {
       { date: "2026-11-11T00:00:00Z", zh: "提交冻结", en: "Submission freeze",
         dzh: "签名并冻结最终 Agent，此后不可更改。", den: "Sign and freeze your final agent. No changes after this point." },
       { date: "2026-11-14T00:00:00Z", zh: "线上赛结果 · 决赛名单", en: "Online results · Finalists",
-        dzh: "公布线上赛名次与各组别决赛队伍。", den: "Online rankings and finalists for each division announced." },
+        dzh: "公布线上赛名次与各赛道决赛队伍。", den: "Online rankings and finalists for each track announced." },
       { date: "2026-11-18T00:00:00Z", end: "2026-11-20T23:59:00Z", label: { zh: "11/18–20", en: "18–20 Nov" },
         zh: "现场决赛 · 新加坡金融科技节", en: "Live finals · Singapore FinTech Festival",
         dzh: "现场开跑、重放前向段、颁奖，并公开全部压力测试与种子。", den: "Live run, forward-window replay, awards, and full reveal of stress tests and seeds." },
