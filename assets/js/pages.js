@@ -46,6 +46,8 @@
       else { a.setAttribute("aria-disabled", "true"); a.removeAttribute("href"); }
     });
     document.querySelectorAll("[data-contact]").forEach(function (el) {
+      var box = el.closest(".contact"), sec = box && box.closest("section");
+      if (sec) sec.hidden = !C.contactEmail;          // no address yet: leave the contact block out entirely
       el.innerHTML = C.contactEmail
         ? '<a class="btn btn-primary" href="mailto:' + C.contactEmail + '">' + C.contactEmail + "</a>"
         : '<span class="btn" aria-disabled="true">' + t("联系邮箱即将公布", "Contact email coming soon") + "</span>";
@@ -67,4 +69,5 @@
     renderLinks();
   }
   document.addEventListener("sw:lang", all);
+  window.SW_refresh = all;   // re-render dynamic bits (e.g. after rails clone their cards)
 })();

@@ -2,6 +2,7 @@
 (function () {
   var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var small = window.innerWidth < 760;
+  var lite = document.body && document.body.hasAttribute("data-lite");   // pages with several live canvases
 
   /* ---------- canvas helper: DPR, resize, pause when hidden/offscreen ---------- */
   function stage(canvas, draw, init) {
@@ -11,7 +12,7 @@
     function resize() {
       var r = canvas.getBoundingClientRect();
       s.w = Math.max(1, r.width); s.h = Math.max(1, r.height);
-      big = s.w * s.h > 900000; var k = big ? Math.min(dpr, 1.5) : dpr;   // full-screen canvases render at most 1.5x
+      big = s.w * s.h > 900000; var k = lite ? 1 : big ? Math.min(dpr, 1.5) : dpr;   // full-screen canvases render at most 1.5x
       canvas.width = s.w * k; canvas.height = s.h * k;
       ctx.setTransform(k, 0, 0, k, 0, 0);
       init && init(s);
@@ -22,7 +23,10 @@
     var last = performance.now();
     function loop(now) {
       var dt = Math.min(0.05, (now - last) / 1000); last = now;
-      if (s.visible && !document.hidden) { s.t += dt; draw(s, dt); }
+      // on the track chooser, panels that aren't hovered while another is draw every other frame
+      var side = lite && canvas.closest(".side"), calm = side && !side.matches(":hover") && side.parentNode.querySelector(".side:hover");
+      s.f = (s.f || 0) + 1;
+      if (s.visible && !document.hidden) { s.t += dt; if (!calm || s.f % 2 === 0) draw(s, calm ? dt * 2 : dt); }
       if (!reduce) requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
@@ -115,7 +119,7 @@
       c.globalCompositeOperation = "lighter";
       c.beginPath(); ma.forEach(function (p, i) { i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); });
       c.strokeStyle = "rgba(120,255,200," + (quiet ? 0.25 : 0.55) + ")"; c.lineWidth = 1.4;
-      c.shadowColor = "rgba(0,255,150,.9)"; c.shadowBlur = quiet ? 0 : 10; c.stroke(); c.shadowBlur = 0;
+      c.shadowColor = "rgba(0,255,150,.9)"; c.shadowBlur = quiet || lite ? 0 : 10; c.stroke(); c.shadowBlur = 0;
       if (!quiet && ma.length) {
         var last = ma[ma.length - 4] || ma[ma.length - 1];
         c.fillStyle = "#eafff4"; c.beginPath(); c.arc(last[0], last[1], 3, 0, 7); c.fill();
@@ -159,7 +163,7 @@
       });
       c.globalCompositeOperation = "source-over";
     }, function (s) {
-      s.L = small ? 20 : (quiet ? 26 : 36);
+      s.L = small ? 20 : (quiet ? 26 : lite ? 22 : 36);
       s.flash = []; s.pos = [];
       if (risk) for (var q = 0; q < (small ? 40 : 90); q++) s.pos.push({ x: rnd(0, s.w), hf: rnd(1.1, 2.4), vx: rnd(0.05, 0.3), f: rnd(0.4, 1.4), ph: rnd(0, 6), beta: rnd(0.6, 1.6), r: rnd(1.4, 2.8) });
       s.bokeh = [];
@@ -653,6 +657,46 @@
       addEventListener("load", sceneFrame);
       sceneFrame();
     }
+
+    // Auto-scrolling rails (track cards, paper covers). The cards are cloned once for a seamless loop.
+    // Hovering brings the rail to a quick stop; leaving lets it ease back up. While the rail is still
+    // low in the viewport it runs faster and settles to its cruising speed as it scrolls into place.
+    // Touch screens get a plain swipeable strip instead.
+    document.querySelectorAll("[data-rail]").forEach(function (rail) {
+      var track = rail.querySelector(".rail-track");
+      if (!track) return;
+      if (reduce || !matchMedia("(hover: hover)").matches) { rail.classList.add("touch"); return; }
+      var items = Array.prototype.slice.call(track.children);
+      items.forEach(function (it) {
+        var c = it.cloneNode(true);
+        c.setAttribute("aria-hidden", "true"); c.tabIndex = -1;
+        c.querySelectorAll("a, button").forEach(function (a) { a.tabIndex = -1; });
+        track.appendChild(c);
+      });
+      var base = +rail.dataset.speed || 30, boost = +rail.dataset.boost || 4;
+      var x = 0, v = base * (1 + boost), hover = false, half = 1, last = 0;
+      var measure = function () { half = track.children[items.length].offsetLeft - track.children[0].offsetLeft || 1; };
+      measure(); addEventListener("resize", measure);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+      rail.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") hover = true; });
+      rail.addEventListener("pointerleave", function () { hover = false; });
+      rail.addEventListener("focusin", function () { hover = true; });
+      rail.addEventListener("focusout", function () { hover = false; });
+      (function tick(now) {
+        var dt = last ? Math.min(0.05, (now - last) / 1000) : 0; last = now;
+        var r = rail.getBoundingClientRect();
+        if (r.bottom > 0 && r.top < innerHeight && !document.hidden) {
+          var approach = Math.min(1, Math.max(0, (r.top - innerHeight * 0.15) / (innerHeight * 0.85)));
+          var target = hover ? 0 : base * (1 + boost * approach * approach);
+          var k = 1 - Math.pow(target < v ? (hover ? 0.0004 : 0.2) : 0.2, dt);   // quick stop on hover, slow ease otherwise
+          v += (target - v) * k;
+          x -= v * dt; if (-x >= half) x += half;
+          track.style.transform = "translate3d(" + x.toFixed(2) + "px,0,0)";
+        }
+        requestAnimationFrame(tick);
+      })(0);
+    });
+    if (window.SW_refresh) window.SW_refresh();
 
     // scroll cue: fades out once the reader starts scrolling
     var cue = document.querySelector(".scroll-cue");

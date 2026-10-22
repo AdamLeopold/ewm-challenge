@@ -48,7 +48,7 @@ window.SW_CONFIG = {
         dzh: "与 HoloBit 赛道一同亮相。", den: "Showcased alongside the HoloBit track." },
       { date: "2026-11-25T00:00:00Z", label: { zh: "11 月下旬", en: "Late Nov" },
         zh: "完整平台开放 · 正式报名与提交", en: "Full platform · Registration & submissions open",
-        dzh: "具体日期以官方公告为准。", den: "Exact date to be announced." }
+        dzh: "完整平台上线，开放报名与提交。", den: "The full platform goes live for registration and submissions." }
     ]
   }
 };

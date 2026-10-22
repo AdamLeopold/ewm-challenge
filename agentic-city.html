@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261022121348">
+<link rel="stylesheet" href="assets/css/main.css?v=20261022133631">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 <style>
   /* builder mock */
@@ -82,7 +82,7 @@
       <p class="lede" data-en="Become the chief planner of a 17.73 km² core district in Hong Kong's Northern Metropolis — San Tin, the Loop's Hong Kong Park and Ngau Tam Mei — and design it for 2035. Tell the AI agent where to zone, what to build and which bus routes to add, then write your policies. Within a fixed budget, you build the city; we then run it through scenario simulations and see how residents, firms and investors respond.">成为香港北部都会区核心区的“首席规划师”：以新田、落马洲河套香港园区和牛潭尾为核心，约 17.73 平方公里，面向 2035 年。告诉 AI Agent 在哪里划区、建什么、加哪条公交线，再写下你的政策。你在固定预算内把城市建好，我们把它放进多种场景里模拟，看居民、企业和投资者如何回应。</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="#play" data-magnet><span data-en="See how it works">看看怎么玩</span> ↓</a>
-        <a class="btn" data-link="registerUrl"><span data-en="Register">报名参赛</span> <span class="soon" data-en="Soon">即将开放</span></a>
+        <a class="btn" href="#submit"><span data-en="What you submit">提交什么</span> ↓</a>
       </div>
       <div class="countdown" data-countdown="city"></div>
       <div class="stats">
@@ -142,7 +142,7 @@
           <div class="budget"><span data-en="Budget remaining">剩余预算</span> <span id="budget-pct">100%</span><div class="bar"><i id="budget-bar"></i></div></div>
         </div>
       </div>
-      <p class="scene-cap" data-en="Illustration of the planned interaction · demo arrives end of October">示意图，展示计划中的交互方式 · Demo 将于 10 月底上线</p>
+      <p class="scene-cap" data-en="The playable demo arrives at the end of October">可体验的 Demo 将于 10 月底上线</p>
       </div></div>
     </div>
     <div class="wrap">
@@ -164,7 +164,7 @@
         <div class="card reveal d1">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
           <h3 data-en="Basic checks before you submit">提交前的基础检查</h3>
-          <p data-en="Built-in baseline metrics tell you whether your plan meets the minimum requirements. They help you iterate; they are not the organisers' final scenario evaluation.">平台内置基础指标，告诉你方案是否满足最基本的要求，方便你提交前调整。基础检查不等于组委会的最终场景评估。</p>
+          <p data-en="Built-in baseline metrics show where your plan stands, so you can improve it before you submit.">平台内置的基础指标随时告诉你方案的情况，方便你在提交前不断改进。</p>
         </div>
       </div>
     </div>
@@ -203,7 +203,7 @@
         </div>
       </div>
       <div class="code-card reveal">
-        <div class="embed-bar"><i></i><i></i><i></i><span class="url">policies.yaml</span><span data-en="Illustration · official field names come with the platform">示意 · 正式字段名以平台发布为准</span></div>
+        <div class="embed-bar"><i></i><i></i><i></i><span class="url">policies.yaml</span><span data-en="Example">示例</span></div>
 <pre><code><span class="c"># one entry per policy</span>
 - <span class="k">id</span>: P-03
   <span class="k">name</span>: <span class="s">Young researcher housing subsidy</span>
@@ -266,7 +266,7 @@
       <div class="grid g3">
         <div class="card reveal"><span class="k" data-en="New to planning">新手</span><h3 data-en="Talk, tap, build">说话、点选、搭积木</h3><p data-en="Plan with natural language, cards and visual blocks. The agent helps generate and check everything.">用自然语言、卡片和可视化积木完成规划，Agent 帮你生成和检查。</p></div>
         <div class="card reveal d1"><span class="k" data-en="Experienced">有经验</span><h3 data-en="Go deeper">深入调参</h3><p data-en="Tune policy parameters, compare alternatives, and use richer model interfaces, data and agent tools.">逐步调整政策参数、比较不同方案，并使用更丰富的模型接口、数据和 Agent 能力。</p></div>
-        <div class="card reveal d2"><span class="k" data-en="Everyone">所有人</span><h3 data-en="Same ground rules">同样的起点</h3><p data-en="One base map, the same starting funds, the same checks and the same submission requirements. Tools lower the barrier; they are not separate tracks.">统一的规划底图、初始资金、基础校验标准和提交要求。不同操作方式只是降低门槛，不是不同赛道。</p></div>
+        <div class="card reveal d2"><span class="k" data-en="Everyone">所有人</span><h3 data-en="Same ground rules">同样的起点</h3><p data-en="One base map, the same starting funds and the same submission for everyone. Pick the tools that suit you.">统一的规划底图、相同的起始资金和一样的提交要求，用你顺手的方式来完成。</p></div>
       </div>
     </div>
   </section>
@@ -318,7 +318,7 @@
     <div class="wrap">
       <div class="sec-head">
         <div><div class="sec-num">07 / TIMELINE</div><h2 data-en="What's coming.">接下来</h2></div>
-        <p data-en="Subject to the official announcement.">以官方公告为准。</p>
+        <p data-en="Key milestones for Track 3.">Track 3 的关键节点。</p>
       </div>
       <div class="timeline" data-timeline="city"></div>
     </div>
@@ -329,7 +329,7 @@
     <div class="wrap">
       <div class="sec-head">
         <div><div class="sec-num">08 / FAQ</div><h2 data-en="Questions.">常见问题</h2></div>
-        <p data-en="If anything here differs from the official rules, the rules prevail.">如与正式规则不一致，以规则为准。</p>
+        <p data-en="Quick answers for participants.">参赛者常问的问题。</p>
       </div>
       <div class="faq">
         <details class="reveal"><summary data-en="Do I need to code?">需要会编程吗？</summary><p data-en="No. You plan by talking to the agent, and the platform generates your files. Experienced entrants can use richer model interfaces if they want.">不需要。你通过和 Agent 对话来规划，平台会生成提交文件。有经验的参赛者如有需要，可以使用更丰富的模型接口。</p></details>
@@ -337,11 +337,11 @@
         <details class="reveal"><summary data-en="Which area am I planning, and for what year?">规划哪里？面向哪一年？</summary><p data-en="A continuous district of about 17.73 km² in the Northern Metropolis, centred on San Tin, the Loop's Hong Kong Park and Ngau Tam Mei. Your plan targets 2035.">北部都会区内以新田、落马洲河套香港园区和牛潭尾为核心的一片连续区域，约 17.73 平方公里。方案面向 2035 年。</p></details>
         <details class="reveal"><summary data-en="What exactly do I submit?">到底提交什么？</summary><p data-en="Two files, both generated and validated by the platform: <code>spatial_plan.zip</code> (manifest.json, plan.gpkg and 3d/) and <code>policies.yaml</code>.">两份文件，都由平台自动生成并校验：<code>spatial_plan.zip</code>（含 manifest.json、plan.gpkg 和 3d/）以及 <code>policies.yaml</code>。</p></details>
         <details class="reveal"><summary data-en="Is there a budget limit?">有预算限制吗？</summary><p data-en="Yes. Everyone starts with the same fixed funds; construction and policies both spend them.">有。每个人起始资金相同，建设和政策都要花钱。</p></details>
-        <details class="reveal"><summary data-en="Are the basic checks my score?">基础检查的结果就是我的成绩吗？</summary><p data-en="No. Basic checks only tell you whether the plan meets minimum requirements. Your ranking comes from the organisers' scenario simulation, agent ratings and expert review.">不是。基础检查只告诉你方案是否满足最基本的要求。名次由组委会的场景模拟、Agent 评价和专家评审综合确定。</p></details>
+        <details class="reveal"><summary data-en="Are the basic checks my score?">基础检查的结果就是我的成绩吗？</summary><p data-en="Basic checks are your guide while you build. Your ranking comes from scenario simulation, agent ratings and expert review.">基础检查是你搭建过程中的参考，名次由场景模拟、Agent 评价和专家评审综合确定。</p></details>
         <details class="reveal"><summary data-en="Is there a separate track for school students?">青少年有单独的赛道吗？</summary><p data-en="No. Everyone follows the same process and rules. The platform's chat, cards and checks make it accessible to newcomers.">没有。所有人走同一套流程和规则，平台的对话、卡片和自动检查让新手也能完成方案。</p></details>
         <details class="reveal"><summary data-en="Can I team up across Shenzhen and Hong Kong, or join from overseas?">可以深港跨境组队、或者从海外参加吗？</summary><p data-en="Yes to both. Cross-border teams are especially encouraged, and overseas youth teams are welcome.">都可以。特别鼓励深港跨境组队，也欢迎海外青年团队。</p></details>
         <details class="reveal"><summary data-en="When can I start building?">什么时候可以开始搭？</summary><p data-en="A demo video and a playable demo arrive at the end of October. The full platform, registration and submissions open in late November.">10 月底先上线演示视频和可体验 Demo；完整平台、正式报名与提交预计在 11 月下旬开放。</p></details>
-        <details class="reveal"><summary data-en="What are the prizes?">奖项是什么？</summary><p data-en="To be announced with the official rules.">将随正式规则一同公布。</p></details>
+        <details class="reveal"><summary data-en="What are the prizes?">奖项是什么？</summary><p data-en="Prizes are announced at the challenge launch.">奖项将在比赛正式发布时公布。</p></details>
       </div>
     </div>
   </section>
@@ -381,10 +381,10 @@
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261022121348"></script>
-<script src="assets/js/i18n.js?v=20261022121348"></script>
-<script src="assets/js/pages.js?v=20261022121348"></script>
-<script src="assets/js/fx.js?v=20261022121348"></script>
+<script src="assets/js/config.js?v=20261022133631"></script>
+<script src="assets/js/i18n.js?v=20261022133631"></script>
+<script src="assets/js/pages.js?v=20261022133631"></script>
+<script src="assets/js/fx.js?v=20261022133631"></script>
 <script>
 (function () {
   var t = function (zh, en) { return window.SW_t(zh, en); };
