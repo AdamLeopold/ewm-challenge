@@ -667,15 +667,27 @@
       if (!track) return;
       if (reduce || !matchMedia("(hover: hover)").matches) { rail.classList.add("touch"); return; }
       var items = Array.prototype.slice.call(track.children);
-      items.forEach(function (it) {
-        var c = it.cloneNode(true);
-        c.setAttribute("aria-hidden", "true"); c.tabIndex = -1;
-        c.querySelectorAll("a, button").forEach(function (a) { a.tabIndex = -1; });
-        track.appendChild(c);
-      });
-      var base = +rail.dataset.speed || 30, boost = +rail.dataset.boost || 4;
+      var copies = 0;
+      var addCopy = function () {
+        items.forEach(function (it) {
+          var c = it.cloneNode(true);
+          c.setAttribute("aria-hidden", "true"); c.tabIndex = -1;
+          c.querySelectorAll("a, button").forEach(function (a) { a.tabIndex = -1; });
+          track.appendChild(c);
+        });
+        copies++;
+      };
+      addCopy();
+      var base = +rail.dataset.speed || 30, boost = +rail.dataset.boost || 4, dir = +rail.dataset.dir || 1;
       var x = 0, v = base * (1 + boost), hover = false, half = 1, last = 0;
-      var measure = function () { half = track.children[items.length].offsetLeft - track.children[0].offsetLeft || 1; };
+      // one loop = the distance from an item to its first copy (gaps included); keep enough copies
+      // that the track always reaches past the right edge, however wide the window
+      var measure = function () {
+        half = track.children[items.length].offsetLeft - track.children[0].offsetLeft || 1;
+        var before = copies;
+        while (half * (copies + 1) < half + rail.clientWidth + 400 && copies < 10) addCopy();
+        if (copies > before && window.SW_refresh) window.SW_refresh();
+      };
       measure(); addEventListener("resize", measure);
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
       rail.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") hover = true; });
@@ -690,7 +702,8 @@
           var target = hover ? 0 : base * (1 + boost * approach * approach);
           var k = 1 - Math.pow(target < v ? (hover ? 0.0004 : 0.2) : 0.2, dt);   // quick stop on hover, slow ease otherwise
           v += (target - v) * k;
-          x -= v * dt; if (-x >= half) x += half;
+          x -= v * dt * dir;
+          x = ((x % half) - half) % half;                                       // stays in (-half, 0], both directions
           track.style.transform = "translate3d(" + x.toFixed(2) + "px,0,0)";
         }
         requestAnimationFrame(tick);

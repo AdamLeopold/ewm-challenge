@@ -1,5 +1,6 @@
 /* SimuWorld home · the stack, in WebGL.
-   Layer 1  the economic world model: a breathing lattice of markets, institutions and space
+   Layer 1  the economic world model: modules (markets, firms, households, institutions, policy, space, data)
+            around a world-model core, wired by pipes that carry streams of data packets
    Layer 2  multi-agent simulation: agents flowing with trails, flashing links when they meet,
             light beams tying them to the world below
    Layer 3  the challenge: glowing track tiles rising from the simulation, plus a "+" for worlds to come
@@ -83,7 +84,7 @@ function start() {
       uniform float uTime, uReveal, uPix; attribute float aRand; varying float vA;
       void main() {
         vec3 p = position; float d = length(p.xz);
-        p.y += wave(p, uTime) * smoothstep(0.0, 1.0, uReveal);
+        p.y += wave(p, uTime) * 0.3 * smoothstep(0.0, 1.0, uReveal) - 0.12;
         float front = uReveal * 10.5;
         vA = (1.0 - smoothstep(front - 2.5, front, d)) * (0.45 + 0.55 * aRand);
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
@@ -93,32 +94,85 @@ function start() {
     fragmentShader: `
       varying float vA;
       void main() { float r = length(gl_PointCoord - 0.5); if (r > 0.5) discard;
-        gl_FragColor = vec4(vec3(0.56, 0.84, 1.0), vA * 0.55 * smoothstep(0.5, 0.0, r)); }`,
+        gl_FragColor = vec4(vec3(0.56, 0.84, 1.0), vA * 0.26 * smoothstep(0.5, 0.0, r)); }`,
   }));
   scene.add(lattice);
 
-  // links between nearby lattice nodes (markets, institutions, space)
-  const linkCount = small ? 160 : 320, linkPos = new Float32Array(linkCount * 6), linkPhase = new Float32Array(linkCount * 2);
-  for (let n = 0; n < linkCount; n++) {
-    const i = Math.floor(Math.random() * (G - 4)) + 2, j = Math.floor(Math.random() * (G - 4)) + 2;
-    const di = Math.floor(Math.random() * 7) - 3, dj = Math.floor(Math.random() * 7) - 3;
-    const a = i * G + j, b = Math.min(G - 1, Math.max(0, i + di)) * G + Math.min(G - 1, Math.max(0, j + dj));
-    for (let c = 0; c < 3; c++) { linkPos[n * 6 + c] = latPos[a * 3 + c]; linkPos[n * 6 + 3 + c] = latPos[b * 3 + c]; }
-    linkPhase[n * 2] = linkPhase[n * 2 + 1] = Math.random() * 6.28;
-  }
-  const linkGeo = new THREE.BufferGeometry();
-  linkGeo.setAttribute("position", new THREE.BufferAttribute(linkPos, 3));
-  linkGeo.setAttribute("aPhase", new THREE.BufferAttribute(linkPhase, 1));
-  scene.add(new THREE.LineSegments(linkGeo, new THREE.ShaderMaterial({
-    uniforms: uni, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-    vertexShader: `${waveGLSL}
-      uniform float uTime, uReveal; attribute float aPhase; varying float vA;
-      void main() { vec3 p = position; p.y += wave(p, uTime) * smoothstep(0.0, 1.0, uReveal);
-        float front = uReveal * 10.5; float d = length(p.xz);
-        vA = (1.0 - smoothstep(front - 3.0, front, d)) * (0.25 + 0.75 * pow(0.5 + 0.5 * sin(uTime * 1.8 + aPhase), 3.0));
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }`,
-    fragmentShader: `varying float vA; void main() { gl_FragColor = vec4(0.56, 0.84, 1.0, vA * 0.55); }`,
-  })));
+  /* modules of the world model, each with its own live state, around a core */
+  const MY = Y1 + 0.1, RING = 4.3;
+  const makeModule = (d, x, z, r, h, i) => {
+    const g = new THREE.Group(); g.position.set(x, MY, z); g.rotation.y = Math.PI / 6;
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 6), new THREE.MeshBasicMaterial({ color: d.c.clone().multiplyScalar(0.16), transparent: true, opacity: 0 }));
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(body.geometry), new THREE.LineBasicMaterial({ color: d.c, transparent: true, opacity: 0 }));
+    const glow = new THREE.Mesh(new THREE.CircleGeometry(r * 0.94, 6), new THREE.MeshBasicMaterial({ color: d.c, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+    glow.rotation.x = -Math.PI / 2; glow.position.y = h / 2 + 0.005;
+    const label = new THREE.Mesh(new THREE.PlaneGeometry(r * 1.7, r * 0.425), new THREE.MeshBasicMaterial({ map: moduleLabel(d.n, d.c), transparent: true, opacity: 0, depthWrite: false }));
+    label.rotation.x = -Math.PI / 2; label.rotation.z = -Math.PI / 6; label.position.y = h / 2 + 0.02;
+    g.add(body, edges, glow, label); scene.add(g);
+    return { g, body, edges, glow, label, x, z, r, h, c: d.c, flash: 0, i };
+  };
+  const MODS = [
+    { n: "MARKETS", c: GREEN }, { n: "FIRMS", c: GREEN }, { n: "HOUSEHOLDS", c: new THREE.Color(0xa9cfff) }, { n: "INSTITUTIONS", c: VIOLET },
+    { n: "POLICY", c: VIOLET }, { n: "SPACE", c: TEAL }, { n: "DATA", c: TEAL },
+  ];
+  const core = makeModule({ n: "WORLD MODEL", c: ICE }, 0, 0, 1.55, 0.55, -1);
+  const mods = MODS.map((d, i) => { const a = i / MODS.length * Math.PI * 2 + 0.35; return makeModule(d, Math.cos(a) * RING, Math.sin(a) * RING, 0.98, 0.36, i); });
+  const allMods = [core].concat(mods);
+  const rings = [2.0, 2.32].map((rr, k) => {
+    const m = new THREE.Mesh(new THREE.TorusGeometry(rr, 0.012, 4, 120), new THREE.MeshBasicMaterial({ color: k ? TEAL : ICE, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+    m.rotation.x = Math.PI / 2; m.position.y = MY; scene.add(m); return m;
+  });
+
+  // live state: a ring of bars around every module, rising and falling as it computes
+  const BARS = 8, barMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 1, 0.07).translate(0, 0.5, 0),
+    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }), allMods.length * BARS);
+  allMods.forEach((m, mi) => { for (let k = 0; k < BARS; k++) barMesh.setColorAt(mi * BARS + k, m.c); });
+  scene.add(barMesh);
+  const bm4 = new THREE.Matrix4(), bq = new THREE.Quaternion(), bv = new THREE.Vector3(), bs = new THREE.Vector3();
+
+  // pipes: module <-> core (state), neighbours (trade and money), a few cross links (rules, space, data)
+  const pairs = [];
+  mods.forEach((m, i) => { pairs.push([core, m, ICE, true]); pairs.push([m, mods[(i + 1) % mods.length], m.c, i % 2 === 0]); });
+  [[0, 4, VIOLET], [1, 6, TEAL], [2, 5, TEAL], [3, 0, VIOLET]].forEach(([a, b, c]) => pairs.push([mods[a], mods[b], c, false]));
+  const SEG = 40, pipes = pairs.map(([A, B, c, bidir], j) => {
+    const a = new THREE.Vector3(A.x, MY + A.h / 2, A.z), b = new THREE.Vector3(B.x, MY + B.h / 2, B.z);
+    const dir = b.clone().sub(a).setY(0).normalize();
+    a.addScaledVector(dir, A.r * 0.8); b.addScaledVector(dir, -B.r * 0.8);
+    const mid = a.clone().add(b).multiplyScalar(0.5); mid.y += 0.45 + a.distanceTo(b) * 0.14;
+    const pts = new THREE.QuadraticBezierCurve3(a, mid, b).getPoints(SEG);
+    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+    scene.add(line);
+    return { pts, line, c, A, B, bidir, j };
+  });
+
+  // data packets with short tails stream along the pipes; an arriving packet makes its module flash
+  const PER = small ? 10 : 22, TAIL = 3, packets = [];
+  pipes.forEach((pp) => { for (let k = 0; k < PER; k++) packets.push({ pp, u: Math.random(), sp: 0.16 + Math.random() * 0.22, dir: pp.bidir && k % 2 ? -1 : 1 }); });
+  const pkPos = new Float32Array(packets.length * TAIL * 3), pkCol = new Float32Array(packets.length * TAIL * 3);
+  const pkGeo = new THREE.BufferGeometry();
+  pkGeo.setAttribute("position", new THREE.BufferAttribute(pkPos, 3));
+  pkGeo.setAttribute("color", new THREE.BufferAttribute(pkCol, 3));
+  const pkMat = new THREE.PointsMaterial({ size: 0.4, vertexColors: true, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, map: dotTexture() });
+  scene.add(new THREE.Points(pkGeo, pkMat));
+  const at = (pts, u, out, o) => {
+    const f = Math.min(SEG - 1e-4, Math.max(0, u * SEG)), i0 = Math.floor(f), w = f - i0, A = pts[i0], B = pts[i0 + 1];
+    out[o] = A.x + (B.x - A.x) * w; out[o + 1] = A.y + (B.y - A.y) * w; out[o + 2] = A.z + (B.z - A.z) * w;
+  };
+
+  // information rising from the modules into the agent layer above
+  const RISE = 5, rsPos = new Float32Array(allMods.length * RISE * 3), rsCol = new Float32Array(allMods.length * RISE * 3);
+  const rsGeo = new THREE.BufferGeometry();
+  rsGeo.setAttribute("position", new THREE.BufferAttribute(rsPos, 3));
+  rsGeo.setAttribute("color", new THREE.BufferAttribute(rsCol, 3));
+  const rsMat = new THREE.PointsMaterial({ size: 0.16, vertexColors: true, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, map: dotTexture() });
+  scene.add(new THREE.Points(rsGeo, rsMat));
+  const shaft = new Float32Array(allMods.length * 6), shaftCol = new Float32Array(allMods.length * 6);
+  allMods.forEach((m, i) => { shaft.set([m.x, MY + m.h / 2, m.z, m.x, Y2, m.z], i * 6); shaftCol.set([m.c.r * 0.7, m.c.g * 0.7, m.c.b * 0.7, 0, 0, 0], i * 6); });
+  const shGeo = new THREE.BufferGeometry();
+  shGeo.setAttribute("position", new THREE.BufferAttribute(shaft, 3));
+  shGeo.setAttribute("color", new THREE.BufferAttribute(shaftCol, 3));
+  const shMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+  scene.add(new THREE.LineSegments(shGeo, shMat));
 
   const frame = (y, color, dashed) => {
     const pts = [[-HALF, y, -HALF], [HALF, y, -HALF], [HALF, y, HALF], [-HALF, y, HALF], [-HALF, y, -HALF]].map((p) => new THREE.Vector3(...p));
@@ -158,7 +212,7 @@ function start() {
   const inMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
   const inLines = new THREE.LineSegments(inGeo, inMat); scene.add(inLines);
 
-  const NB = small ? 18 : 40, bmPos = new Float32Array(NB * 6), bmCol = new Float32Array(NB * 6);
+  const NB = small ? 8 : 16, bmPos = new Float32Array(NB * 6), bmCol = new Float32Array(NB * 6);
   const bmGeo = new THREE.BufferGeometry();
   bmGeo.setAttribute("position", new THREE.BufferAttribute(bmPos, 3));
   bmGeo.setAttribute("color", new THREE.BufferAttribute(bmCol, 3));
@@ -258,6 +312,30 @@ function start() {
       bmCol.set([a.col.r * fl, a.col.g * fl, a.col.b * fl, 0, 0, 0], o);
     }
     bmGeo.attributes.position.needsUpdate = true; bmGeo.attributes.color.needsUpdate = true;
+
+    // the world model at work: packets travel, modules flash on arrival, information rises
+    for (let n = 0; n < packets.length; n++) {
+      const k = packets[n], pp = k.pp;
+      k.u += k.sp * dt * k.dir;
+      if (k.u > 1 || k.u < 0) { k.u -= k.dir; (k.dir > 0 ? pp.B : pp.A).flash = 1; }
+      for (let q = 0; q < TAIL; q++) {
+        const o = (n * TAIL + q) * 3, f = q === 0 ? 1 : q === 1 ? 0.45 : 0.18;
+        at(pp.pts, k.u - q * 0.025 * k.dir, pkPos, o);
+        pkCol[o] = pp.c.r * f; pkCol[o + 1] = pp.c.g * f; pkCol[o + 2] = pp.c.b * f;
+      }
+    }
+    pkGeo.attributes.position.needsUpdate = true; pkGeo.attributes.color.needsUpdate = true;
+    allMods.forEach((m, i) => {
+      m.flash *= Math.pow(0.03, dt);
+      for (let q = 0; q < RISE; q++) {
+        const u = (t * 0.32 + q / RISE + i * 0.137) % 1, o = (i * RISE + q) * 3, f = Math.sin(u * Math.PI);
+        rsPos[o] = m.x; rsPos[o + 1] = MY + m.h / 2 + (Y2 - MY - m.h / 2) * u; rsPos[o + 2] = m.z;
+        rsCol[o] = m.c.r * f; rsCol[o + 1] = m.c.g * f; rsCol[o + 2] = m.c.b * f;
+      }
+    });
+    rsGeo.attributes.position.needsUpdate = true; rsGeo.attributes.color.needsUpdate = true;
+    rings[0].rotation.z = t * 0.25; rings[1].rotation.z = -t * 0.18;
+
     for (const v of views) if (v.visible) { pose(v); v.composer.render(); }
   }
 
@@ -267,6 +345,29 @@ function start() {
     uni.uReveal.value = s1; uni.uPix.value = v.pix;
     frame1.opacity = s1 * 0.6; frame2.opacity = s2 * 0.5; frame3.opacity = s3 * 0.6;
     agMat.opacity = s2; trMat.opacity = s2 * 0.75; inMat.opacity = s2 * 0.9; bmMat.opacity = s2 * 0.7;
+
+    // modules rise out of the floor one by one, pipes connect, then data starts to flow
+    allMods.forEach((m, mi) => {
+      const k = clamp((s1 - 0.22 - (m.i + 1) * 0.045) / 0.28), e = ease(k);
+      const y = MY - (1 - e) * 1.1;
+      m.g.position.y = y; m.g.visible = k > 0;
+      m.body.material.opacity = 0.92 * k; m.edges.material.opacity = Math.min(1, 0.55 + m.flash * 0.6) * k;
+      m.label.material.opacity = k; m.glow.material.opacity = (0.05 + m.flash * 0.3) * k;
+      for (let q = 0; q < BARS; q++) {
+        const a = q / BARS * Math.PI * 2 + 0.2, rr = m.r + 0.2;
+        const hb = (0.08 + 0.55 * Math.pow(0.5 + 0.5 * Math.sin(t * (1.1 + q * 0.37) + mi * 2.1 + q), 2) * (1 + m.flash)) * (m.i < 0 ? 1.4 : 1) * e;
+        bv.set(m.x + Math.cos(a) * rr, y - m.h / 2, m.z + Math.sin(a) * rr); bs.set(1, Math.max(0.001, hb + m.h * 0.8), 1);
+        barMesh.setMatrixAt(mi * BARS + q, bm4.compose(bv, bq, bs));
+      }
+    });
+    barMesh.instanceMatrix.needsUpdate = true; barMesh.material.opacity = clamp((s1 - 0.3) / 0.3) * 0.8;
+    rings.forEach((r) => { r.material.opacity = clamp((s1 - 0.25) / 0.3) * 0.55; });
+    pipes.forEach((pp) => {
+      const k = clamp((s1 - 0.42 - pp.j * 0.01) / 0.26);
+      pp.line.geometry.setDrawRange(0, Math.ceil(k * (SEG + 1))); pp.line.material.opacity = 0.6 * k;
+    });
+    pkMat.opacity = clamp((s1 - 0.6) / 0.25);
+    rsMat.opacity = s2 * 0.9; shMat.opacity = s2 * 0.35;
 
     // tiles rise in turn from the simulation layer to the challenge layer
     tiles.forEach((tl) => {
@@ -286,11 +387,11 @@ function start() {
     // the backdrop keeps orbiting slowly around the finished stack
     const theta = v.ghost ? 0.4 + t * 0.06 + ptr.x * 0.08 : -0.8 + pS * 0.95 + ptr.x * 0.14 + t * 0.02;
     const phi = 0.72 - pS * 0.32 - ptr.y * 0.05;
-    const rad = (31 - pS * 5 - s4 * 2) * Math.max(1, 1.3 / camera.aspect);
-    const ty = 2.6 + pS * 4.6;
+    const rad = (14 + ease(clamp((pS - 0.26) * 1.7)) * 14 - clamp((pS - 0.5) * 2) * 3 - s4 * 2) * Math.max(1, 1.3 / camera.aspect);
+    const ty = 0.2 + ease(clamp((pS - 0.28) * 1.45)) * 6.8;
     camera.position.set(Math.cos(phi) * Math.sin(theta) * rad, ty + Math.sin(phi) * rad, Math.cos(phi) * Math.cos(theta) * rad);
     camera.lookAt(0, ty, 0);
-    v.bloom.strength = 0.65 + s3 * 0.2 + s4 * 0.25;
+    v.bloom.strength = 0.55 + s3 * 0.2 + s4 * 0.2;
   }
   host.classList.add("gl-on");
   requestAnimationFrame(tick);
@@ -302,6 +403,17 @@ function dotTexture() {
   grd.addColorStop(0, "rgba(255,255,255,1)"); grd.addColorStop(0.35, "rgba(255,255,255,.6)"); grd.addColorStop(1, "rgba(255,255,255,0)");
   g.fillStyle = grd; g.fillRect(0, 0, 64, 64);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
+function moduleLabel(text, color) {
+  const c = document.createElement("canvas"); c.width = 512; c.height = 128;
+  const g = c.getContext("2d");
+  g.shadowColor = "rgb(" + [color.r, color.g, color.b].map((v) => Math.round(v * 255)).join(",") + ")"; g.shadowBlur = 18;
+  g.fillStyle = "#f2fbff"; g.textAlign = "center"; g.textBaseline = "middle";
+  g.font = "700 " + (text.length > 10 ? 50 : 62) + "px 'JetBrains Mono', monospace";
+  if ("letterSpacing" in g) g.letterSpacing = "4px";
+  g.fillText(text, 256, 66);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
 
 function labelTexture(d) {

@@ -629,7 +629,7 @@ footer a:hover { color: var(--fg); }
 .track-card .timeline.compact .tl-dot { display: none; }
 .track-card .timeline.compact .tl-date { color: var(--c-col); font-size: 12px; }
 .track-card .timeline.compact .tl-body h4 { font-size: 13px; font-weight: 500; }
-.more-card { border-style: dashed; justify-content: center; }
+.more-card { border-style: dashed; justify-content: center; margin-right: clamp(64px, 10vw, 180px); }
 .more-card .plus { font-family: var(--font-display); font-size: 64px; line-height: 1; color: var(--sw); opacity: .6; margin-top: 8px; }
 
 /* paper covers */
@@ -669,9 +669,9 @@ footer a:hover { color: var(--fg); }
 .person-photo .mono { display: grid; place-items: center; height: 100%; font-family: "Noto Sans SC", var(--font-display); font-weight: 700; font-size: 28px; color: #04121c; }
 @media (max-width: 960px) { .people { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
 @media (max-width: 520px) { .people { grid-template-columns: 1fr !important; } .person-photo { width: 60px; height: 60px; } }
-.host-gifts a { grid-template-columns: 1fr auto; }
-.host-gifts img { height: auto; width: 100%; max-width: 460px; }
-@media (max-width: 640px) { .host-gifts a { grid-template-columns: 1fr; } }
+.host-full a { grid-template-columns: 1fr auto; }
+.host-full img { height: auto; width: 100%; max-width: 460px; max-height: 84px; object-fit: contain; object-position: left center; }
+@media (max-width: 640px) { .host-full a { grid-template-columns: 1fr; } }
 
 /* WebGL stack: the CSS layers stay as the fallback */
 .stack3d { position: relative; }
@@ -723,3 +723,11 @@ footer a:hover { color: var(--fg); }
   -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent); mask-image: radial-gradient(closest-side, #000 55%, transparent); }
 #foundation.gl-on .found-gl { display: block; }
 @media (max-width: 760px) { .found-gl { right: -30vw; width: 130vw; height: 80vh; opacity: .16; } }
+/* title pages and abstracts, drifting the other way under the covers */
+.abstracts-rail { margin-top: -6px; }
+.abstract { flex: none; display: block; position: relative; width: 440px; height: 330px; border-radius: 6px; overflow: hidden; background: #fff;
+  box-shadow: 0 20px 50px -30px rgba(0,0,0,.8); transition: translate .5s cubic-bezier(.22,1,.36,1), box-shadow .5s; }
+.abstract img { display: block; width: 100%; height: auto; padding: 18px 20px 0; }
+.abstract::after { content: ""; position: absolute; inset: auto 0 0; height: 90px; background: linear-gradient(rgba(255,255,255,0), #fff 85%); pointer-events: none; }
+.abstract:hover { translate: 0 -5px; box-shadow: 0 30px 60px -24px rgba(143,214,255,.45); }
+@media (max-width: 560px) { .abstract { width: 300px; height: 240px; } .abstract img { padding: 12px 14px 0; } }
