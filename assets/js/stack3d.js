@@ -396,42 +396,35 @@ function start() {
   ];
 
   /* ---------- outer layer · SimuWorld Challenge ---------- */
-  // a planetary ring: a band of particles with a few brighter worlds in it, slowly turning around the model
-  const ringG = new THREE.Group(); ringG.position.y = RING_Y; ringG.rotation.set(0.12, 0, 0.07); scene.add(ringG);
-  const RN = small ? 900 : 2200, rnPos = new Float32Array(RN * 3), rnCol = new Float32Array(RN * 3);
+  // the SimuWorld ring: like a sign circling a globe, the name itself is the ring -- large upright letters on a
+  // tilted band well clear of the model, with thin rails of dust above and below and a few worlds riding along it
+  const RR = 16.5, RH = 2.0;
+  const ringG = new THREE.Group(); ringG.position.y = RING_Y; ringG.rotation.set(0.34, 0, -0.2, "ZXY"); scene.add(ringG);
+  const spinG = new THREE.Group(); ringG.add(spinG);
+  const nameTex = ringNameTexture(); nameTex.wrapS = THREE.RepeatWrapping; nameTex.repeat.set(2, 1);
+  const nameFront = new THREE.Mesh(new THREE.CylinderGeometry(RR, RR, RH, 256, 1, true), new THREE.MeshBasicMaterial({ map: nameTex, transparent: true, opacity: 0, depthWrite: false, side: THREE.FrontSide }));
+  const nameBack = new THREE.Mesh(nameFront.geometry, new THREE.MeshBasicMaterial({ map: nameTex, transparent: true, opacity: 0, depthWrite: false, side: THREE.BackSide }));
+  spinG.add(nameBack, nameFront);
+  const RN = small ? 700 : 1600, rnPos = new Float32Array(RN * 3), rnCol = new Float32Array(RN * 3);
   const RCOL = [ICE, WHITE, ICE, SKY, VIOLET, TEAL];
   for (let i = 0; i < RN; i++) {
-    const band = Math.random(), r = band < 0.5 ? 8.8 + Math.random() * 1.9 : band < 0.58 ? 10.75 + Math.random() * 0.1 : 12.3 + Math.random() * 1.6;
-    const a = Math.random() * Math.PI * 2, c = RCOL[i % RCOL.length], f = 0.4 + Math.random() * 0.6;
-    rnPos.set([Math.cos(a) * r, (Math.random() - 0.5) * 0.12, Math.sin(a) * r], i * 3); rnCol.set([c.r * f, c.g * f, c.b * f], i * 3);
+    const rail = i % 2 ? 1 : -1, r = RR + (Math.random() - 0.5) * 0.7, a = Math.random() * Math.PI * 2, c = RCOL[i % RCOL.length], f = 0.35 + Math.random() * 0.6;
+    rnPos.set([Math.cos(a) * r, rail * (RH / 2 + 0.25) + (Math.random() - 0.5) * 0.18, Math.sin(a) * r], i * 3); rnCol.set([c.r * f, c.g * f, c.b * f], i * 3);
   }
   const rnGeo = new THREE.BufferGeometry();
   rnGeo.setAttribute("position", new THREE.BufferAttribute(rnPos, 3)); rnGeo.setAttribute("color", new THREE.BufferAttribute(rnCol, 3));
   const rnMat = new THREE.PointsMaterial({ size: 0.2, vertexColors: true, ...ADD, opacity: 0, map: dot });
-  ringG.add(new THREE.Points(rnGeo, rnMat));
-  const bandMats = [8.7, 10.85, 12.2, 14.0].map((r) => {
-    const pts = []; for (let i = 0; i <= 200; i++) { const a = i / 200 * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r)); }
-    const m = new THREE.LineBasicMaterial({ color: ICE, ...ADD, opacity: 0 }); ringG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), m)); return m;
+  spinG.add(new THREE.Points(rnGeo, rnMat));
+  const bandMats = [-1, 1].map((k) => {
+    const pts = []; for (let i = 0; i <= 256; i++) { const a = i / 256 * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * RR, k * (RH / 2 + 0.25), Math.sin(a) * RR)); }
+    const m = new THREE.LineBasicMaterial({ color: ICE, ...ADD, opacity: 0 }); spinG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), m)); return m;
   });
-  const WN = 9, worlds = [], wPos = new Float32Array(WN * 3), wCol = new Float32Array(WN * 3);
-  for (let i = 0; i < WN; i++) { const c = [GREEN, TEAL, VIOLET, ICE, GOLD][i % 5]; worlds.push({ a: i / WN * Math.PI * 2 + Math.random() * 0.5, r: i % 2 ? 9.2 + Math.random() * 1.3 : 12.5 + Math.random() * 1.2, c, ph: Math.random() * 6.28 }); }
+  const WN = 7, worlds = [], wPos = new Float32Array(WN * 3), wCol = new Float32Array(WN * 3);
+  for (let i = 0; i < WN; i++) { const c = [GREEN, TEAL, VIOLET, ICE, GOLD][i % 5]; worlds.push({ a: i / WN * Math.PI * 2 + Math.random() * 0.4, r: RR, y: (i % 2 ? 1 : -1) * (RH / 2 + 0.25), c, ph: Math.random() * 6.28 }); }
   const wGeo = new THREE.BufferGeometry();
   wGeo.setAttribute("position", new THREE.BufferAttribute(wPos, 3)); wGeo.setAttribute("color", new THREE.BufferAttribute(wCol, 3));
   const wMat = new THREE.PointsMaterial({ size: 1.1, vertexColors: true, ...ADD, opacity: 0, map: dot });
-  ringG.add(new THREE.Points(wGeo, wMat));
-  // the ring's name, written along the ring itself so it turns with it
-  const ringText = (() => {
-    const r0 = 10.95, r1 = 12.1, segs = 240, pos = [], uv = [], idx = [];
-    for (let i = 0; i <= segs; i++) {
-      const a = -i / segs * Math.PI * 2, u = i / segs * 2;   // two repeats around the ring, reading clockwise from above
-      pos.push(Math.cos(a) * r1, 0.02, Math.sin(a) * r1, Math.cos(a) * r0, 0.02, Math.sin(a) * r0); uv.push(u, 1, u, 0);
-      if (i < segs) { const k = i * 2; idx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); }
-    }
-    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx);
-    const tex = ringNameTexture(); tex.wrapS = THREE.RepeatWrapping;
-    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
-    ringG.add(m); return m.material;
-  })();
+  spinG.add(new THREE.Points(wGeo, wMat));
   const CT = 12, cmPos = new Float32Array(CT * 3), cmCol = new Float32Array(CT * 3), cmGeo = new THREE.BufferGeometry();
   cmGeo.setAttribute("position", new THREE.BufferAttribute(cmPos, 3)); cmGeo.setAttribute("color", new THREE.BufferAttribute(cmCol, 3));
   const cmMat = new THREE.PointsMaterial({ size: 0.5, vertexColors: true, ...ADD, opacity: 0, map: dot });
@@ -451,9 +444,9 @@ function start() {
     [0.50, 0, Y3 + 0.2, 0, 18, 1.05, 0.6],
     [0.58, 0.8, Y4 + 1.2, 0, 20, 0.55, 0.42],
     [0.68, 0.4, Y4 + 1.4, 0, 16.5, 0.1, 0.34],
-    [0.80, 0, 6.2, 0, 56, 0.35, 0.3],
-    [0.92, 0, 6.0, 0, 52, 0.7, 0.27],
-    [1.00, 0, 6.0, 0, 52, 0.85, 0.27],
+    [0.80, 0, 6.0, 0, 68, 0.35, 0.22],
+    [0.92, 0, 5.8, 0, 62, 0.7, 0.2],
+    [1.00, 0, 5.8, 0, 62, 0.85, 0.2],
   ];
   const cr = (p0, p1, p2, p3, s) => 0.5 * ((2 * p1) + (-p0 + p2) * s + (2 * p0 - 5 * p1 + 4 * p2 - p3) * s * s + (-p0 + 3 * p1 - 3 * p2 + p3) * s * s * s);
   const camAt = (p) => {
@@ -617,17 +610,17 @@ function start() {
     nameRings.forEach((r) => { r.tex.offset.x = (t * 0.012 * (r.k ? -1 : 1)) % 1; });
 
     // outer ring · the planetary ring turns, its worlds pulse; your agent flies in from one of them
-    ringG.rotation.y = t * 0.035;
+    spinG.rotation.y = -t * 0.05;
     worlds.forEach((w, i) => {
       const br = 0.55 + 0.45 * Math.sin(t * 1.3 + w.ph);
-      wPos.set([Math.cos(w.a) * w.r, 0.05, Math.sin(w.a) * w.r], i * 3); wCol.set([w.c.r * br, w.c.g * br, w.c.b * br], i * 3);
+      wPos.set([Math.cos(w.a) * w.r, w.y, Math.sin(w.a) * w.r], i * 3); wCol.set([w.c.r * br, w.c.g * br, w.c.b * br], i * 3);
     });
     wGeo.attributes.position.needsUpdate = true; wGeo.attributes.color.needsUpdate = true;
     if (comet.k >= 1) {
       comet.wait -= dt;
       if (comet.wait <= 0) {
-        const w = worlds[Math.floor(Math.random() * WN)]; ringG.updateMatrixWorld();
-        const a = new THREE.Vector3(Math.cos(w.a) * w.r, 0.05, Math.sin(w.a) * w.r).applyMatrix4(ringG.matrixWorld), b = new THREE.Vector3((Math.random() - 0.5) * 5, Y2 + 0.3, (Math.random() - 0.5) * 5);
+        const w = worlds[Math.floor(Math.random() * WN)]; ringG.updateMatrixWorld(true);
+        const a = new THREE.Vector3(Math.cos(w.a) * w.r, w.y, Math.sin(w.a) * w.r).applyMatrix4(spinG.matrixWorld), b = new THREE.Vector3((Math.random() - 0.5) * 5, Y2 + 0.3, (Math.random() - 0.5) * 5);
         const m = a.clone().add(b).multiplyScalar(0.5); m.y += 4.5;
         comet.curve = new THREE.QuadraticBezierCurve3(a, m, b); comet.k = 0; comet.wait = 3.5; comet.col = w.c;
       }
@@ -692,14 +685,14 @@ function start() {
     nameRings.forEach((r) => { r.m.position.y = r.k ? topY + 0.6 * r4 + 0.4 : SB - 0.2; r.m.material.opacity = all * 0.8; });
     spine.mat.opacity = clamp(r2 * 0.6 + r4 * 0.4); spine.smat.opacity = spine.mat.opacity * 0.4;
     // outer ring
-    rnMat.opacity = r5; wMat.opacity = clamp((r5 - 0.3) / 0.5); bandMats.forEach((m, i) => { m.opacity = r5 * (i === 1 || i === 2 ? 0.32 : 0.14); });
-    ringText.opacity = clamp((r5 - 0.4) / 0.5);
-    ringG.scale.setScalar(0.75 + 0.25 * ease(r5));
+    rnMat.opacity = r5; wMat.opacity = clamp((r5 - 0.3) / 0.5); bandMats.forEach((m) => { m.opacity = r5 * 0.3; });
+    nameFront.material.opacity = clamp((r5 - 0.2) / 0.5); nameBack.material.opacity = nameFront.material.opacity * 0.22;
+    ringG.scale.setScalar(0.8 + 0.2 * ease(r5));
     cmMat.opacity = clamp((r5 - 0.5) / 0.4); splash.material.opacity = comet.splash * 0.8 * cmMat.opacity; splash.scale.setScalar(0.2 + (1 - comet.splash) * 1.6);
 
     // camera
     let tx, ty, tz, rad, th, ph;
-    if (v.ghost) { tx = 0; ty = 6.0; tz = 0; rad = 42; th = 0.4 + t * 0.06 + ptr.x * 0.08; ph = 0.36; }
+    if (v.ghost) { tx = 0; ty = 5.8; tz = 0; rad = 58; th = 0.4 + t * 0.06 + ptr.x * 0.08; ph = 0.36; }
     else {
       [tx, ty, tz, rad, th, ph] = camAt(pS);
       th += t * 0.02 + ptr.x * 0.1 + user.th * all; ph = Math.max(0.12, Math.min(1.25, ph - ptr.y * 0.04 + user.ph * all));
@@ -777,13 +770,14 @@ function tagTex(text, color) {
 
 // "SIMUWORLD CHALLENGE · MANY WORLDS ·", written along the planetary ring
 function ringNameTexture() {
-  const c = document.createElement("canvas"); c.width = 2048; c.height = 96;
+  const c = document.createElement("canvas"); c.width = 4096; c.height = 200;
   const g = c.getContext("2d");
-  g.textBaseline = "middle"; g.font = "700 50px 'Space Grotesk', sans-serif";
-  if ("letterSpacing" in g) g.letterSpacing = "16px";
-  g.shadowColor = "rgba(143,214,255,.9)"; g.shadowBlur = 14;
-  g.fillStyle = "rgba(236,250,255,.95)"; g.fillText("SIMUWORLD CHALLENGE", 30, 50);
-  g.fillStyle = "rgba(143,214,255,.8)"; g.font = "600 40px 'JetBrains Mono', monospace"; g.fillText("·  MANY WORLDS  ·  YOUR AGENT ENTERS HERE  ·", 860, 52);
+  g.textBaseline = "middle"; g.textAlign = "center"; g.font = "700 150px 'Space Grotesk', sans-serif";
+  if ("letterSpacing" in g) g.letterSpacing = "38px";
+  const grd = g.createLinearGradient(0, 30, 0, 170); grd.addColorStop(0, "#ffffff"); grd.addColorStop(0.55, "#bfe6ff"); grd.addColorStop(1, "#6fb8ff");
+  g.shadowColor = "rgba(143,214,255,.95)"; g.shadowBlur = 26; g.fillStyle = grd;
+  g.fillText("SIMUWORLD", 1024, 104); g.fillText("CHALLENGE", 3072, 104);
+  g.shadowBlur = 0; g.fillStyle = "rgba(143,214,255,.85)"; g.beginPath(); g.arc(2048, 100, 14, 0, 7); g.arc(4090, 100, 14, 0, 7); g.fill();
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
 }
 
