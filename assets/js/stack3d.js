@@ -1,7 +1,8 @@
 /* SimuWorld home · the stack, in WebGL.
    Layer 1  the economic world model: modules (markets, firms, households, institutions, policy, space, data)
             around a world-model core, wired by pipes that carry streams of data packets
-   Layer 2  multi-agent simulation: agents flowing with trails, flashing links when they meet,
+   Layer 2  multi-agent simulation: little icons (people, households, markets, firms, banks, homes, coins)
+            flowing with trails, flashing links when they meet,
             light beams tying them to the world below
    Layer 3  the challenge: glowing track tiles rising from the simulation, plus a "+" for worlds to come
    Driven by the pinned scene's scroll progress (--p on .scene-stack). Falls back to the CSS stack
@@ -36,7 +37,7 @@ function start() {
     const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 200);
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.7, 0.42, 0.22);
+    const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.7, 0.4, 0.38);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
     // light is the only thing drawn: alpha follows brightness, so the canvas adds glow over the page and never darkens it
@@ -45,12 +46,12 @@ function start() {
       vertexShader: "varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
       fragmentShader: "uniform sampler2D tDiffuse; varying vec2 vUv; void main() { vec3 c = texture2D(tDiffuse, vUv).rgb; gl_FragColor = vec4(c, clamp(max(c.r, max(c.g, c.b)), 0.0, 1.0)); }",
     }));
-    const v = { cv, el, renderer, camera, composer, bloom, ghost, visible: false, pS: ghost ? 1 : 0, pix: 1 };
+    const v = { cv, el, renderer, camera, composer, bloom, ghost, visible: false, pS: ghost ? 1 : 0, pix: 1, hpx: 600 };
     new IntersectionObserver((e) => { v.visible = e[0].isIntersecting; }, { rootMargin: "200px" }).observe(el);
     const resize = () => {
       const r = cv.getBoundingClientRect(); const w = Math.max(1, r.width), h = Math.max(1, r.height);
       renderer.setSize(w, h, false); composer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
-      v.pix = renderer.getPixelRatio() * Math.min(1.4, h / 600);
+      v.pix = renderer.getPixelRatio() * Math.min(1.4, h / 600); v.hpx = h * renderer.getPixelRatio();
     };
     new ResizeObserver(resize).observe(cv); resize();
     return v;
@@ -184,18 +185,40 @@ function start() {
   const frame1 = frame(Y1, ICE), frame2 = frame(Y2, WHITE), frame3 = frame(Y3, ICE, true);
 
   /* ---------- layer 2: agents ---------- */
-  const N = small ? 180 : 420, TR = 8;
+  // who acts in the world: people, households, markets, firms, banks, homes, money
+  const GOLD = new THREE.Color(0xffc857);
+  const KINDS = [
+    { icon: 0, c: WHITE, w: 0.30 }, { icon: 1, c: ICE, w: 0.14 }, { icon: 2, c: GREEN, w: 0.12 }, { icon: 3, c: GREEN, w: 0.08 },
+    { icon: 4, c: TEAL, w: 0.11 }, { icon: 5, c: VIOLET, w: 0.08 }, { icon: 6, c: ICE, w: 0.08 }, { icon: 7, c: GOLD, w: 0.09 },
+  ];
+  const N = small ? 120 : 260, TR = 8;
   const ag = [];
-  const agPos = new Float32Array(N * 3), agCol = new Float32Array(N * 3);
+  const agPos = new Float32Array(N * 3), agCol = new Float32Array(N * 3), agIcon = new Float32Array(N), agSize = new Float32Array(N);
   for (let i = 0; i < N; i++) {
-    const roll = Math.random(), col = roll < 0.12 ? GREEN : roll < 0.24 ? VIOLET : roll < 0.34 ? TEAL : roll < 0.7 ? WHITE : ICE;
-    ag.push({ x: (Math.random() * 2 - 1) * HALF * 0.9, z: (Math.random() * 2 - 1) * HALF * 0.9, a: Math.random() * 6.28, s: 0.6 + Math.random() * 0.8, trail: [], col });
-    agCol.set([col.r, col.g, col.b], i * 3);
+    let roll = Math.random(), kd = KINDS[0];
+    for (const k of KINDS) { if (roll < k.w) { kd = k; break; } roll -= k.w; }
+    const col = kd.c;
+    ag.push({ x: (Math.random() * 2 - 1) * HALF * 0.9, z: (Math.random() * 2 - 1) * HALF * 0.9, a: Math.random() * 6.28, s: 0.45 + Math.random() * 0.6, trail: [], col, ph: Math.random() * 6.28 });
+    agCol.set([col.r, col.g, col.b], i * 3); agIcon[i] = kd.icon; agSize[i] = kd.icon === 0 ? 0.9 + Math.random() * 0.2 : 1.05 + Math.random() * 0.2;
   }
   const agGeo = new THREE.BufferGeometry();
   agGeo.setAttribute("position", new THREE.BufferAttribute(agPos, 3));
   agGeo.setAttribute("color", new THREE.BufferAttribute(agCol, 3));
-  const agMat = new THREE.PointsMaterial({ size: 0.16, vertexColors: true, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, map: dotTexture() });
+  agGeo.setAttribute("aIcon", new THREE.BufferAttribute(agIcon, 1));
+  agGeo.setAttribute("aSize", new THREE.BufferAttribute(agSize, 1));
+  const agMat = new THREE.ShaderMaterial({
+    uniforms: { uMap: { value: iconAtlas() }, uOpacity: { value: 0 }, uSize: { value: small ? 0.62 : 0.5 }, uH: { value: 600 } },
+    transparent: true, depthWrite: false,
+    vertexShader: `
+      attribute vec3 color; attribute float aIcon, aSize; uniform float uSize, uH; varying vec3 vC; varying float vI;
+      void main() { vC = color; vI = aIcon; vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = uSize * aSize * projectionMatrix[1][1] * uH * 0.5 / -mv.z; gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `
+      uniform sampler2D uMap; uniform float uOpacity; varying vec3 vC; varying float vI;
+      void main() { vec2 cell = vec2(mod(vI, 4.0), 1.0 - floor(vI / 4.0));
+        vec4 tx = texture2D(uMap, (cell + vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y)) / vec2(4.0, 2.0));
+        if (tx.a < 0.02) discard; gl_FragColor = vec4(vC * (0.5 + 0.35 * tx.r), tx.a * uOpacity); }`,
+  });
   scene.add(new THREE.Points(agGeo, agMat));
 
   const trPos = new Float32Array(N * (TR - 1) * 6), trCol = new Float32Array(N * (TR - 1) * 6);
@@ -276,7 +299,7 @@ function start() {
       a.x += Math.cos(a.a) * a.s * dt; a.z += Math.sin(a.a) * a.s * dt;
       if (Math.abs(a.x) > HALF * 0.95) { a.x = Math.sign(a.x) * HALF * 0.95; a.a = Math.PI - a.a; }
       if (Math.abs(a.z) > HALF * 0.95) { a.z = Math.sign(a.z) * HALF * 0.95; a.a = -a.a; }
-      agPos[i * 3] = a.x; agPos[i * 3 + 1] = Y2; agPos[i * 3 + 2] = a.z;
+      agPos[i * 3] = a.x; agPos[i * 3 + 1] = Y2 + 0.24 + Math.abs(Math.sin(t * 5 * a.s + a.ph)) * 0.06; agPos[i * 3 + 2] = a.z;
       if (frameN % 2 === 0) { a.trail.unshift(a.x, a.z); if (a.trail.length > TR * 2) a.trail.length = TR * 2; }
       const key = Math.floor(a.x / binSize) + ":" + Math.floor(a.z / binSize);
       (bins.get(key) || bins.set(key, []).get(key)).push(i);
@@ -344,7 +367,7 @@ function start() {
     const s1 = 0.18 + 0.82 * ease(clamp(pS * 3.2)), s2 = ease(clamp((pS - 0.3) * 3.2)), s3 = clamp((pS - 0.6) * 3.0), s4 = clamp((pS - 0.88) * 8);
     uni.uReveal.value = s1; uni.uPix.value = v.pix;
     frame1.opacity = s1 * 0.6; frame2.opacity = s2 * 0.5; frame3.opacity = s3 * 0.6;
-    agMat.opacity = s2; trMat.opacity = s2 * 0.75; inMat.opacity = s2 * 0.9; bmMat.opacity = s2 * 0.7;
+    agMat.uniforms.uOpacity.value = s2 * (1 - 0.35 * s3); agMat.uniforms.uH.value = v.hpx; trMat.opacity = s2 * 0.75; inMat.opacity = s2 * 0.9; bmMat.opacity = s2 * 0.7;
 
     // modules rise out of the floor one by one, pipes connect, then data starts to flow
     allMods.forEach((m, mi) => {
@@ -387,11 +410,11 @@ function start() {
     // the backdrop keeps orbiting slowly around the finished stack
     const theta = v.ghost ? 0.4 + t * 0.06 + ptr.x * 0.08 : -0.8 + pS * 0.95 + ptr.x * 0.14 + t * 0.02;
     const phi = 0.72 - pS * 0.32 - ptr.y * 0.05;
-    const rad = (14 + ease(clamp((pS - 0.26) * 1.7)) * 14 - clamp((pS - 0.5) * 2) * 3 - s4 * 2) * Math.max(1, 1.3 / camera.aspect);
+    const rad = (14 + ease(clamp((pS - 0.26) * 2.4)) * 6 + ease(clamp((pS - 0.6) * 2.6)) * 8 - clamp((pS - 0.5) * 2) * 3 - s4 * 2) * Math.max(1, 1.3 / camera.aspect);
     const ty = 0.2 + ease(clamp((pS - 0.28) * 1.45)) * 6.8;
     camera.position.set(Math.cos(phi) * Math.sin(theta) * rad, ty + Math.sin(phi) * rad, Math.cos(phi) * Math.cos(theta) * rad);
     camera.lookAt(0, ty, 0);
-    v.bloom.strength = 0.55 + s3 * 0.2 + s4 * 0.2;
+    v.bloom.strength = 0.6 + s3 * 0.1 + s4 * 0.1;
   }
   host.classList.add("gl-on");
   requestAnimationFrame(tick);
@@ -402,6 +425,31 @@ function dotTexture() {
   const g = c.getContext("2d"), grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
   grd.addColorStop(0, "rgba(255,255,255,1)"); grd.addColorStop(0.35, "rgba(255,255,255,.6)"); grd.addColorStop(1, "rgba(255,255,255,0)");
   g.fillStyle = grd; g.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
+// eight white glyphs on a 4 x 2 atlas: person, household, candlesticks, rising chart, factory, bank, home, coin
+function iconAtlas() {
+  const S = 128, c = document.createElement("canvas"); c.width = S * 4; c.height = S * 2;
+  const g = c.getContext("2d");
+  g.fillStyle = g.strokeStyle = "#fff"; g.lineCap = g.lineJoin = "round";
+  const cell = (i, draw) => { g.save(); g.translate((i % 4) * S, Math.floor(i / 4) * S); g.shadowColor = "rgba(255,255,255,.9)"; g.shadowBlur = 6; draw(); g.restore(); };
+  const person = (x, y, k) => { g.beginPath(); g.arc(x, y - 30 * k, 14 * k, 0, 7); g.fill();
+    g.beginPath(); g.moveTo(x - 24 * k, y + 34 * k); g.quadraticCurveTo(x - 24 * k, y - 10 * k, x, y - 10 * k); g.quadraticCurveTo(x + 24 * k, y - 10 * k, x + 24 * k, y + 34 * k); g.closePath(); g.fill(); };
+  cell(0, () => person(64, 66, 1.25));
+  cell(1, () => { person(44, 70, 1); person(86, 74, 0.82); person(66, 90, 0.55); });
+  cell(2, () => { g.lineWidth = 5; [[30, 40, 84, 52, 72], [56, 30, 70, 38, 62], [82, 48, 96, 56, 88], [104, 20, 60, 28, 50]].forEach(([x, top, bot, o, cl]) => {
+      g.beginPath(); g.moveTo(x, top); g.lineTo(x, bot + 14); g.stroke(); g.fillRect(x - 9, Math.min(o, cl), 18, Math.abs(cl - o) + 10); }); });
+  cell(3, () => { g.lineWidth = 9; g.beginPath(); g.moveTo(18, 100); g.lineTo(46, 70); g.lineTo(68, 84); g.lineTo(108, 34); g.stroke();
+    g.beginPath(); g.moveTo(84, 30); g.lineTo(112, 28); g.lineTo(110, 56); g.stroke(); g.lineWidth = 5; g.beginPath(); g.moveTo(14, 112); g.lineTo(116, 112); g.stroke(); });
+  cell(4, () => { g.beginPath(); g.moveTo(14, 112); g.lineTo(14, 60); g.lineTo(44, 78); g.lineTo(44, 60); g.lineTo(74, 78); g.lineTo(74, 30); g.lineTo(94, 30); g.lineTo(94, 18); g.lineTo(108, 18); g.lineTo(108, 112); g.closePath(); g.fill(); });
+  cell(5, () => { g.beginPath(); g.moveTo(64, 14); g.lineTo(116, 44); g.lineTo(12, 44); g.closePath(); g.fill(); g.fillRect(14, 104, 100, 10);
+    [24, 48, 72, 96].forEach((x) => g.fillRect(x, 52, 10, 46)); });
+  cell(6, () => { g.beginPath(); g.moveTo(64, 16); g.lineTo(114, 60); g.lineTo(100, 60); g.lineTo(100, 112); g.lineTo(28, 112); g.lineTo(28, 60); g.lineTo(14, 60); g.closePath(); g.fill();
+    g.globalCompositeOperation = "destination-out"; g.fillRect(54, 80, 20, 32); g.globalCompositeOperation = "source-over"; });
+  cell(7, () => { g.beginPath(); g.arc(64, 64, 44, 0, 7); g.fill(); g.globalCompositeOperation = "destination-out";
+    g.font = "700 62px 'Inter', sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("$", 64, 68); g.globalCompositeOperation = "source-over";
+    g.lineWidth = 5; g.beginPath(); g.arc(64, 64, 34, 0, 7); g.globalCompositeOperation = "destination-out"; g.stroke(); });
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 
