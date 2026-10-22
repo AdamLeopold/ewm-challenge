@@ -10,10 +10,13 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
 
 const section = document.querySelector(".scene-stack");
 const host = section && section.querySelector(".stack3d");
 const canvas = host && host.querySelector(".stack-gl");
+const ghostHost = document.querySelector("#foundation");
+const ghostCanvas = ghostHost && ghostHost.querySelector(".found-gl");
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const small = innerWidth < 760;
 
@@ -22,18 +25,36 @@ if (canvas && !reduce) {
 }
 
 function start() {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
-  renderer.setClearColor(0x000000, 1);
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x000000, 0.018);
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 200);
-
-  const composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.7, 0.42, 0.22);
-  composer.addPass(bloom);
-  composer.addPass(new OutputPass());
+  // one scene, two views: the pinned stack scene, and a faint, fully assembled backdrop behind the foundation section
+  const makeView = (cv, el, dpr, ghost) => {
+    const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !ghost, alpha: true, premultipliedAlpha: true, powerPreference: "high-performance" });
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, dpr));
+    renderer.setClearColor(0x000000, 0);
+    const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 200);
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.7, 0.42, 0.22);
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+    // light is the only thing drawn: alpha follows brightness, so the canvas adds glow over the page and never darkens it
+    composer.addPass(new ShaderPass({
+      uniforms: { tDiffuse: { value: null } },
+      vertexShader: "varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      fragmentShader: "uniform sampler2D tDiffuse; varying vec2 vUv; void main() { vec3 c = texture2D(tDiffuse, vUv).rgb; gl_FragColor = vec4(c, clamp(max(c.r, max(c.g, c.b)), 0.0, 1.0)); }",
+    }));
+    const v = { cv, el, renderer, camera, composer, bloom, ghost, visible: false, pS: ghost ? 1 : 0, pix: 1 };
+    new IntersectionObserver((e) => { v.visible = e[0].isIntersecting; }, { rootMargin: "200px" }).observe(el);
+    const resize = () => {
+      const r = cv.getBoundingClientRect(); const w = Math.max(1, r.width), h = Math.max(1, r.height);
+      renderer.setSize(w, h, false); composer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+      v.pix = renderer.getPixelRatio() * Math.min(1.4, h / 600);
+    };
+    new ResizeObserver(resize).observe(cv); resize();
+    return v;
+  };
+  const views = [makeView(canvas, host, 1.5, false)];
 
   const ICE = new THREE.Color(0x8fd6ff), WHITE = new THREE.Color(0xe4f3ff);
   const GREEN = new THREE.Color(0x00ff88), TEAL = new THREE.Color(0x3ff2c8), VIOLET = new THREE.Color(0xb06bff), PINK = new THREE.Color(0xff5fd2);
@@ -175,15 +196,8 @@ function start() {
   /* ---------- loop ---------- */
   const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
   addEventListener("pointermove", (e) => { ptr.tx = e.clientX / innerWidth * 2 - 1; ptr.ty = e.clientY / innerHeight * 2 - 1; }, { passive: true });
-  let visible = false, p = 0, pS = 0, t = 0, last = performance.now(), frameN = 0;
-  new IntersectionObserver((e) => { visible = e[0].isIntersecting; }, { rootMargin: "200px" }).observe(host);
-
-  const resize = () => {
-    const r = canvas.getBoundingClientRect(); const w = Math.max(1, r.width), h = Math.max(1, r.height);
-    renderer.setSize(w, h, false); composer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
-    uni.uPix.value = renderer.getPixelRatio() * Math.min(1.4, h / 600);
-  };
-  new ResizeObserver(resize).observe(canvas);
+  let t = 0, last = performance.now(), frameN = 0;
+  if (ghostCanvas) { try { views.push(makeView(ghostCanvas, ghostHost, 1, true)); ghostHost.classList.add("gl-on"); } catch (e) { /* no backdrop */ } }
 
   const clamp = (v) => Math.min(1, Math.max(0, v));
   const ease = (v) => 1 - Math.pow(1 - v, 3);
@@ -193,15 +207,12 @@ function start() {
   function tick(now) {
     requestAnimationFrame(tick);
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    if (!visible || document.hidden) return;
+    if (document.hidden || !views.some((v) => v.visible)) return;
     t += dt; frameN++;
-    p = parseFloat(section.style.getPropertyValue("--p")) || 0;
-    pS += (p - pS) * (1 - Math.pow(0.002, dt));          // smoothed progress for the camera
+    const main = views[0], p = parseFloat(section.style.getPropertyValue("--p")) || 0;
+    main.pS += (p - main.pS) * (1 - Math.pow(0.002, dt));          // smoothed progress for the camera
     ptr.x += (ptr.tx - ptr.x) * (1 - Math.pow(0.02, dt)); ptr.y += (ptr.ty - ptr.y) * (1 - Math.pow(0.02, dt));
-    const s1 = 0.18 + 0.82 * ease(clamp(pS * 3.2)), s2 = ease(clamp((pS - 0.3) * 3.2)), s3 = clamp((pS - 0.6) * 3.0), s4 = clamp((pS - 0.88) * 8);
-
-    uni.uTime.value = t; uni.uReveal.value = s1;
-    frame1.opacity = s1 * 0.6; frame2.opacity = s2 * 0.5; frame3.opacity = s3 * 0.6;
+    uni.uTime.value = t;
 
     // agents wander on a slowly turning flow field, keep a short trail, and link up when they meet
     bins.clear();
@@ -247,6 +258,14 @@ function start() {
       bmCol.set([a.col.r * fl, a.col.g * fl, a.col.b * fl, 0, 0, 0], o);
     }
     bmGeo.attributes.position.needsUpdate = true; bmGeo.attributes.color.needsUpdate = true;
+    for (const v of views) if (v.visible) { pose(v); v.composer.render(); }
+  }
+
+  function pose(v) {
+    const pS = v.pS, camera = v.camera;
+    const s1 = 0.18 + 0.82 * ease(clamp(pS * 3.2)), s2 = ease(clamp((pS - 0.3) * 3.2)), s3 = clamp((pS - 0.6) * 3.0), s4 = clamp((pS - 0.88) * 8);
+    uni.uReveal.value = s1; uni.uPix.value = v.pix;
+    frame1.opacity = s1 * 0.6; frame2.opacity = s2 * 0.5; frame3.opacity = s3 * 0.6;
     agMat.opacity = s2; trMat.opacity = s2 * 0.75; inMat.opacity = s2 * 0.9; bmMat.opacity = s2 * 0.7;
 
     // tiles rise in turn from the simulation layer to the challenge layer
@@ -263,18 +282,16 @@ function start() {
       tl.pillar.material.uniforms.uA.value = tl.ghost ? k * 0.35 : k;
     });
 
-    // camera: from a high, distant view of the world model down into an orbit around the challenge
-    const theta = -0.8 + pS * 0.95 + ptr.x * 0.14 + t * 0.02;
+    // camera: from a high, distant view of the world model down into an orbit around the challenge;
+    // the backdrop keeps orbiting slowly around the finished stack
+    const theta = v.ghost ? 0.4 + t * 0.06 + ptr.x * 0.08 : -0.8 + pS * 0.95 + ptr.x * 0.14 + t * 0.02;
     const phi = 0.72 - pS * 0.32 - ptr.y * 0.05;
     const rad = (31 - pS * 5 - s4 * 2) * Math.max(1, 1.3 / camera.aspect);
     const ty = 2.6 + pS * 4.6;
     camera.position.set(Math.cos(phi) * Math.sin(theta) * rad, ty + Math.sin(phi) * rad, Math.cos(phi) * Math.cos(theta) * rad);
     camera.lookAt(0, ty, 0);
-    bloom.strength = 0.65 + s3 * 0.2 + s4 * 0.25;
-
-    composer.render();
+    v.bloom.strength = 0.65 + s3 * 0.2 + s4 * 0.25;
   }
-  resize();
   host.classList.add("gl-on");
   requestAnimationFrame(tick);
 }
