@@ -1,5 +1,5 @@
 /* SimuWorld home · the economic world model, in WebGL.
-   One model in a glass shell, four layers, bottom to top, each with its own look:
+   One model, four layers, bottom to top, each with its own look:
      L1  Intelligence foundation: LLM as stacked transformer sheets with word tokens rising through them and
          attention arcs between them; RL as a glowing objective landscape that a ball climbs, inside an
          action -> environment -> reward loop
@@ -9,8 +9,9 @@
          data; the institutions module evolves now and then
      L4  Equilibrium & reality discipline: an armillary of three rings (behaviour, data, learned environment)
          that converge on a fixed point, beside real data that the simulated curve learns to fit
-   A light spine runs through all four, and "ECONOMIC WORLD MODEL" turns around the shell.
-   Around it, the SimuWorld Challenge as a planetary ring of worlds; now and then your agent flies in from it.
+   A light spine runs through all four, and "ECONOMIC WORLD MODEL" turns around the top and bottom.
+   Around it, the SimuWorld Challenge as a planetary ring of worlds with its name turning in it; now and then
+   your agent flies in from it.
    The pinned scene's scroll progress (--p on .scene-stack) drives the reveal and the camera, which visits
    each layer in turn and then pulls out; once the model is complete it can be dragged around.
    A faint copy of the finished model also turns behind the foundation section.
@@ -377,13 +378,8 @@ function start() {
   const calFlow = packets([calPipe], small ? 4 : 7, 0.34);
   const l3Up = risers([{ x: 0, z: 0, y0: Y3 + 0.4, y1: Y4, c: ICE }, { x: inst.x, z: inst.z, y0: Y3 + 0.3, y1: Y4, c: VIOLET }], 5, 0.26);
 
-  /* ---------- the model as one thing: a glass shell, a light spine, its name turning around it ---------- */
+  /* ---------- the model as one thing: a light spine, and its name turning around the top and bottom ---------- */
   const SH = 7.0, SB = -0.7;
-  const shellGeo = new THREE.BoxGeometry(SH * 2, 1, SH * 2).translate(0, 0.5, 0);
-  const shell = new THREE.Group(); shell.position.y = SB; scene.add(shell);
-  const shellFace = new THREE.Mesh(shellGeo, new THREE.MeshBasicMaterial({ color: ICE, ...ADD, opacity: 0, side: THREE.DoubleSide }));
-  const shellEdge = new THREE.LineSegments(new THREE.EdgesGeometry(shellGeo), new THREE.LineBasicMaterial({ color: ICE, transparent: true, opacity: 0 }));
-  shell.add(shellFace, shellEdge);
   const nameRings = [0, 1].map((k) => {
     const tex = nameTexture(); tex.wrapS = THREE.RepeatWrapping; tex.repeat.set(3, 1);
     const m = new THREE.Mesh(new THREE.CylinderGeometry(SH * 1.32, SH * 1.32, 0.62, 128, 1, true), new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0, depthWrite: false, side: THREE.FrontSide }));
@@ -405,7 +401,7 @@ function start() {
   const RN = small ? 900 : 2200, rnPos = new Float32Array(RN * 3), rnCol = new Float32Array(RN * 3);
   const RCOL = [ICE, WHITE, ICE, SKY, VIOLET, TEAL];
   for (let i = 0; i < RN; i++) {
-    const band = Math.random(), r = band < 0.55 ? 9.0 + Math.random() * 1.6 : band < 0.62 ? 10.7 + Math.random() * 0.25 : 11.1 + Math.random() * 1.9;
+    const band = Math.random(), r = band < 0.5 ? 8.8 + Math.random() * 1.9 : band < 0.58 ? 10.75 + Math.random() * 0.1 : 12.3 + Math.random() * 1.6;
     const a = Math.random() * Math.PI * 2, c = RCOL[i % RCOL.length], f = 0.4 + Math.random() * 0.6;
     rnPos.set([Math.cos(a) * r, (Math.random() - 0.5) * 0.12, Math.sin(a) * r], i * 3); rnCol.set([c.r * f, c.g * f, c.b * f], i * 3);
   }
@@ -413,17 +409,29 @@ function start() {
   rnGeo.setAttribute("position", new THREE.BufferAttribute(rnPos, 3)); rnGeo.setAttribute("color", new THREE.BufferAttribute(rnCol, 3));
   const rnMat = new THREE.PointsMaterial({ size: 0.2, vertexColors: true, ...ADD, opacity: 0, map: dot });
   ringG.add(new THREE.Points(rnGeo, rnMat));
-  const bandMats = [8.9, 10.75, 13.05].map((r) => {
+  const bandMats = [8.7, 10.85, 12.2, 14.0].map((r) => {
     const pts = []; for (let i = 0; i <= 200; i++) { const a = i / 200 * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r)); }
     const m = new THREE.LineBasicMaterial({ color: ICE, ...ADD, opacity: 0 }); ringG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), m)); return m;
   });
   const WN = 9, worlds = [], wPos = new Float32Array(WN * 3), wCol = new Float32Array(WN * 3);
-  for (let i = 0; i < WN; i++) { const c = [GREEN, TEAL, VIOLET, ICE, GOLD][i % 5]; worlds.push({ a: i / WN * Math.PI * 2 + Math.random() * 0.5, r: 9.4 + Math.random() * 3.2, c, ph: Math.random() * 6.28 }); }
+  for (let i = 0; i < WN; i++) { const c = [GREEN, TEAL, VIOLET, ICE, GOLD][i % 5]; worlds.push({ a: i / WN * Math.PI * 2 + Math.random() * 0.5, r: i % 2 ? 9.2 + Math.random() * 1.3 : 12.5 + Math.random() * 1.2, c, ph: Math.random() * 6.28 }); }
   const wGeo = new THREE.BufferGeometry();
   wGeo.setAttribute("position", new THREE.BufferAttribute(wPos, 3)); wGeo.setAttribute("color", new THREE.BufferAttribute(wCol, 3));
   const wMat = new THREE.PointsMaterial({ size: 1.1, vertexColors: true, ...ADD, opacity: 0, map: dot });
   ringG.add(new THREE.Points(wGeo, wMat));
-  const ringLabel = flatLabel("SIMUWORLD CHALLENGE", "MANY WORLDS · YOUR AGENT ENTERS FROM OUTSIDE", ICE, 7.2, 0, RING_Y - 0.02, 14.4);
+  // the ring's name, written along the ring itself so it turns with it
+  const ringText = (() => {
+    const r0 = 10.95, r1 = 12.1, segs = 240, pos = [], uv = [], idx = [];
+    for (let i = 0; i <= segs; i++) {
+      const a = -i / segs * Math.PI * 2, u = i / segs * 2;   // two repeats around the ring, reading clockwise from above
+      pos.push(Math.cos(a) * r1, 0.02, Math.sin(a) * r1, Math.cos(a) * r0, 0.02, Math.sin(a) * r0); uv.push(u, 1, u, 0);
+      if (i < segs) { const k = i * 2; idx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); }
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx);
+    const tex = ringNameTexture(); tex.wrapS = THREE.RepeatWrapping;
+    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
+    ringG.add(m); return m.material;
+  })();
   const CT = 12, cmPos = new Float32Array(CT * 3), cmCol = new Float32Array(CT * 3), cmGeo = new THREE.BufferGeometry();
   cmGeo.setAttribute("position", new THREE.BufferAttribute(cmPos, 3)); cmGeo.setAttribute("color", new THREE.BufferAttribute(cmCol, 3));
   const cmMat = new THREE.PointsMaterial({ size: 0.5, vertexColors: true, ...ADD, opacity: 0, map: dot });
@@ -435,17 +443,17 @@ function start() {
   /* ---------- camera path: visit each layer, then pull out ---------- */
   // [progress, target x, target y, target z, radius, azimuth, elevation]
   const KEYS = [
-    [0.00, 0, 0.6, 0.6, 17, -0.85, 0.62],
-    [0.13, 0, 0.6, 0.6, 15, -0.2, 0.56],
-    [0.22, 0, Y2, 0, 19, 0.05, 0.64],
-    [0.32, 0.4, Y2, 0.3, 16, 0.4, 0.54],
-    [0.40, 0, Y3, 0, 18, 0.7, 0.72],
-    [0.50, 0, Y3 + 0.2, 0, 14, 1.05, 0.6],
-    [0.58, 0.8, Y4 + 1.2, 0, 16, 0.55, 0.42],
-    [0.68, 0.4, Y4 + 1.4, 0, 13, 0.1, 0.34],
-    [0.80, 0, 6.2, 0, 46, 0.35, 0.3],
-    [0.92, 0, 6.0, 0, 42, 0.7, 0.27],
-    [1.00, 0, 6.0, 0, 42, 0.85, 0.27],
+    [0.00, 0, 0.6, 0.6, 21, -0.85, 0.62],
+    [0.13, 0, 0.6, 0.6, 19, -0.2, 0.56],
+    [0.22, 0, Y2, 0, 23, 0.05, 0.64],
+    [0.32, 0.4, Y2, 0.3, 20, 0.4, 0.54],
+    [0.40, 0, Y3, 0, 22, 0.7, 0.72],
+    [0.50, 0, Y3 + 0.2, 0, 18, 1.05, 0.6],
+    [0.58, 0.8, Y4 + 1.2, 0, 20, 0.55, 0.42],
+    [0.68, 0.4, Y4 + 1.4, 0, 16.5, 0.1, 0.34],
+    [0.80, 0, 6.2, 0, 56, 0.35, 0.3],
+    [0.92, 0, 6.0, 0, 52, 0.7, 0.27],
+    [1.00, 0, 6.0, 0, 52, 0.85, 0.27],
   ];
   const cr = (p0, p1, p2, p3, s) => 0.5 * ((2 * p1) + (-p0 + p2) * s + (2 * p0 - 5 * p1 + 4 * p2 - p3) * s * s + (-p0 + 3 * p1 - 3 * p2 + p3) * s * s * s);
   const camAt = (p) => {
@@ -679,16 +687,13 @@ function start() {
     calPipe.mat.opacity = r4 * 0.35 * f4; calFlow.mat.opacity = clamp((r4 - 0.5) / 0.4) * f4;
     frames[3].opacity = r4 * 0.45 * f4; tags[3].opacity = lab(r4, f4);
     l3Up.mat.opacity = r4 * 0.9 * f4; l3Up.smat.opacity = r4 * 0.3 * f4;
-    // the shell grows with the stack and closes once all four layers are in; its name turns around it
+    // the name rings: the top one rises with the stack
     const topY = 2.6 + (Y2 * r2 + (Y3 - Y2) * r3 + (Y4 - Y3) * r4);
-    shell.scale.y = topY - SB + 0.6 * r4;
-    const shA = clamp(r1 * 0.6 + r4 * 0.4);
-    shellEdge.material.opacity = shA * 0.22; shellFace.material.opacity = shA * 0.01;
-    nameRings.forEach((r) => { r.m.position.y = r.k ? SB + shell.scale.y + 0.4 : SB - 0.2; r.m.material.opacity = (r.k ? r4 : r1) * (0.35 + 0.45 * all); });
+    nameRings.forEach((r) => { r.m.position.y = r.k ? topY + 0.6 * r4 + 0.4 : SB - 0.2; r.m.material.opacity = all * 0.8; });
     spine.mat.opacity = clamp(r2 * 0.6 + r4 * 0.4); spine.smat.opacity = spine.mat.opacity * 0.4;
     // outer ring
-    rnMat.opacity = r5; wMat.opacity = clamp((r5 - 0.3) / 0.5); bandMats.forEach((m, i) => { m.opacity = r5 * (i === 1 ? 0.3 : 0.14); });
-    ringLabel.opacity = clamp((r5 - 0.4) / 0.5);
+    rnMat.opacity = r5; wMat.opacity = clamp((r5 - 0.3) / 0.5); bandMats.forEach((m, i) => { m.opacity = r5 * (i === 1 || i === 2 ? 0.32 : 0.14); });
+    ringText.opacity = clamp((r5 - 0.4) / 0.5);
     ringG.scale.setScalar(0.75 + 0.25 * ease(r5));
     cmMat.opacity = clamp((r5 - 0.5) / 0.4); splash.material.opacity = comet.splash * 0.8 * cmMat.opacity; splash.scale.setScalar(0.2 + (1 - comet.splash) * 1.6);
 
@@ -768,6 +773,18 @@ function tagTex(text, color) {
   g.beginPath(); g.roundRect ? g.roundRect(2, 6, w - 4, H - 12, 26) : g.rect(2, 6, w - 4, H - 12); g.fill(); g.stroke();
   g.fillStyle = "#f2fbff"; g.textBaseline = "middle"; g.fillText(text, 22, H / 2 + 1);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
+// "SIMUWORLD CHALLENGE · MANY WORLDS ·", written along the planetary ring
+function ringNameTexture() {
+  const c = document.createElement("canvas"); c.width = 2048; c.height = 96;
+  const g = c.getContext("2d");
+  g.textBaseline = "middle"; g.font = "700 50px 'Space Grotesk', sans-serif";
+  if ("letterSpacing" in g) g.letterSpacing = "16px";
+  g.shadowColor = "rgba(143,214,255,.9)"; g.shadowBlur = 14;
+  g.fillStyle = "rgba(236,250,255,.95)"; g.fillText("SIMUWORLD CHALLENGE", 30, 50);
+  g.fillStyle = "rgba(143,214,255,.8)"; g.font = "600 40px 'JetBrains Mono', monospace"; g.fillText("·  MANY WORLDS  ·  YOUR AGENT ENTERS HERE  ·", 860, 52);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
 }
 
 // "ECONOMIC WORLD MODEL ·" repeated, for the turning name rings
