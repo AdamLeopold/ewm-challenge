@@ -699,7 +699,10 @@
           var r = sc.getBoundingClientRect(), run = r.height - innerHeight;
           var p = reduce ? 1 : (run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 1);
           sc.style.setProperty("--p", p.toFixed(4));
-          sc.querySelectorAll("[data-at]").forEach(function (el) { el.classList.toggle("on", p >= parseFloat(el.dataset.at)); });
+          var now = null;
+          sc.querySelectorAll("[data-at]").forEach(function (el) { var on = p >= parseFloat(el.dataset.at); el.classList.toggle("on", on); if (on) now = el; });
+          sc.querySelectorAll("[data-at].now").forEach(function (el) { if (el !== now) el.classList.remove("now"); });
+          if (now) now.classList.add("now");
           if (sc.onSceneProgress) sc.onSceneProgress(p);
         });
       };
