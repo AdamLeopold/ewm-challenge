@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261022142738">
+<link rel="stylesheet" href="assets/css/main.css?v=20261022162904">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 </head>
 <body class="theme-sw">
@@ -85,7 +85,7 @@
       </div>
       <span class="eyebrow org-label" data-en="Research behind it">背后的研究</span>
     </div>
-    <div class="rail papers-rail" data-rail data-speed="14" data-boost="2">
+    <div class="rail papers-rail" data-rail data-speed="14">
       <div class="rail-track">
         <a class="paper p1" href="https://arxiv.org/abs/2608.06020" target="_blank" rel="noopener">
           <span class="paper-venue">arXiv · 2026</span>
@@ -118,7 +118,7 @@
         </a>
       </div>
     </div>
-    <div class="rail abstracts-rail" data-rail data-dir="-1" data-speed="10" data-boost="2">
+    <div class="rail abstracts-rail" data-rail data-dir="-1" data-speed="12">
       <div class="rail-track">
         <a class="abstract" href="https://arxiv.org/abs/2608.06020" target="_blank" rel="noopener"><img src="assets/papers/ewm.webp" alt="From Economic Agents to Agentic Economies: A Systems Blueprint for Economic World Models — title page and abstract" loading="lazy" width="1001" height="1017"></a>
         <a class="abstract" href="https://ssrn.com/abstract=3554486" target="_blank" rel="noopener"><img src="assets/papers/alphaportfolio.webp" alt="AlphaPortfolio: Goal-Oriented Investment Management Through Deep Reinforcement Learning — title page and abstract" loading="lazy" width="1001" height="702"></a>
@@ -135,13 +135,25 @@
   </section>
 
   <!-- scroll scene: the stack assembles layer by layer -->
-  <section class="scene-stack" data-scene aria-label="Economic world model, multi-agent simulation, SimuWorld Challenge">
+  <section class="scene-stack" data-scene aria-label="Economic World Model: Intelligence Foundation, Economic Agents, Economic Environment and Institutions, Equilibrium and Reality Discipline; SimuWorld Challenge">
     <div class="scene-stick"><div class="wrap stack-wrap">
-      <ol class="stack-steps">
-        <li data-at="0.02"><span class="n">L1</span><h3 data-en="Economic world model">经济世界模型</h3><p data-en="The world itself: markets, institutions, space, and the rules that connect them.">世界本身：市场、制度、空间，以及把它们连在一起的规则。</p></li>
-        <li data-at="0.34"><span class="n">L2</span><h3 data-en="Multi-agent simulation">多智能体仿真</h3><p data-en="Thousands of agents act inside that world. Prices, risks and cities emerge from what they do.">成千上万个 Agent 在这个世界里行动，价格、风险和城市由它们的行为涌现。</p></li>
-        <li data-at="0.66"><span class="n">L3</span><h3 data-en="SimuWorld Challenge">SimuWorld Challenge</h3><p data-en="Your agent enters the simulation. Every track is a world to prove it in, and more are on the way.">你的 Agent 进入仿真。每个赛道都是一个检验它的世界，而且还会越来越多。</p></li>
-      </ol>
+      <div class="stack-copy">
+        <div class="stack-group">
+          <span class="stack-group-label" data-en="Economic World Model">经济世界模型</span>
+          <ol class="stack-steps">
+            <li data-at="0.02"><span class="n">L1</span><h3 data-en="Intelligence Foundation">智能底座</h3><p data-en="What agents think and learn with. LLMs carry beliefs, reasoning and language; RL drives goal optimisation and adaptation.">Agent 靠什么思考和学习。LLM 负责信念、推理与语言，RL 负责目标优化与适应。</p></li>
+            <li data-at="0.19"><span class="n">L2</span><h3 data-en="Economic Agents">经济行为主体</h3><p data-en="How a single person or firm acts: roles, goals, private states, belief updates, decision policies and constraints, calibrated to real behaviour, bounded rationality included.">单个人或企业会怎么做：角色、目标、私有状态、信念更新、决策策略与约束，并用真实行为数据校准偏差与有限理性。</p></li>
+            <li data-at="0.37"><span class="n">L3</span><h3 data-en="Economic Environment &amp; Institutions">经济环境与制度</h3><p data-en="How individual actions add up: market mechanisms (clearing, auctions, matching), accounting and budget constraints, policy rules, and institutions that can evolve.">个体行动怎么变成总体结果：市场机制（出清、拍卖、匹配）、会计与预算约束、政策规则，制度本身也可以内生演化。</p></li>
+            <li data-at="0.55"><span class="n">L4</span><h3 data-en="Equilibrium &amp; Reality Discipline">均衡与现实纪律</h3><p data-en="Why the results can be trusted: internally, a DDGE fixed point where behaviour, data and the learned environment agree; externally, continuous calibration to real data.">模拟结果凭什么可信：对内是 DDGE 不动点，行为、数据与学到的环境三者闭环一致；对外与真实数据持续校准。</p></li>
+          </ol>
+        </div>
+        <div class="stack-group stack-outer">
+          <span class="stack-group-label" data-en="Outer Layer">外层</span>
+          <ol class="stack-steps">
+            <li data-at="0.73"><span class="n">SW</span><h3 data-en="SimuWorld Challenge">SimuWorld Challenge</h3><p data-en="Your agent steps into this world from outside. Each track is a door into a different world, and more are on the way.">你的 Agent 从外部走进这个世界。每个赛道都是通往一个世界的入口，而且还会越来越多。</p></li>
+          </ol>
+        </div>
+      </div>
       <div class="stack3d" aria-hidden="true">
         <canvas class="stack-gl"></canvas>
         <div class="stack-inner">
@@ -185,7 +197,7 @@
         <p data-en="Each world comes from a partner platform and runs on its own clock. New worlds and tracks keep joining — enter any track, or more than one.">每个世界由一个合作平台提供，按自己的时钟运行。新的世界和赛道会陆续加入，可以报一个赛道，也可以报多个。</p>
       </div>
     </div>
-    <div class="rail tracks-rail" data-rail data-speed="18" data-boost="3">
+    <div class="rail tracks-rail" data-rail data-speed="18">
       <div class="rail-track">
         <a class="card track-card" href="holobit.html#track-1" style="--c-col: var(--holo)">
           <span class="k">Track 1</span>
@@ -322,11 +334,11 @@
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261022142738"></script>
-<script src="assets/js/i18n.js?v=20261022142738"></script>
-<script src="assets/js/pages.js?v=20261022142738"></script>
-<script src="assets/js/fx.js?v=20261022142738"></script>
+<script src="assets/js/config.js?v=20261022162904"></script>
+<script src="assets/js/i18n.js?v=20261022162904"></script>
+<script src="assets/js/pages.js?v=20261022162904"></script>
+<script src="assets/js/fx.js?v=20261022162904"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-<script type="module" src="assets/js/stack3d.js?v=20261022142738"></script>
+<script type="module" src="assets/js/stack3d.js?v=20261022162904"></script>
 </body>
 </html>

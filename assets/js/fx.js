@@ -341,11 +341,45 @@
     });
   }
 
+  /* ---------- agent glyphs: person, household, candlesticks, rising chart, factory, bank, home, coin ----------
+     Drawn in white into a 128 x 128 box; the hero globe and the WebGL stack both use them. */
+  function drawIcon(g, kind) {
+    g.fillStyle = g.strokeStyle = "#fff"; g.lineCap = g.lineJoin = "round";
+    var person = function (x, y, k) {
+      g.beginPath(); g.arc(x, y - 30 * k, 14 * k, 0, 7); g.fill();
+      g.beginPath(); g.moveTo(x - 24 * k, y + 34 * k); g.quadraticCurveTo(x - 24 * k, y - 10 * k, x, y - 10 * k); g.quadraticCurveTo(x + 24 * k, y - 10 * k, x + 24 * k, y + 34 * k); g.closePath(); g.fill();
+    };
+    var out = function (f) { g.globalCompositeOperation = "destination-out"; f(); g.globalCompositeOperation = "source-over"; };
+    if (kind === 0) person(64, 66, 1.25);
+    else if (kind === 1) { person(44, 70, 1); person(86, 74, 0.82); person(66, 90, 0.55); }
+    else if (kind === 2) { g.lineWidth = 5; [[30, 40, 84, 52, 72], [56, 30, 70, 38, 62], [82, 48, 96, 56, 88], [104, 20, 60, 28, 50]].forEach(function (b) {
+      g.beginPath(); g.moveTo(b[0], b[1]); g.lineTo(b[0], b[2] + 14); g.stroke(); g.fillRect(b[0] - 9, Math.min(b[3], b[4]), 18, Math.abs(b[4] - b[3]) + 10); }); }
+    else if (kind === 3) { g.lineWidth = 9; g.beginPath(); g.moveTo(18, 100); g.lineTo(46, 70); g.lineTo(68, 84); g.lineTo(108, 34); g.stroke();
+      g.beginPath(); g.moveTo(84, 30); g.lineTo(112, 28); g.lineTo(110, 56); g.stroke(); g.lineWidth = 5; g.beginPath(); g.moveTo(14, 112); g.lineTo(116, 112); g.stroke(); }
+    else if (kind === 4) { g.beginPath(); [[14, 112], [14, 60], [44, 78], [44, 60], [74, 78], [74, 30], [94, 30], [94, 18], [108, 18], [108, 112]].forEach(function (q, i) { i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }); g.closePath(); g.fill(); }
+    else if (kind === 5) { g.beginPath(); g.moveTo(64, 14); g.lineTo(116, 44); g.lineTo(12, 44); g.closePath(); g.fill(); g.fillRect(14, 104, 100, 10);
+      [24, 48, 72, 96].forEach(function (x) { g.fillRect(x, 52, 10, 46); }); }
+    else if (kind === 6) { g.beginPath(); [[64, 16], [114, 60], [100, 60], [100, 112], [28, 112], [28, 60], [14, 60]].forEach(function (q, i) { i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }); g.closePath(); g.fill();
+      out(function () { g.fillRect(54, 80, 20, 32); }); }
+    else { g.beginPath(); g.arc(64, 64, 44, 0, 7); g.fill();
+      out(function () { g.font = "700 62px 'Inter', sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("$", 64, 68); g.lineWidth = 5; g.beginPath(); g.arc(64, 64, 34, 0, 7); g.stroke(); }); }
+  }
+  var spriteCache = {};
+  function iconSprite(kind, rgb) {   // a tinted, glowing 64px sprite, built once per glyph and colour
+    var key = kind + "|" + rgb;
+    if (spriteCache[key]) return spriteCache[key];
+    var c = document.createElement("canvas"); c.width = c.height = 64;
+    var g = c.getContext("2d"); g.scale(0.5, 0.5); g.shadowColor = "rgba(" + rgb + ",.9)"; g.shadowBlur = 14; drawIcon(g, kind);
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = "source-in"; g.fillStyle = "rgb(" + rgb + ")"; g.fillRect(0, 0, 64, 64);
+    return (spriteCache[key] = c);
+  }
+
   /* ---------- SimuWorld: a dotted globe (the world model) with agents arcing between places ---------- */
   function worldFX(canvas, opts) {
     opts = opts || {};
     var cxr = parseFloat(canvas.dataset.cx || "0.68"), cyr = parseFloat(canvas.dataset.cy || "0.52");
     var ICE = "143,214,255", WHITE = "228,243,255", GREEN = "0,255,136", VIOLET = "176,107,255";
+    var ICON_KINDS = [[0, WHITE], [0, WHITE], [1, ICE], [2, GREEN], [3, GREEN], [4, "63,242,200"], [5, VIOLET], [6, ICE], [7, "255,200,87"]];
     function sph(lat, lon) { var cl = Math.cos(lat); return [cl * Math.sin(lon), Math.sin(lat), cl * Math.cos(lon)]; }
     return stage(canvas, function (s, dt) {
       easePointer(dt);
@@ -403,6 +437,19 @@
         }
       });
       c.globalCompositeOperation = "source-over";
+      // a few agents on the surface (people, markets, firms, banks...) that breathe in and out
+      s.icons.forEach(function (ic) {
+        ic.k += dt / ic.dur;
+        if (ic.k >= 1) { ic.k = 0; ic.at = s.dots[Math.floor(Math.random() * s.dots.length)]; ic.kind = ICON_KINDS[Math.floor(Math.random() * ICON_KINDS.length)]; ic.dur = rnd(7, 11); }
+        var q = pr(ic.at);
+        if (q[2] < 0.15) return;
+        var br = Math.sin(Math.PI * ic.k), a = Math.pow(br, 1.6) * Math.min(1, (q[2] - 0.15) * 3);
+        if (a < 0.01) return;
+        var sz = (small ? 22 : 30) * (0.85 + 0.15 * br) * (0.8 + 0.2 * q[2]);
+        c.globalAlpha = a; c.globalCompositeOperation = "lighter";
+        c.drawImage(iconSprite(ic.kind[0], ic.kind[1]), q[0] - sz / 2, q[1] - sz, sz, sz);
+        c.globalAlpha = 1; c.globalCompositeOperation = "source-over";
+      });
     }, function (s) {
       var n = small ? 520 : 1100, golden = Math.PI * (3 - Math.sqrt(5));
       s.dots = [];
@@ -412,10 +459,15 @@
         var roll = Math.random(), col = roll < 0.15 ? GREEN : roll < 0.3 ? VIOLET : roll < 0.6 ? WHITE : ICE;
         s.arcs.push({ from: s.dots[Math.floor(Math.random() * n)], to: s.dots[Math.floor(Math.random() * n)], k: Math.random(), v: rnd(0.12, 0.3), col: col });
       }
+      s.icons = [];
+      for (var m = 0; m < (small ? 6 : 12); m++) {
+        s.icons.push({ at: s.dots[Math.floor(Math.random() * n)], kind: ICON_KINDS[Math.floor(Math.random() * ICON_KINDS.length)], k: Math.random(), dur: rnd(7, 11) });
+      }
     });
   }
 
   window.SW_FX = { holo: holoFX, city: cityFX, terminal: terminalFX, world: worldFX };
+  window.SW_drawIcon = drawIcon;
 
   /* ---------- interactions ---------- */
   function countUp(el) {
@@ -658,53 +710,86 @@
       sceneFrame();
     }
 
-    // Auto-scrolling rails (track cards, paper covers). The cards are cloned once for a seamless loop.
-    // Hovering brings the rail to a quick stop; leaving lets it ease back up. While the rail is still
-    // low in the viewport it runs faster and settles to its cruising speed as it scrolls into place.
-    // Touch screens get a plain swipeable strip instead.
+    // Rails (track cards, paper covers, abstracts): real horizontal scrollers the reader can swipe,
+    // drag or trackpad through, that also drift on their own. The cards are repeated so the strip
+    // wraps seamlessly at both ends from the very first frame. Drift runs about twice as fast while
+    // the rail is entering the viewport and settles to cruising speed at the centre of the screen;
+    // hovering brings it to a quick stop, and it eases back after the pointer leaves or a manual scroll.
+    var smoothstep = function (v) { v = Math.min(1, Math.max(0, v)); return v * v * (3 - 2 * v); };
     document.querySelectorAll("[data-rail]").forEach(function (rail) {
       var track = rail.querySelector(".rail-track");
       if (!track) return;
-      if (reduce || !matchMedia("(hover: hover)").matches) { rail.classList.add("touch"); return; }
-      var items = Array.prototype.slice.call(track.children);
-      var copies = 0;
-      var addCopy = function () {
+      var items = Array.prototype.slice.call(track.children), sets = 1;
+      var addSet = function () {
         items.forEach(function (it) {
           var c = it.cloneNode(true);
           c.setAttribute("aria-hidden", "true"); c.tabIndex = -1;
           c.querySelectorAll("a, button").forEach(function (a) { a.tabIndex = -1; });
           track.appendChild(c);
         });
-        copies++;
+        sets++;
       };
-      addCopy();
-      var base = +rail.dataset.speed || 30, boost = +rail.dataset.boost || 4, dir = +rail.dataset.dir || 1;
-      var x = 0, v = base * (1 + boost), hover = false, half = 1, last = 0;
-      // one loop = the distance from an item to its first copy (gaps included); keep enough copies
-      // that the track always reaches past the right edge, however wide the window
+      var loop = 1, home = 0;   // loop = width of one set; home = scroll offset where the reader starts
       var measure = function () {
-        half = track.children[items.length].offsetLeft - track.children[0].offsetLeft || 1;
-        var before = copies;
-        while (half * (copies + 1) < half + rail.clientWidth + 400 && copies < 10) addCopy();
-        if (copies > before && window.SW_refresh) window.SW_refresh();
+        if (sets < 2) addSet();
+        loop = track.children[items.length].offsetLeft - track.children[0].offsetLeft || 1;
+        var pad = Math.ceil(rail.clientWidth / loop) + 1, before = sets;   // sets needed on each side
+        while (sets < pad * 2 + 1 && sets < 14) addSet();
+        home = loop * pad;
+        if (sets > before && window.SW_refresh) window.SW_refresh();
       };
-      measure(); addEventListener("resize", measure);
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+      var pos = 0;
+      var wrap = function () {   // keep the view inside the middle band; the sets are identical, so the jump is invisible
+        if (pos < home - loop * 0.5) pos += loop; else if (pos > home + loop * 0.5) pos -= loop;
+        rail.scrollLeft = pos;
+      };
+      measure(); pos = home; wrap();
+      addEventListener("resize", function () { var off = pos - home; measure(); pos = home + off; wrap(); });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { var off = pos - home; measure(); pos = home + off; wrap(); });
+
+      var auto = !reduce, base = +rail.dataset.speed || 20, dir = +rail.dataset.dir || 1;
+      var v = 0, hover = false, manualUntil = 0, last = 0;
+      var nudge = function () { manualUntil = performance.now() + 1200; };
       rail.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") hover = true; });
       rail.addEventListener("pointerleave", function () { hover = false; });
       rail.addEventListener("focusin", function () { hover = true; });
       rail.addEventListener("focusout", function () { hover = false; });
+      rail.addEventListener("wheel", function (e) { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) nudge(); }, { passive: true });
+      rail.addEventListener("touchstart", nudge, { passive: true });
+      rail.addEventListener("scroll", function () {   // the reader scrolled (trackpad, touch, keyboard)
+        if (Math.abs(rail.scrollLeft - Math.round(pos)) > 1) { pos = rail.scrollLeft; nudge(); wrap(); }
+      }, { passive: true });
+      // mouse drag with a little momentum
+      var drag = null;
+      rail.addEventListener("pointerdown", function (e) {
+        if (e.pointerType !== "mouse" || e.button !== 0) return;
+        drag = { x: e.clientX, start: pos, moved: 0, vx: 0, t: performance.now() };
+      });
+      addEventListener("pointermove", function (e) {
+        if (!drag) return;
+        var dx = e.clientX - drag.x, now = performance.now();
+        if (Math.abs(dx) > 4 && !drag.moved) { drag.moved = 1; rail.classList.add("dragging"); }
+        if (!drag.moved) return;
+        var np = drag.start - dx; drag.vx = (np - pos) / Math.max(8, now - drag.t) * 1000; drag.t = now;
+        pos = np; nudge(); wrap(); drag.start = pos; drag.x = e.clientX;
+      });
+      addEventListener("pointerup", function () {
+        if (!drag) return;
+        if (drag.moved) { v = drag.vx * dir; nudge(); setTimeout(function () { rail.classList.remove("dragging"); }, 0); }
+        drag = null;
+      });
+      rail.addEventListener("click", function (e) { if (rail.classList.contains("dragging")) { e.preventDefault(); e.stopPropagation(); } }, true);
+      rail.addEventListener("dragstart", function (e) { e.preventDefault(); });
+
       (function tick(now) {
         var dt = last ? Math.min(0.05, (now - last) / 1000) : 0; last = now;
         var r = rail.getBoundingClientRect();
-        if (r.bottom > 0 && r.top < innerHeight && !document.hidden) {
-          var approach = Math.min(1, Math.max(0, (r.top - innerHeight * 0.15) / (innerHeight * 0.85)));
-          var target = hover ? 0 : base * (1 + boost * approach * approach);
-          var k = 1 - Math.pow(target < v ? (hover ? 0.0004 : 0.2) : 0.2, dt);   // quick stop on hover, slow ease otherwise
-          v += (target - v) * k;
-          x -= v * dt * dir;
-          x = ((x % half) - half) % half;                                       // stays in (-half, 0], both directions
-          track.style.transform = "translate3d(" + x.toFixed(2) + "px,0,0)";
+        if (r.bottom > 0 && r.top < innerHeight && !document.hidden && !drag) {
+          var d = smoothstep(Math.abs((r.top + r.height / 2) - innerHeight / 2) / (innerHeight / 2));
+          var target = !auto || hover || now < manualUntil ? 0 : base * (1 + d);
+          var slowing = Math.abs(target) < Math.abs(v);
+          v += (target - v) * (1 - Math.pow(slowing ? (hover ? 0.0004 : 0.05) : 0.25, dt));
+          if (Math.abs(v) > 0.01) { pos += v * dt * dir; wrap(); }
         }
         requestAnimationFrame(tick);
       })(0);
@@ -721,7 +806,18 @@
     if (!reduce) {
       var hero = document.querySelector(".hero"), heroWrap = hero && hero.querySelector(".wrap"), heroMedia = hero && hero.querySelector("video");
       var bgCanvas = document.querySelector(".page-bg canvas");
-      var heads = Array.prototype.slice.call(document.querySelectorAll(".sec-head h2")).filter(function (h) { return !h.closest("[data-scene]"); });
+      // every numbered section gets depth: a large ghost numeral that lags behind the page, the heading
+      // group and the content below it drifting at different rates, and a faint glow that wanders
+      var secs = Array.prototype.slice.call(document.querySelectorAll("section")).filter(function (sec) {
+        return !sec.matches("[data-scene]") && sec.querySelector(":scope .sec-num") && !sec.querySelector("[data-scene]");
+      }).map(function (sec) {
+        var num = sec.querySelector(".sec-num"), head = sec.querySelector(".sec-head"), ghost = document.createElement("span");
+        ghost.className = "sec-ghost"; ghost.setAttribute("aria-hidden", "true");
+        ghost.textContent = (num.textContent.match(/\d+/) || [""])[0];
+        sec.classList.add("has-depth"); sec.insertBefore(ghost, sec.firstChild);
+        var body = Array.prototype.slice.call(sec.querySelectorAll(":scope > .wrap > *:not(.sec-head), :scope > .rail, :scope > .wrap + .wrap"));
+        return { sec: sec, ghost: ghost, head: head, body: body };
+      });
       var ticking = false;
       var frame = function () {
         ticking = false;
@@ -732,10 +828,14 @@
         }
         if (heroMedia && y < vh * 1.3) heroMedia.style.translate = "0 " + (y * 0.16).toFixed(1) + "px";
         if (bgCanvas) bgCanvas.style.translate = "0 " + (-Math.min(y * 0.04, 160)).toFixed(1) + "px";
-        heads.forEach(function (h) {
-          var r = h.getBoundingClientRect();
-          if (r.bottom < -120 || r.top > vh + 120) return;
-          h.style.translate = "0 " + (((r.top + r.height / 2) - vh / 2) / vh * 30).toFixed(1) + "px";
+        secs.forEach(function (o) {
+          var r = o.sec.getBoundingClientRect();
+          if (r.bottom < -200 || r.top > vh + 200) return;
+          var k = Math.max(-1.5, Math.min(1.5, ((r.top + Math.min(r.height, vh) / 2) - vh / 2) / vh));   // 0 when the section's top half is centred
+          o.ghost.style.translate = "0 " + (k * -140).toFixed(1) + "px";
+          if (o.head) o.head.style.translate = "0 " + (k * 40).toFixed(1) + "px";
+          o.body.forEach(function (el) { el.style.translate = "0 " + (k * -14).toFixed(1) + "px"; });
+          o.sec.style.setProperty("--glow-y", (k * -18).toFixed(2) + "%");
         });
       };
       addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
