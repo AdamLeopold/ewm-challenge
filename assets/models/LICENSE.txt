@@ -1,4 +1,4 @@
-3D models in this folder are by Quaternius (https://quaternius.com):
-Ultimate Modular Men / Women and Buildings packs.
+3D models in this folder are by Kenney (https://kenney.nl):
+Mini Characters, City Kit (Commercial) and City Kit (Suburban).
 License: CC0 1.0 Universal (Public Domain Dedication)
 https://creativecommons.org/publicdomain/zero/1.0/

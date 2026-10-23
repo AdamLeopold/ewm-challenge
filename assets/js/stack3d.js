@@ -1,8 +1,8 @@
 /* SimuWorld home · the economic world model, in WebGL.
    The story the camera tells, scrolled by the pinned scene's progress (--p on .scene-stack):
      L1  Intelligence foundation lives inside every agent. We start inside one agent's chest -- a machined
-         transformer stack with attention heads and tokens riding its residual stream, wrapped in branching RL
-         neuron circuits -- which folds into a small orb as we pull out to find a waving figure.
+         transformer stack with attention heads and tokens riding its residual stream, and beside it, wired to it,
+         a cluster of branching RL neuron circuits -- which fold into a small orb as we pull out to find a waving figure.
      L2  Economic agents: low-poly people on a platform, walking, talking to each other, docking at a bank,
          a stock market, a firm or a home for a moment (borrow, trade, work, spend), then letting go. The
          buildings themselves slide to new cells now and then and snap into place.
@@ -36,12 +36,13 @@ const small = innerWidth < 760;
 if (canvas && !reduce) {
   // labels are drawn into textures, so give the web fonts a moment to arrive first
   const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]) : Promise.resolve();
-  // people and buildings: low-poly models by Quaternius (CC0), see assets/models/LICENSE.txt
+  // people and buildings: cartoon models by Kenney (CC0), see assets/models/LICENSE.txt
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const load = (n) => new Promise((res, rej) => loader.load("assets/models/" + n + ".glb", res, undefined, rej));
+  const people = ["male-a", "female-a", "male-c", "female-d", "male-e", "female-b"].map((n) => "people/character-" + n);
   const assets = Promise.all([
-    Promise.all(["male-suit", "female-casual", "male-worker", "female-suit"].map(load)),
-    Promise.all(["bank", "market", "firm", "home"].map(load)),
+    Promise.all(people.map(load)),
+    Promise.all(["commercial/market", "commercial/firm", "suburban/home-a", "suburban/home-b"].map(load)),
   ]);
   Promise.all([fontsReady, assets]).then(([, a]) => start(a)).catch(() => { /* keep the CSS stack */ });
 }
@@ -105,8 +106,8 @@ function start([charGltf, bldGltf]) {
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0, depthWrite: false }));
     s.scale.set(h * tex.image.width / tex.image.height, h, 1); (parent || scene).add(s); return s;
   };
-  const frame = (y, color, dashed, parent) => {
-    const pts = [[-HALF, y, -HALF], [HALF, y, -HALF], [HALF, y, HALF], [-HALF, y, HALF], [-HALF, y, -HALF]].map((p) => new THREE.Vector3(...p));
+  const frame = (y, color, dashed, parent, half) => {
+    const H = half || HALF, pts = [[-H, y, -H], [H, y, -H], [H, y, H], [-H, y, H], [-H, y, -H]].map((p) => new THREE.Vector3(...p));
     const mat = dashed ? new THREE.LineDashedMaterial({ color, dashSize: 0.3, gapSize: 0.25, transparent: true, opacity: 0 })
                        : new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0 });
     const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat); if (dashed) l.computeLineDistances(); (parent || scene).add(l); return mat;
@@ -203,10 +204,20 @@ function start([charGltf, bldGltf]) {
     }
   };
 
-  /* ---------- L2 · the agent platform: low-poly people and buildings ---------- */
-  scene.add(new THREE.HemisphereLight(0xe6f2ff, 0x202a3a, 2.2));
-  const sun = new THREE.DirectionalLight(0xffffff, 2.4); sun.position.set(6, 12, 9); scene.add(sun);
-  const CHAR_H = 1.45, CHEST = 0.9, bldMats = new Set();
+  /* ---------- L2 · the agent platform: cartoon people walking a small town ---------- */
+  scene.add(new THREE.HemisphereLight(0xeef6ff, 0x26303f, 1.25));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.3); sun.position.set(6, 12, 9); scene.add(sun);
+  const HALF2 = 8.5, CHAR_H = 0.78, CHEST = 0.26, bldMats = new Set();
+  // a soft glowing rim on solid models, so they keep the scene's luminous edges
+  const rim = (mat, color, k) => {
+    mat.onBeforeCompile = (sh) => {
+      sh.uniforms.uRim = { value: color.clone().multiplyScalar(k) };
+      sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nuniform vec3 uRim;")
+        .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n{ float rimF = pow(1.0 - abs(dot(normal, normalize(vViewPosition))), 2.4); totalEmissiveRadiance += uRim * rimF; }");
+    };
+    mat.customProgramCacheKey = () => "rim" + color.getHexString() + k;
+    return mat;
+  };
   const fit = (obj, size, byHeight) => {   // scale a model to a height (people) or a footprint (buildings), standing on y = 0
     obj.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(obj), d = box.getSize(new THREE.Vector3());
     const s = size / (byHeight ? d.y : Math.max(d.x, d.z)); obj.scale.multiplyScalar(s);
@@ -215,43 +226,67 @@ function start([charGltf, bldGltf]) {
   };
   const makeFigure = (i) => {
     const src = charGltf[i % charGltf.length], model = cloneSkinned(src.scene), g = new THREE.Group(), mats = [];
-    model.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.transparent = true; o.frustumCulled = false; mats.push(o.material); } });
+    model.traverse((o) => { if (o.isMesh) { o.material = rim(o.material.clone(), ICE, 0.45); o.material.transparent = true; o.frustumCulled = false; mats.push(o.material); } });
     g.add(model); fit(model, CHAR_H, true); scene.add(g);
     const mixer = new THREE.AnimationMixer(model), acts = {};
     src.animations.forEach((a) => { acts[a.name] = mixer.clipAction(a); });
-    const f = { g, mats, mixer, acts, cur: null };
+    const f = { g, mats, mixer, acts, cur: null, armR: model.getObjectByName("arm-right") };
     f.play = (name, speed) => {
-      const a = acts[name] || acts.Idle; a.timeScale = speed || 1; if (f.cur === a) return;
-      a.reset().setEffectiveWeight(1).play(); if (f.cur) f.cur.crossFadeTo(a, 0.35, false); f.cur = a;
+      const a = acts[name] || acts.idle; a.timeScale = speed || 1; if (f.cur === a) return;
+      a.reset().setEffectiveWeight(1).play(); if (f.cur) f.cur.crossFadeTo(a, 0.3, false); f.cur = a;
     };
-    f.play("Idle"); mixer.update(Math.random() * 2);
+    f.play("idle"); mixer.update(Math.random() * 2);
     return f;
   };
-  const BLD = { bank: [VIOLET, "BANK", 1.55, 0], market: [GREEN, "STOCK MARKET", 1.35, 1], firm: [TEAL, "FIRM", 1.4, 2], home: [SKY, "HOME", 1.2, 3] };
-  const makeBuilding = (kind) => {
-    const [c, name, size, gi] = BLD[kind], g = new THREE.Group(), model = bldGltf[gi].scene.clone(true);
-    model.traverse((o) => { if (o.isMesh) { o.material.transparent = true; bldMats.add(o.material); } });
-    g.add(model); const top = fit(model, size, false);
+  // civic buildings drawn in the same cartoon style: a bank and a court with columns and a pediment
+  const civic = (kind) => {
+    const g = new THREE.Group(), white = rim(new THREE.MeshStandardMaterial({ color: 0xd9dee8, roughness: 0.8, transparent: true }), ICE, 0.18);
+    const roofC = kind === "court" ? 0x5b6476 : 0x6b5aa8, roof = rim(new THREE.MeshStandardMaterial({ color: roofC, roughness: 0.7, transparent: true }), ICE, 0.18);
+    [white, roof].forEach((m) => bldMats.add(m));
+    const W = kind === "court" ? 3.0 : 2.6, D = 1.9, add = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); g.add(o); return o; };
+    add(new THREE.BoxGeometry(W + 0.4, 0.14, D + 0.5), white, 0, 0.07, 0.05); add(new THREE.BoxGeometry(W + 0.2, 0.12, D + 0.3), white, 0, 0.2, 0.05);
+    add(new THREE.BoxGeometry(W - 0.3, 1.25, D - 0.5), white, 0, 0.88, -0.2);
+    const n = kind === "court" ? 6 : 5;
+    for (let k = 0; k < n; k++) add(new THREE.CylinderGeometry(0.09, 0.1, 1.25, 12), white, -W / 2 + 0.25 + k * (W - 0.5) / (n - 1), 0.88, D / 2 - 0.05);
+    add(new THREE.BoxGeometry(W + 0.1, 0.18, D + 0.1), white, 0, 1.6, 0);
+    const ped = new THREE.CylinderGeometry(0.5, 0.5, D + 0.1, 3); ped.rotateX(Math.PI / 2); ped.rotateZ(Math.PI / 2); ped.scale(W / 1.4, 0.8, 1); add(ped, roof, 0, 1.87, 0);
+    if (kind === "court") { add(new THREE.CylinderGeometry(0.42, 0.5, 0.35, 16), white, 0, 2.3, -0.2); add(new THREE.SphereGeometry(0.44, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 2.47, -0.2); }
+    else { const sign = add(new THREE.BoxGeometry(0.9, 0.22, 0.04), rim(new THREE.MeshStandardMaterial({ color: 0xffc857, emissive: 0x6a4a00, transparent: true }), GOLD, 0.6), 0, 1.6, D / 2 + 0.07); bldMats.add(sign.material); }
+    return g;
+  };
+  const BLD = {
+    bank: { c: VIOLET, name: "BANK", act: "BORROW", r: 1.6 }, court: { c: SKY, name: "COURT", act: "RULES · DISPUTES", r: 1.8 },
+    market: { c: GREEN, name: "STOCK MARKET", act: "TRADE", size: 2.5, gi: 0, r: 1.45 }, firm: { c: TEAL, name: "FIRM", act: "WORK", size: 2.1, gi: 1, r: 1.25 },
+    home: { c: SKY, name: "HOME", act: "SPEND · SAVE", size: 2.4, gi: 2, r: 1.35 }, home2: { c: SKY, name: "HOME", act: "SPEND · SAVE", size: 2.4, gi: 3, r: 1.35 },
+  };
+  const makeBuilding = (kind, x, z) => {
+    const d = BLD[kind], g = new THREE.Group(); let top;
+    if (d.gi == null) { const m = civic(kind); g.add(m); top = kind === "court" ? 2.9 : 2.3; }
+    else {
+      const model = bldGltf[d.gi].scene.clone(true);
+      model.traverse((o) => { if (o.isMesh) { o.material = rim(o.material.clone(), ICE, 0.18); o.material.transparent = true; bldMats.add(o.material); } });
+      g.add(model); top = fit(model, d.size, false);
+    }
     if (kind === "market") {   // a live ticker on the roof
       const cg = new THREE.Group(); cg.position.y = top + 0.02; g.add(cg);
       g.userData.candles = [0, 1, 2, 3, 4].map((i) => {
         const m = new THREE.MeshStandardMaterial({ color: i % 3 === 1 ? 0xff4d8d : 0x18d67a, emissive: i % 3 === 1 ? 0x5a0a28 : 0x064d2a, roughness: 0.5, transparent: true }); bldMats.add(m);
-        const b = new THREE.Mesh(new THREE.BoxGeometry(0.14, 1, 0.14).translate(0, 0.5, 0), m), wick = new THREE.Mesh(new THREE.BoxGeometry(0.025, 1, 0.025).translate(0, 0.5, 0), m);
-        b.position.x = wick.position.x = -0.44 + i * 0.22; cg.add(b, wick); return { b, wick, ph: i * 1.3 };
+        const b = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1, 0.16).translate(0, 0.5, 0), m), wick = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1, 0.03).translate(0, 0.5, 0), m);
+        b.position.x = wick.position.x = -0.5 + i * 0.25; cg.add(b, wick); return { b, wick, ph: i * 1.3 };
       });
     }
-    const label = tag(name, c, 0.26);
-    scene.add(g); return { g, kind, c, label, top: top + (kind === "market" ? 0.55 : 0), cell: null, from: null, to: null, k: 1, docks: 0 };
+    g.position.set(x, PY, z); g.rotation.y = Math.atan2(-x, -z);   // every building faces the square
+    const label = tag(d.name, d.c, 0.3);
+    scene.add(g); return { g, kind: kind === "home2" ? "home" : kind, c: d.c, act: d.act, r: d.r, label, top: top + (kind === "market" ? 0.6 : 0), docks: 0 };
   };
-  const CELLS = []; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) if (i || j) CELLS.push([i * 2.3, j * 2.3]);
-  const KINDS_B = ["bank", "market", "firm", "home", "bank", "market", "home", "firm"].slice(0, small ? 5 : 8);
-  const shuffled = CELLS.filter((c) => !(Math.abs(c[0]) < 1 && c[1] > 1)).sort(() => Math.random() - 0.5);   // keep the hero's spot clear
-  const buildings = KINDS_B.map((k, i) => { const b = makeBuilding(k); b.cell = shuffled[i]; b.g.position.set(b.cell[0], PY, b.cell[1]); b.g.rotation.y = (Math.random() - 0.5) * 0.6; return b; });
+  // a fixed town around a central square; only the people move
+  const TOWN = [["court", 0, -6.2], ["bank", -5.3, -4.3], ["market", 5.3, -4.3], ["firm", 6.3, 1.6], ["home", -6.3, 1.6], ["home2", -3.9, 6.1], ["home", 3.9, 6.1]];
+  const buildings = TOWN.slice(0, small ? 6 : 7).map(([k, x, z]) => makeBuilding(k, x, z));
   const FCOL = [WHITE, ICE, WHITE, LILAC, ICE, WHITE, SKY];
   const NF = small ? 8 : 14, figs = [];
   for (let i = 0; i < NF; i++) {
     const f = makeFigure(i); f.c = i === 0 ? WHITE : FCOL[i % FCOL.length];
-    Object.assign(f, { x: i === 0 ? 0 : (Math.random() - 0.5) * 9, z: i === 0 ? 2.6 : (Math.random() - 0.5) * 9, yaw: 0, state: "wander", tx: 0, tz: 0, timer: Math.random() * 2, walk: Math.random() * 6, partner: null, target: null });
+    Object.assign(f, { x: i === 0 ? 0 : (Math.random() - 0.5) * 7, z: i === 0 ? 2.6 : (Math.random() - 0.5) * 7, yaw: 0, state: "wander", tx: 0, tz: 0, timer: Math.random() * 2, partner: null, target: null });
     f.tag = tag("TALK", WHITE, 0.24); f.tag.userData.word = "TALK|" + WHITE.getHex();
     f.tether = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: f.c, ...ADD, opacity: 0 }));
     scene.add(f.tether); f.tetherA = 0;
@@ -259,20 +294,19 @@ function start([charGltf, bldGltf]) {
   }
   const hero = figs[0];
   const coins = [0, 1, 2, 3].map(() => { const mat = new THREE.MeshStandardMaterial({ color: 0xffc857, emissive: 0x5a3a00, metalness: 0.6, roughness: 0.3, transparent: true }); bldMats.add(mat); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.035, 18), mat); m.visible = false; scene.add(m); return { m, k: 1, a: new THREE.Vector3(), b: new THREE.Vector3() }; });
-  const ACT = { bank: "BORROW", market: "TRADE", firm: "WORK", home: "SPEND · SAVE" };
   const setTag = (f, word, color) => {
     const key = word + "|" + color.getHex(); if (f.tag.userData.word === key) return;
     const tex = texCache[key] || (texCache[key] = tagTex(word, color));
     f.tag.material.map = tex; f.tag.material.needsUpdate = true; f.tag.scale.set(0.24 * tex.image.width / tex.image.height, 0.24, 1); f.tag.userData.word = key;
   };
-  const grid = new THREE.GridHelper(HALF * 2, 12, ICE, ICE); grid.position.y = PY; grid.material.transparent = true; grid.material.opacity = 0; grid.material.depthWrite = false; scene.add(grid);
+  const grid = new THREE.GridHelper(HALF2 * 2, 16, ICE, ICE); grid.position.y = PY; grid.material.transparent = true; grid.material.opacity = 0; grid.material.depthWrite = false; scene.add(grid);
 
   /* ---------- L1 · intelligence foundation, built at its own scale and carried in the hero's chest ----------
-     A machined transformer stack (blocks, attention heads, a residual stream that tokens ride up) wrapped in
-     branching reinforcement-learning neuron circuits. As the camera pulls out, it all folds into one small orb. */
-  const S1 = 0.021, l1G = new THREE.Group(); l1G.scale.setScalar(S1); scene.add(l1G);
+     A machined transformer stack (blocks, attention heads, a residual stream that tokens ride up) and, beside it,
+     a cluster of reinforcement-learning neuron circuits wired to it. As the camera pulls out, both fold into one orb. */
+  const S1 = 0.05, l1G = new THREE.Group(); l1G.scale.setScalar(S1); scene.add(l1G);
   const L1C = 1.8, l1In = new THREE.Group(); l1In.position.y = L1C; l1G.add(l1In);
-  const l1C = new THREE.Group(); l1C.position.y = -L1C; l1In.add(l1C);
+  const l1C = new THREE.Group(); l1C.position.set(-2.2, -L1C, 0); l1In.add(l1C);
   const metal = new THREE.MeshStandardMaterial({ color: 0x223044, metalness: 0.85, roughness: 0.32, emissive: 0x06121e, transparent: true });
   const l1Line = []; const lineMat = (c, o) => { const m = new THREE.LineBasicMaterial({ color: c, ...ADD, opacity: 0 }); m.userData.base = o; l1Line.push(m); return m; };
   const BLK = [0.3, 1.2, 2.1, 3.0], heads = [], headMats = [];
@@ -309,7 +343,7 @@ function start([charGltf, bldGltf]) {
   const arMat = new THREE.LineBasicMaterial({ vertexColors: true, ...ADD, opacity: 0 });
   l1C.add(new THREE.LineSegments(arGeo, arMat));
   const arcs = []; for (let i = 0; i < AR; i++) arcs.push({ a: 0, b: 1, life: Math.random(), dur: 1.2 + Math.random() });
-  // RL: branching neuron circuits that grow out from the stack and carry reward signals back and forth
+  // RL, beside the transformer: a cluster of branching neuron circuits around a reward core, wired to the stack
   const nPos = [], nCol = [], nodes = [], rlPaths = [];
   const grow = (from, dir, len, depth, path, col) => {
     const to = from.clone().addScaledVector(dir, len); const c = col.clone().multiplyScalar(0.55 + 0.45 * depth / 4);
@@ -322,11 +356,17 @@ function start([charGltf, bldGltf]) {
       grow(to, d, len * (0.62 + Math.random() * 0.15), depth - 1, p, col);
     }
   };
-  for (let k = 0; k < (small ? 5 : 7); k++) {
-    const a = k / (small ? 5 : 7) * Math.PI * 2 + 0.4, y = 0.3 + (k % 4) * 0.9;
-    const root = new THREE.Vector3(Math.cos(a) * 1.35, y, Math.sin(a) * 0.95), dir = new THREE.Vector3(Math.cos(a), 0.25, Math.sin(a)).normalize();
-    grow(root, dir, 0.9, 4, [root], k % 3 === 0 ? TEAL : GREEN); nodes.push(root);
+  const RX = 4.4, soma = new THREE.Vector3(RX, 1.8, 0), NR = small ? 6 : 9;
+  for (let k = 0; k < NR; k++) {   // dendrites spread out from the core in all directions
+    const yy = 1 - 2 * (k + 0.5) / NR, rr = Math.sqrt(1 - yy * yy), a = k * 2.4;
+    const dir = new THREE.Vector3(Math.cos(a) * rr, yy * 0.8, Math.sin(a) * rr).normalize();
+    const root = soma.clone().addScaledVector(dir, 0.35);
+    grow(root, dir, 0.85, 4, [soma.clone(), root], k % 3 === 0 ? TEAL : GREEN);
   }
+  const bridges = [0.3, 1.2, 2.1, 3.0].map((y, k) => { const pp = { pts: new THREE.QuadraticBezierCurve3(new THREE.Vector3(1.3, y, 0), new THREE.Vector3(2.6, (y + 1.8) / 2 + 0.3, 0.5), soma.clone()).getPoints(20), c: k % 2 ? TEAL : ICE, speed: 0.8, bidir: true };
+    l1C.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pp.pts), lineMat(pp.c, 0.45))); return pp; });
+  const bridgeFlow = packets(bridges, 2, 0.26 * S1 * 1.3, false, l1C);
+  const somaS = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0x9dffd0, ...ADD, opacity: 0 })); somaS.position.copy(soma); somaS.scale.setScalar(1.1); l1C.add(somaS);
   const rlGeo = new THREE.BufferGeometry();
   rlGeo.setAttribute("position", new THREE.Float32BufferAttribute(nPos, 3)); rlGeo.setAttribute("color", new THREE.Float32BufferAttribute(nCol, 3));
   const rlMat = new THREE.LineBasicMaterial({ vertexColors: true, ...ADD, opacity: 0 });
@@ -335,9 +375,9 @@ function start([charGltf, bldGltf]) {
   const ndMat = new THREE.PointsMaterial({ size: 0.16 * S1 * 1.6, color: GREEN, ...ADD, opacity: 0, map: dot });
   l1C.add(new THREE.Points(ndGeo, ndMat));
   const rlFlow = packets(rlPaths, 1, 0.26 * S1 * 1.3, false, l1C);
-  const l1Tags = [["LLM · TRANSFORMER", ICE, [0, 4.9, 0]], ["RL · REWARD CIRCUITS", GREEN, [2.9, 2.8, 0.4]], ["ACTION", GREEN, [-3.0, 1.2, 0.6]], ["REWARD", GREEN, [2.6, 0.2, -1.0]]]
+  const l1Tags = [["LLM · TRANSFORMER", ICE, [0, 4.6, 0]], ["RL · REWARD CIRCUITS", GREEN, [RX, 4.6, 0]], ["ACTION", GREEN, [RX + 2.5, 2.9, 0.6]], ["REWARD", GREEN, [RX + 2.2, 0.4, -0.6]]]
     .map(([w, c, p]) => { const s = tag(w, c, 0.3, l1C); s.position.set(...p); return s; });
-  const l1Tag = tag("L1 · INTELLIGENCE FOUNDATION · INSIDE EVERY AGENT", ICE, 0.36, l1C); l1Tag.position.set(0, 5.5, 0);
+  const l1Tag = tag("L1 · INTELLIGENCE FOUNDATION · INSIDE EVERY AGENT", ICE, 0.36, l1C); l1Tag.position.set(RX / 2, 5.5, 0);
   // the orb everything folds into; it keeps glowing faintly in the agent's chest
   const orb = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0xcfeeff, ...ADD, opacity: 0, depthTest: false })); orb.position.y = L1C; l1G.add(orb);
   const orbRing = new THREE.Mesh(new THREE.TorusGeometry(1, 0.06, 6, 48), new THREE.MeshBasicMaterial({ color: GREEN, ...ADD, opacity: 0, depthTest: false })); orbRing.position.y = L1C; l1G.add(orbRing);
@@ -437,9 +477,9 @@ function start([charGltf, bldGltf]) {
     scene.add(m); return { m, tex, k };
   });
   const spine = risers([{ x: 0, z: 0, y0: PY + 1.4, y1: Y4 + 2.4, c: ICE }, { x: 0.06, z: 0.06, y0: Y4 + 2.4, y1: PY + 1.4, c: VIOLET }], 9, 0.12, 0.22);
-  const frames = [frame(PY, WHITE), frame(Y3, ICE, false, l3G), frame(Y4, ICE, true, l4G)];
+  const frames = [frame(PY, WHITE, false, null, HALF2), frame(Y3, ICE, false, l3G), frame(Y4, ICE, true, l4G)];
   const tags = [
-    flatLabel("L2", "ECONOMIC AGENTS", WHITE, 3.8, -HALF + 1.9, PY + 0.02, HALF + 0.75),
+    flatLabel("L2", "ECONOMIC AGENTS", WHITE, 3.8, -HALF2 + 1.9, PY + 0.02, HALF2 + 0.75),
     flatLabel("L3", "ENVIRONMENT & INSTITUTIONS", ICE, 3.8, -HALF + 1.9, Y3 + 0.02, HALF + 0.75, 0, l3G),
     flatLabel("L4", "EQUILIBRIUM & REALITY", ICE, 3.8, -HALF + 1.9, Y4 + 0.02, HALF + 0.75, 0, l4G),
   ];
@@ -473,12 +513,12 @@ function start([charGltf, bldGltf]) {
   // [progress, target x, target y, target z, radius, azimuth, elevation, layer]; the radius is interpolated in log
   // space, and the target height follows the layer (3 or 4) as it floats up
   const KEYS = [
-    [0.00, HC[0], HC[1], HC[2], 0.13, 0.35, 0.12, 0],
-    [0.07, HC[0], HC[1], HC[2], 0.3, 0.05, 0.22, 0],
-    [0.13, HC[0], HC[1] - 0.1, HC[2], 1.3, -0.15, 0.2, 0],
-    [0.19, HC[0], 0.75, HC[2], 3.6, -0.3, 0.2, 0],
-    [0.27, 0, 0.6, 1.2, 11, 0.05, 0.42, 0],
-    [0.35, 0, 0.5, 0, 18, 0.4, 0.6, 0],
+    [0.00, HC[0], HC[1] + 0.12, HC[2], 1.25, 0.25, 0.12, 0],
+    [0.07, HC[0], HC[1] + 0.12, HC[2], 1.35, 0.05, 0.16, 0],
+    [0.13, HC[0], HC[1] + 0.12, HC[2], 1.9, -0.15, 0.2, 0],
+    [0.19, HC[0], 0.42, HC[2], 3.2, -0.3, 0.22, 0],
+    [0.27, 0, 0.6, 1.2, 13, 0.05, 0.42, 0],
+    [0.35, 0, 0.5, 0, 22, 0.4, 0.6, 0],
     [0.43, 0, Y3 - 3.2, 0, 27, 0.7, 0.38, 3],
     [0.50, 0, Y3, 0, 18, 1.0, 0.62, 3],
     [0.58, 0.8, Y4 + 1.2, 0, 20, 0.55, 0.42, 4],
@@ -513,20 +553,19 @@ function start([charGltf, bldGltf]) {
   canvas.addEventListener("pointerup", endDrag); canvas.addEventListener("pointercancel", endDrag);
 
   /* ---------- agent behaviour: wander, pick an errand, dock for a moment, let go ---------- */
-  const freeCell = () => { const used = new Set(buildings.map((b) => b.cell.join())); const c = shuffled.filter((c) => !used.has(c.join())); return c[Math.floor(Math.random() * c.length)]; };
   const turnTo = (f, want, rate, dt) => { let dy = want - f.yaw; while (dy > Math.PI) dy -= 2 * Math.PI; while (dy < -Math.PI) dy += 2 * Math.PI; f.yaw += dy * (1 - Math.pow(rate, dt)); };
   const choose = (f) => {
     if (Math.random() < 0.3) {
       const free = figs.filter((g) => g !== f && g !== hero && g.state === "wander"), o = free[Math.floor(Math.random() * free.length)];
       if (o) { f.state = "go"; f.target = null; f.partner = o; o.state = "wait"; o.partner = f; return; }
     }
-    if (Math.random() < 0.8) { const b = buildings[Math.floor(Math.random() * buildings.length)]; if (b.k >= 1) { f.state = "go"; f.target = b; f.partner = null; return; } }
-    f.state = "wander"; f.tx = (Math.random() - 0.5) * 10; f.tz = (Math.random() - 0.5) * 10; f.timer = 2 + Math.random() * 3;
+    if (Math.random() < 0.8) { f.state = "go"; f.target = buildings[Math.floor(Math.random() * buildings.length)]; f.partner = null; return; }
+    f.state = "wander"; f.tx = (Math.random() - 0.5) * 9; f.tz = (Math.random() - 0.5) * 9; f.timer = 2 + Math.random() * 3;
   };
   const release = (f) => {
     if (f.target) f.target.docks--;
     if (f.partner && f.partner.partner === f) { const o = f.partner; o.state = "wander"; o.timer = 0.5; o.partner = null; o.tx = o.x; o.tz = o.z; }
-    f.target = null; f.partner = null; f.state = "wander"; f.tx = f.x + (Math.random() - 0.5) * 4; f.tz = f.z + (Math.random() - 0.5) * 4; f.timer = 1.5 + Math.random() * 2;
+    f.target = null; f.partner = null; f.side = null; f.state = "wander"; f.tx = f.x + (Math.random() - 0.5) * 4; f.tz = f.z + (Math.random() - 0.5) * 4; f.timer = 1.5 + Math.random() * 2;
   };
   const stepFigure = (f, dt, t, heroHold) => {
     let moving = false, gx = f.tx, gz = f.tz;
@@ -535,10 +574,12 @@ function start([charGltf, bldGltf]) {
     if (f.state === "wander") { f.timer -= dt; if (f.timer <= 0) choose(f); }
     if (f.state === "go") {
       if (f.target) {
-        const b = f.target.g.position, dx = f.x - b.x, dz = f.z - b.z, d = Math.hypot(dx, dz) || 1; gx = b.x + dx / d * 0.95; gz = b.z + dz / d * 0.95;
+        // go to the front of the building (it faces the square)
+        const b = f.target.g.position, fx = -b.x, fz = -b.z, fd = Math.hypot(fx, fz) || 1, rr = f.target.r + 0.35, side = (f.side = f.side == null ? (Math.random() - 0.5) * 1.2 : f.side);
+        gx = b.x + fx / fd * rr + fz / fd * side; gz = b.z + fz / fd * rr - fx / fd * side;
         if (Math.hypot(f.x - gx, f.z - gz) < 0.08) {
           f.state = "dock"; f.timer = 2 + Math.random() * 2; f.target.docks++;
-          if (f.target.kind === "bank") { const c = coins.find((c) => c.k >= 1); if (c) { c.k = 0; c.a.set(b.x, 0.7, b.z); c.b.set(f.x, 0.95, f.z); } }
+          if (f.target.kind === "bank") { const c = coins.find((c) => c.k >= 1); if (c) { c.k = 0; c.a.set(b.x, 1.0, b.z); c.b.set(f.x, 0.5, f.z); } }
         }
       } else if (f.partner) {
         const o = f.partner; if (o.partner !== f) { release(f); return; }
@@ -549,24 +590,24 @@ function start([charGltf, bldGltf]) {
     if (f.state === "dock") { f.timer -= dt; if (f.timer <= 0) release(f); }
     if (f.state === "wander" || f.state === "go") {
       const dx = gx - f.x, dz = gz - f.z, d = Math.hypot(dx, dz);
-      if (d > 0.05) { const sp = Math.min(d, 0.9 * dt); f.x += dx / d * sp; f.z += dz / d * sp; moving = true; turnTo(f, Math.atan2(dx, dz), 0.002, dt); }
-      f.x = Math.max(-HALF + 0.6, Math.min(HALF - 0.6, f.x)); f.z = Math.max(-HALF + 0.6, Math.min(HALF - 0.6, f.z));
+      if (d > 0.05) { const sp = Math.min(d, 0.75 * dt); f.x += dx / d * sp; f.z += dz / d * sp; moving = true; turnTo(f, Math.atan2(dx, dz), 0.002, dt); }
+      f.x = Math.max(-HALF2 + 0.6, Math.min(HALF2 - 0.6, f.x)); f.z = Math.max(-HALF2 + 0.6, Math.min(HALF2 - 0.6, f.z));
     }
     if (f.state === "dock") { const o = f.target ? f.target.g.position : f.partner; if (o) turnTo(f, Math.atan2(o.x - f.x, o.z - f.z), 0.01, dt); }
     if (f.state === "hold") turnTo(f, 0, 0.01, dt);
-    // animation: walk while moving, wave hello, reach out at a building, idle otherwise
-    if (moving) f.play("Walk", 1.15);
-    else if (f.state === "hold") f.play("Wave");
-    else if (f.state === "dock") f.play(f.target ? "Interact" : "Wave", f.target ? 1 : 0.8);
-    else f.play("Idle");
+    // animation: walk while moving, reach out at a building, nod while talking, idle otherwise; the hero waves
+    if (moving) f.play("walk", 1.1);
+    else if (f.state === "dock") f.play(f.target ? "interact-right" : "emote-yes", f.target ? 0.8 : 0.7);
+    else f.play("idle");
     f.mixer.update(dt);
+    if (f.state === "hold" && f.armR) f.armR.rotation.set(0, 0, 2.5 + Math.sin(t * 8) * 0.35);
     f.g.position.set(f.x, PY, f.z); f.g.rotation.y = f.yaw;
     const docked = f.state === "dock";
     f.tetherA += ((docked ? 1 : 0) - f.tetherA) * (1 - Math.pow(0.02, dt));
     if (docked) {
       const o = f.target ? f.target.g.position : f.partner, tp = f.tether.geometry.attributes.position;
-      tp.setXYZ(0, f.x, 1.0, f.z); tp.setXYZ(1, o.x, f.target ? 0.7 : 1.0, o.z); tp.needsUpdate = true;
-      setTag(f, f.target ? ACT[f.target.kind] : "TALK", f.target ? f.target.c : WHITE);
+      tp.setXYZ(0, f.x, 0.4, f.z); tp.setXYZ(1, o.x, f.target ? 0.8 : 0.4, o.z); tp.needsUpdate = true;
+      setTag(f, f.target ? f.target.act : "TALK", f.target ? f.target.c : WHITE);
     }
     f.tag.position.set(f.x, PY + CHAR_H + 0.3, f.z);
   };
@@ -574,7 +615,7 @@ function start([charGltf, bldGltf]) {
   /* ---------- loop ---------- */
   const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
   addEventListener("pointermove", (e) => { ptr.tx = e.clientX / innerWidth * 2 - 1; ptr.ty = e.clientY / innerHeight * 2 - 1; }, { passive: true });
-  let t = 0, last = performance.now(), frameN = 0, conv = 0, moveT = 4;
+  let t = 0, last = performance.now(), frameN = 0, conv = 0;
   if (ghostCanvas) { try { views.push(makeView(ghostCanvas, ghostHost, 1, true)); ghostHost.classList.add("gl-on"); } catch (e) { /* no backdrop */ } }
   const tmp = new THREE.Vector3(), cv = new THREE.Vector3(), headV = new THREE.Vector3(), nodeV = new THREE.Vector3(), midV = new THREE.Vector3(), endV = new THREE.Vector3(), pV = new THREE.Vector3();
 
@@ -588,6 +629,8 @@ function start([charGltf, bldGltf]) {
     ptr.x += (ptr.tx - ptr.x) * (1 - Math.pow(0.02, dt)); ptr.y += (ptr.ty - ptr.y) * (1 - Math.pow(0.02, dt));
     const on = dragOn();
     canvas.style.pointerEvents = on ? "auto" : "none"; host.classList.toggle("can-drag", on);
+    // keep the dragged turn within one revolution, so leaving the full view only turns back to the nearest front
+    user.th = Math.atan2(Math.sin(user.th), Math.cos(user.th));
     if (!user.drag) {
       user.th += user.vth; user.ph = Math.max(-0.25, Math.min(0.75, user.ph + user.vph));
       user.vth *= Math.pow(0.04, dt); user.vph *= Math.pow(0.04, dt); user.idle += dt;
@@ -598,18 +641,11 @@ function start([charGltf, bldGltf]) {
     const heroHold = main.visible && main.pS < 0.24;
     if (heroHold) { hero.x += (0 - hero.x) * (1 - Math.pow(0.05, dt)); hero.z += (2.6 - hero.z) * (1 - Math.pow(0.05, dt)); }
     figs.forEach((f) => stepFigure(f, dt, t, heroHold));
-    moveT -= dt;
-    if (moveT <= 0) {   // now and then a building slides to a free cell and snaps into place
-      moveT = 5 + Math.random() * 4;
-      const idle = buildings.filter((b) => b.docks <= 0 && b.k >= 1 && !figs.some((f) => f.target === b)), b = idle[Math.floor(Math.random() * idle.length)];
-      if (b) { b.from = b.g.position.clone(); b.cell = freeCell(); b.to = new THREE.Vector3(b.cell[0], PY, b.cell[1]); b.k = 0; }
-    }
     buildings.forEach((b) => {
-      if (b.k < 1) { b.k = Math.min(1, b.k + dt / 1.3); b.g.position.lerpVectors(b.from, b.to, backOut(b.k)); }
       b.label.position.set(b.g.position.x, PY + b.top + 0.35, b.g.position.z);
       if (b.g.userData.candles) b.g.userData.candles.forEach((c, i) => {
         const h = 0.18 + 0.32 * (0.5 + 0.5 * Math.sin(t * (1.4 + i * 0.3) * (b.docks > 0 ? 2.5 : 1) + c.ph));
-        c.b.scale.y = h; c.b.position.y = 0.12; c.wick.scale.y = h + 0.24; c.wick.position.y = 0;
+        c.b.scale.y = h * 1.3; c.b.position.y = 0.14; c.wick.scale.y = h * 1.3 + 0.28; c.wick.position.y = 0;
       });
     });
     coins.forEach((c) => {
@@ -622,7 +658,7 @@ function start([charGltf, bldGltf]) {
     hero.g.updateMatrixWorld(); chest.set(0, CHEST, 0.0); hero.g.localToWorld(chest);
     l1G.position.copy(chest); l1G.position.y -= L1C * S1; l1G.rotation.y = hero.yaw;
     heads.forEach((h, i) => { h.ring.rotation[h.ax ? "x" : "y"] = t * h.sp; h.ring.rotation.z = Math.sin(t * 0.7 + i) * 0.4; });
-    l1C.rotation.y = Math.sin(t * 0.25) * 0.25;
+    l1C.rotation.y = Math.sin(t * 0.25) * 0.08;
     tokens.forEach((tk) => {
       tk.k += tk.sp * dt; if (tk.k >= 1) { tk.k -= 1; tk.pick(); }
       const seg = tk.k * (tk.path.length - 1), i0 = Math.min(tk.path.length - 2, Math.floor(seg)), w = sstep(seg - i0);
@@ -642,7 +678,7 @@ function start([charGltf, bldGltf]) {
       }
     }
     arGeo.attributes.position.needsUpdate = true; arGeo.attributes.color.needsUpdate = true;
-    residFlow.update(dt); rlFlow.update(dt);
+    residFlow.update(dt); rlFlow.update(dt); bridgeFlow.update(dt);
 
     // L3 · the machine runs; the institutions module evolves every few seconds
     l3Flow.update(dt);
@@ -757,6 +793,7 @@ function start([charGltf, bldGltf]) {
     l1Line.forEach((m) => { m.opacity = m.userData.base * Lc; }); headMats.forEach((m) => { m.opacity = 0.9 * Lc; });
     tokens.forEach((tk) => { tk.s.material.opacity = Lc * tk.fade; });
     arMat.opacity = Lc; rlMat.opacity = 0.95 * Lc; ndMat.opacity = Lc; rlFlow.mat.opacity = Lc; residFlow.mat.opacity = Lc;
+    bridgeFlow.mat.opacity = Lc; somaS.material.opacity = Lc * (0.75 + 0.25 * Math.sin(t * 3));
     l1Tags.forEach((s) => { s.material.opacity = Lc; });
     l1Tag.material.opacity = v.ghost ? 0 : clamp((0.12 - pS) / 0.05) * clamp(pS / 0.02 + 0.3);
     const orbA = v.ghost ? 0 : mg * (1 - 0.55 * clamp((pS - 0.2) / 0.08));
@@ -765,7 +802,7 @@ function start([charGltf, bldGltf]) {
     // L2
     const figA = (0.25 + 0.75 * f2);
     // seen from inside, the hero's own body is only a faint shell; the others arrive as we pull out
-    const heroA = v.ghost ? figA : (0.12 + 0.88 * clamp((pS - 0.12) / 0.1)) * figA, othersA = v.ghost ? figA : clamp((pS - 0.12) / 0.1) * figA;
+    const heroA = v.ghost ? figA : (0.3 + 0.7 * clamp((pS - 0.12) / 0.1)) * figA, othersA = v.ghost ? figA : clamp((pS - 0.12) / 0.1) * figA;
     figs.forEach((f) => {
       const a = f === hero ? heroA : othersA; f.mats.forEach((m) => { m.opacity = a; m.depthWrite = a > 0.97; });
       f.g.visible = a > 0.01;
