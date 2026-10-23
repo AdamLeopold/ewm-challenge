@@ -59,6 +59,12 @@ function start([charGltf, bldGltf]) {
     const camera = new THREE.PerspectiveCamera(34, 1, 0.005, 300);
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
+    // a single NaN or infinite pixel would be smeared by the bloom blur into flickering black squares: scrub first
+    composer.addPass(new ShaderPass({
+      uniforms: { tDiffuse: { value: null } },
+      vertexShader: "varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      fragmentShader: "uniform sampler2D tDiffuse; varying vec2 vUv; void main() { vec4 c = texture2D(tDiffuse, vUv); bvec4 bad = bvec4(c.r != c.r || c.r > 6e4, c.g != c.g || c.g > 6e4, c.b != c.b || c.b > 6e4, c.a != c.a); if (any(bad)) c = vec4(0.0); gl_FragColor = clamp(c, 0.0, 64.0); }",
+    }));
     const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.7, 0.4, 0.38);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
@@ -214,7 +220,7 @@ function start([charGltf, bldGltf]) {
     mat.onBeforeCompile = (sh) => {
       sh.uniforms.uRim = { value: color.clone().multiplyScalar(k) };
       sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nuniform vec3 uRim;")
-        .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n{ float rimF = pow(1.0 - abs(dot(normal, normalize(vViewPosition))), 2.4); totalEmissiveRadiance += uRim * rimF; }");
+        .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n{ float rimF = pow(clamp(1.0 - abs(dot(normal, normalize(vViewPosition))), 0.0, 1.0), 2.4); totalEmissiveRadiance += uRim * rimF; }");
     };
     mat.customProgramCacheKey = () => "rim" + color.getHexString() + k;
     return mat;
