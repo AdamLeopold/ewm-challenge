@@ -424,21 +424,24 @@ function start([charGltf, bldGltf]) {
   const l3Flow = packets(l3Pipes, small ? 8 : 14, 0.4);
   adopt(mark, l3G);
 
-  // neural lines: from each agent's head, a trunk to a node, then branches into a few L3 modules
-  const BR = 3, NSEG = 1 + BR * 2;
-  const nlPos = new Float32Array(NF * NSEG * 6), nlCol = new Float32Array(NF * NSEG * 6), nlGeo = new THREE.BufferGeometry();
+  // neural lines: from every entity on the agent platform -- each person's head, each building's roof -- a trunk
+  // rises to a node, then branches into a few L3 modules
+  const ents = figs.map((f) => ({ c: f.c, head: (v) => v.set(f.x, PY + CHAR_H + 0.08, f.z) }))
+    .concat(buildings.map((b) => ({ c: b.c, head: (v) => v.set(b.g.position.x, PY + b.top + 0.1, b.g.position.z) })));
+  const NF2 = ents.length, BR = 3, NSEG = 1 + BR * 2;
+  const nlPos = new Float32Array(NF2 * NSEG * 6), nlCol = new Float32Array(NF2 * NSEG * 6), nlGeo = new THREE.BufferGeometry();
   nlGeo.setAttribute("position", new THREE.BufferAttribute(nlPos, 3)); nlGeo.setAttribute("color", new THREE.BufferAttribute(nlCol, 3));
   const nlMat = new THREE.LineBasicMaterial({ vertexColors: true, ...ADD, opacity: 0 });
   scene.add(new THREE.LineSegments(nlGeo, nlMat));
-  const NN = NF * (1 + BR), nnPos = new Float32Array(NN * 3), nnCol = new Float32Array(NN * 3), nnGeo = new THREE.BufferGeometry();
+  const NN = NF2 * (1 + BR), nnPos = new Float32Array(NN * 3), nnCol = new Float32Array(NN * 3), nnGeo = new THREE.BufferGeometry();
   nnGeo.setAttribute("position", new THREE.BufferAttribute(nnPos, 3)); nnGeo.setAttribute("color", new THREE.BufferAttribute(nnCol, 3));
   const nnMat = new THREE.PointsMaterial({ size: 0.34, vertexColors: true, ...ADD, opacity: 0, map: dot });
   scene.add(new THREE.Points(nnGeo, nnMat));
-  const NP = NF * 2, npPos = new Float32Array(NP * 3), npCol = new Float32Array(NP * 3), npGeo = new THREE.BufferGeometry();
+  const NP = NF2 * 2, npPos = new Float32Array(NP * 3), npCol = new Float32Array(NP * 3), npGeo = new THREE.BufferGeometry();
   npGeo.setAttribute("position", new THREE.BufferAttribute(npPos, 3)); npGeo.setAttribute("color", new THREE.BufferAttribute(npCol, 3));
   const npMat = new THREE.PointsMaterial({ size: 0.3, vertexColors: true, ...ADD, opacity: 0, map: dot });
   scene.add(new THREE.Points(npGeo, npMat));
-  figs.forEach((f, i) => { f.links = [0, 1, 2].map((k) => (i * 3 + k * 2 + 1) % l3Mods.length); f.nph = Math.random(); });
+  ents.forEach((f, i) => { f.links = [0, 1, 2].map((k) => (i * 3 + k * 2 + 1) % l3Mods.length); f.nph = Math.random(); });
 
   /* ---------- L4 · equilibrium & reality discipline ---------- */
   mark = scene.children.length;
@@ -530,7 +533,8 @@ function start([charGltf, bldGltf]) {
     [0.19, HC[0], 0.42, HC[2], 3.2, -0.3, 0.22, 0],
     [0.27, 0, 0.6, 1.2, 13, 0.05, 0.42, 0],
     [0.35, 0, 0.5, 0, 22, 0.4, 0.6, 0],
-    [0.43, 0, Y3 - 3.2, 0, 27, 0.7, 0.38, 3],
+    [0.39, 0, 5.0, 0, 15, -0.35, -0.27, 0],
+    [0.45, 0, 6.2, 0, 16, 0.1, -0.17, 0],
     [0.50, 0, Y3, 0, 18, 1.0, 0.62, 3],
     [0.58, 0.8, Y4 + 1.2, 0, 20, 0.55, 0.42, 4],
     [0.68, 0.4, Y4 + 1.4, 0, 16.5, 0.1, 0.34, 4],
@@ -760,9 +764,9 @@ function start([charGltf, bldGltf]) {
 
   // neural lines for a given growth g (0..1): head -> node, then node -> mid -> module for each branch
   const growNeural = (g) => {
-    figs.forEach((f, i) => {
-      headV.set(f.x, PY + CHAR_H + 0.08, f.z);
-      nodeV.set(f.x * 0.85, PY + CHAR_H + (Y3 + l3G.position.y - PY - CHAR_H) * 0.4, f.z * 0.85);
+    ents.forEach((f, i) => {
+      f.head(headV);
+      nodeV.set(headV.x * 0.85, headV.y + (Y3 + l3G.position.y - headV.y) * 0.4, headV.z * 0.85);
       const g1 = clamp(g * 2), g2 = clamp(g * 2 - 1), base = i * NSEG * 6, bright = 0.5 + 0.5 * Math.sin(t * 2 + i);
       const seg = (k, A, B, gg, c, f0) => {
         const o = base + k * 6; nlPos.set([A.x, A.y, A.z, A.x + (B.x - A.x) * gg, A.y + (B.y - A.y) * gg, A.z + (B.z - A.z) * gg], o);
@@ -798,7 +802,7 @@ function start([charGltf, bldGltf]) {
     const pS = v.pS, camera = v.camera, [E3, E4] = v.ghost ? [0, 0] : gaps(pS);
     l3G.position.y = E3; l4G.position.y = E4;
     const L = v.ghost ? 0.25 : 1 - clamp((pS - 0.2) / 0.1) * 0.75;      // L1 is the star at first, then a glow inside the agent
-    const r2 = v.ghost ? 1 : ease(clamp((pS - 0.1) / 0.12)), r3 = clamp((pS - 0.38) / 0.13), g3 = clamp((pS - 0.36) / 0.12);
+    const r2 = v.ghost ? 1 : ease(clamp((pS - 0.1) / 0.12)), r3 = clamp((pS - 0.38) / 0.13), g3 = clamp((pS - 0.33) / 0.07);
     const r4 = ease(clamp((pS - 0.53) / 0.1)), r5 = clamp((pS - 0.71) / 0.12);
     const all = clamp((pS - 0.76) / 0.1);
     const dimAfter = (next) => 1 - 0.8 * clamp((pS - next) / 0.06) * (1 - all);
@@ -868,7 +872,7 @@ function start([charGltf, bldGltf]) {
     else {
       [tx, ty, tz, rad, th, ph] = camAt(pS, E3, E4);
       const far = clamp((pS - 0.2) / 0.1);   // no pointer sway while we are inside the agent
-      th += (t * 0.02 + ptr.x * 0.1) * far + user.th * all; ph = Math.max(0.05, Math.min(1.25, ph - ptr.y * 0.04 * far + user.ph * all));
+      th += (t * 0.02 + ptr.x * 0.1) * far + user.th * all; ph = Math.max(-0.9, Math.min(1.25, ph - ptr.y * 0.04 * far + user.ph * all));
       if (pS < 0.3) { const k = 1 - clamp((pS - 0.22) / 0.08); tx += (hero.x - HC[0]) * k; tz += (hero.z - HC[2]) * k; }
     }
     rad *= Math.max(1, (small ? 1.0 : 1.3) / camera.aspect);
