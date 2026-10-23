@@ -293,7 +293,11 @@ function start([charGltf, bldGltf]) {
     figs.push(f);
   }
   const hero = figs[0];
+  // solid models fade by dithering (alpha hash) rather than blending: no sorting flicker, and every drawn pixel is
+  // fully opaque, so dark parts never flash as half-transparent squares over the page
+  const dither = (m) => { m.transparent = false; m.alphaHash = true; m.depthWrite = true; m.needsUpdate = true; };
   const coins = [0, 1, 2, 3].map(() => { const mat = new THREE.MeshStandardMaterial({ color: 0xffc857, emissive: 0x5a3a00, metalness: 0.6, roughness: 0.3, transparent: true }); bldMats.add(mat); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.035, 18), mat); m.visible = false; scene.add(m); return { m, k: 1, a: new THREE.Vector3(), b: new THREE.Vector3() }; });
+  figs.forEach((f) => f.mats.forEach(dither)); bldMats.forEach(dither);
   const setTag = (f, word, color) => {
     const key = word + "|" + color.getHex(); if (f.tag.userData.word === key) return;
     const tex = texCache[key] || (texCache[key] = tagTex(word, color));
@@ -644,7 +648,7 @@ function start([charGltf, bldGltf]) {
     // the agent is not shown around its intelligence at first; as the camera pulls out it appears very large and
     // shrinks to its real size, its chest staying where the orb is
     const hk = 1 + 7 * Math.pow(1 - sstep((main.pS - 0.09) / 0.14), 2);
-    hero.g.scale.setScalar(hk); hero.g.position.y += CHEST * (1 - hk);
+    hero.g.scale.setScalar(hk); hero.g.position.y += CHEST * (1 - hk); hero.hk = hk;
     buildings.forEach((b) => {
       b.label.position.set(b.g.position.x, PY + b.top + 0.35, b.g.position.z);
       if (b.g.userData.candles) b.g.userData.candles.forEach((c, i) => {
@@ -806,13 +810,14 @@ function start([charGltf, bldGltf]) {
     // L2
     const figA = (0.25 + 0.75 * f2);
     // seen from inside, the hero's own body is only a faint shell; the others arrive as we pull out
-    const heroA = v.ghost ? figA : clamp((pS - 0.115) / 0.06) * figA, othersA = v.ghost ? figA : clamp((pS - 0.12) / 0.1) * figA;
+    const heroA = v.ghost ? figA : clamp((pS - 0.115) / 0.025) * figA, othersA = v.ghost ? figA : clamp((pS - 0.115) / 0.035) * figA;
+    v.heroA = heroA;
     figs.forEach((f) => {
-      const a = f === hero ? heroA : othersA; f.mats.forEach((m) => { m.opacity = a; m.depthWrite = a > 0.97; });
+      const a = f === hero ? heroA : othersA; f.mats.forEach((m) => { m.opacity = a; });
       f.g.visible = a > 0.01;
       f.tether.material.opacity = f.tetherA * 0.7 * r2 * f2; f.tag.material.opacity = f.tetherA * r2 * (0.15 + 0.85 * f2);
     });
-    const bA = r2 * (0.3 + 0.7 * f2); bldMats.forEach((m) => { m.opacity = bA; m.depthWrite = bA > 0.97; });
+    const bA = (v.ghost ? 1 : clamp((pS - 0.11) / 0.035)) * (0.3 + 0.7 * f2); bldMats.forEach((m) => { m.opacity = bA; });
     buildings.forEach((b) => { b.g.visible = r2 > 0.01; b.label.material.opacity = lab(r2, f2) * 0.8; });
     grid.material.opacity = r2 * 0.12 * f2; frames[0].opacity = r2 * 0.4 * f2; tags[0].opacity = lab(r2, f2);
     // neural lines
@@ -858,6 +863,11 @@ function start([charGltf, bldGltf]) {
     rad *= Math.max(1, (small ? 1.0 : 1.3) / camera.aspect);
     camera.position.set(tx + Math.cos(ph) * Math.sin(th) * rad, ty + Math.sin(ph) * rad, tz + Math.cos(ph) * Math.cos(th) * rad);
     camera.lookAt(tx, ty, tz);
+    // the giant agent only shows once the camera is clear of its body: no faces sliding through the near plane
+    if (!v.ghost) {
+      const size = (hero.hk || 1) * CHAR_H, d = camera.position.distanceTo(chest), a = v.heroA * clamp((d - 0.6 * size) / (0.12 * size));
+      hero.mats.forEach((m) => { m.opacity = a; }); hero.g.visible = a > 0.01;
+    }
     v.bloom.strength = 0.6 + all * 0.1;
   }
   host.classList.add("gl-on");
