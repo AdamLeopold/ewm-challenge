@@ -66,7 +66,7 @@ function start([charGltf, bldGltf]) {
     composer.addPass(new ShaderPass({
       uniforms: { tDiffuse: { value: null } },
       vertexShader: "varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-      fragmentShader: "uniform sampler2D tDiffuse; varying vec2 vUv; void main() { vec3 c = texture2D(tDiffuse, vUv).rgb; vec4 s = texture2D(tDiffuse, vUv); gl_FragColor = vec4(c, clamp(max(max(c.r, max(c.g, c.b)), smoothstep(0.82, 1.0, s.a)), 0.0, 1.0)); }",
+      fragmentShader: "uniform sampler2D tDiffuse; varying vec2 vUv; void main() { vec3 c = texture2D(tDiffuse, vUv).rgb; vec4 s = texture2D(tDiffuse, vUv); gl_FragColor = vec4(c, clamp(max(max(c.r, max(c.g, c.b)), smoothstep(0.975, 1.0, s.a)), 0.0, 1.0)); }",
     }));
     const v = { cv, el, renderer, camera, composer, bloom, ghost, visible: false, pS: ghost ? 1 : 0, pix: 1, hpx: 600 };
     new IntersectionObserver((e) => { v.visible = e[0].isIntersecting; }, { rootMargin: "200px" }).observe(el);
@@ -180,8 +180,9 @@ function start([charGltf, bldGltf]) {
     const edges = new THREE.LineSegments(new THREE.EdgesGeometry(body.geometry), new THREE.LineBasicMaterial({ color: d.c.clone(), transparent: true, opacity: 0 }));
     const glow = new THREE.Mesh(new THREE.CircleGeometry(r * 0.94, 6), new THREE.MeshBasicMaterial({ color: d.c.clone(), ...ADD, opacity: 0 }));
     glow.rotation.x = -Math.PI / 2; glow.position.y = h / 2 + 0.005;
-    const label = new THREE.Mesh(new THREE.PlaneGeometry(r * 1.7, r * 0.425), new THREE.MeshBasicMaterial({ map: moduleLabel(d.n, d.c), transparent: true, opacity: 0, depthWrite: false }));
-    label.rotation.x = -Math.PI / 2; label.rotation.z = -Math.PI / 6; label.position.y = h / 2 + 0.02;
+    // the name floats above the module and always faces the camera, so it reads upright from any angle
+    const label = new THREE.Sprite(new THREE.SpriteMaterial({ map: moduleLabel(d.n, d.c), transparent: true, opacity: 0, depthWrite: false }));
+    label.scale.set(r * 1.9, r * 0.475, 1); label.position.y = h / 2 + 0.55;
     g.add(body, edges, glow, label); scene.add(g);
     return { g, body, edges, glow, label, x, y, z, r, h, c: d.c, flash: 0 };
   };
@@ -311,7 +312,7 @@ function start([charGltf, bldGltf]) {
   const S1 = 0.05, l1G = new THREE.Group(); l1G.scale.setScalar(S1); scene.add(l1G);
   const L1C = 1.8, l1In = new THREE.Group(); l1In.position.y = L1C; l1G.add(l1In);
   const l1C = new THREE.Group(); l1C.position.set(-2.2, -L1C, 0); l1In.add(l1C);
-  const metal = new THREE.MeshStandardMaterial({ color: 0x223044, metalness: 0.85, roughness: 0.32, emissive: 0x06121e, transparent: true });
+  const metal = new THREE.MeshStandardMaterial({ color: 0x223044, metalness: 0.85, roughness: 0.32, emissive: 0x06121e, alphaHash: true });   // dithered fade: a dark half-transparent block would read as a black square
   const l1Line = []; const lineMat = (c, o) => { const m = new THREE.LineBasicMaterial({ color: c, ...ADD, opacity: 0 }); m.userData.base = o; l1Line.push(m); return m; };
   const BLK = [0.3, 1.2, 2.1, 3.0], heads = [], headMats = [];
   BLK.forEach((y, bi) => {
@@ -645,6 +646,10 @@ function start([charGltf, bldGltf]) {
     const heroHold = main.visible && main.pS < 0.24;
     if (heroHold) { hero.x += (0 - hero.x) * (1 - Math.pow(0.05, dt)); hero.z += (2.6 - hero.z) * (1 - Math.pow(0.05, dt)); }
     figs.forEach((f) => stepFigure(f, dt, t, heroHold));
+    if (main.pS < 0.3) figs.forEach((f) => {   // while the camera pulls out of the hero, others keep their distance
+      if (f === hero) return; const dx = f.x - hero.x, dz = f.z - hero.z, d = Math.hypot(dx, dz) || 1, R = 3.2;
+      if (d < R) { f.x = hero.x + dx / d * R; f.z = hero.z + dz / d * R; if (f.state === "go" && f.partner === hero) f.state = "wander"; }
+    });
     // the agent is not shown around its intelligence at first; as the camera pulls out it appears very large and
     // shrinks to its real size, its chest staying where the orb is
     const hk = 1 + 7 * Math.pow(1 - sstep((main.pS - 0.09) / 0.14), 2);
@@ -797,7 +802,7 @@ function start([charGltf, bldGltf]) {
     // L1 inside the hero: shown in full, then folded into an orb as the camera pulls out
     const mg = v.ghost ? 1 : sstep((pS - 0.08) / 0.09), Lc = L * (1 - mg);
     l1In.scale.setScalar(1 - 0.97 * mg); l1C.visible = Lc > 0.005;
-    metal.opacity = Lc; metal.depthWrite = Lc > 0.97;
+    metal.opacity = Lc;
     l1Line.forEach((m) => { m.opacity = m.userData.base * Lc; }); headMats.forEach((m) => { m.opacity = 0.9 * Lc; });
     tokens.forEach((tk) => { tk.s.material.opacity = Lc * tk.fade; });
     arMat.opacity = Lc; rlMat.opacity = 0.95 * Lc; ndMat.opacity = Lc; rlFlow.mat.opacity = Lc; residFlow.mat.opacity = Lc;
@@ -808,7 +813,7 @@ function start([charGltf, bldGltf]) {
     orb.material.opacity = orbA; orb.scale.setScalar(1.2 + 1.6 * Math.sin(Math.PI * clamp(mg)) + 0.15 * Math.sin(t * 4));
     orbRing.material.opacity = orbA * 0.8; orbRing.rotation.set(t * 1.3, t * 0.9, 0); orbRing.scale.setScalar(0.9 + 0.25 * Math.sin(t * 2));
     // L2
-    const figA = (0.25 + 0.75 * f2);
+    const figA = 1;   // solid models are dithered, so they are not dimmed with the other layers (that would show as grain)
     // seen from inside, the hero's own body is only a faint shell; the others arrive as we pull out
     const heroA = v.ghost ? figA : clamp((pS - 0.115) / 0.025) * figA, othersA = v.ghost ? figA : clamp((pS - 0.115) / 0.035) * figA;
     v.heroA = heroA;
@@ -817,7 +822,7 @@ function start([charGltf, bldGltf]) {
       f.g.visible = a > 0.01;
       f.tether.material.opacity = f.tetherA * 0.7 * r2 * f2; f.tag.material.opacity = f.tetherA * r2 * (0.15 + 0.85 * f2);
     });
-    const bA = (v.ghost ? 1 : clamp((pS - 0.11) / 0.035)) * (0.3 + 0.7 * f2); bldMats.forEach((m) => { m.opacity = bA; });
+    const bA = v.ghost ? 1 : clamp((pS - 0.11) / 0.035); bldMats.forEach((m) => { m.opacity = bA; });
     buildings.forEach((b) => { b.g.visible = r2 > 0.01; b.label.material.opacity = lab(r2, f2) * 0.8; });
     grid.material.opacity = r2 * 0.12 * f2; frames[0].opacity = r2 * 0.4 * f2; tags[0].opacity = lab(r2, f2);
     // neural lines
@@ -914,7 +919,7 @@ function tagTex(text, color) {
   g.font = "600 34px 'JetBrains Mono', monospace"; if ("letterSpacing" in g) g.letterSpacing = "3px";
   const w = Math.ceil(g.measureText(text).width) + 44; c.width = w; c.height = H;
   g.font = "600 34px 'JetBrains Mono', monospace"; if ("letterSpacing" in g) g.letterSpacing = "3px";
-  g.fillStyle = "rgba(4,14,22,.72)"; g.strokeStyle = rgbOf(color); g.lineWidth = 2;
+  g.fillStyle = "rgba(4,14,22,.42)"; g.strokeStyle = rgbOf(color); g.lineWidth = 2;
   g.beginPath(); g.roundRect ? g.roundRect(2, 6, w - 4, H - 12, 26) : g.rect(2, 6, w - 4, H - 12); g.fill(); g.stroke();
   g.fillStyle = "#f2fbff"; g.textBaseline = "middle"; g.fillText(text, 22, H / 2 + 1);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
