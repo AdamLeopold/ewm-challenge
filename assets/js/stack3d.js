@@ -3,7 +3,7 @@
      L1  Intelligence foundation lives inside every agent. We start inside one agent's chest -- an LLM as stacked
          transformer sheets with word tokens rising and attention arcs, an RL objective landscape with a ball
          climbing it inside an action -> environment -> reward loop -- and pull out to find a waving figure.
-     L2  Economic agents: holographic figures on a platform, walking, talking to each other, docking at a bank,
+     L2  Economic agents: low-poly people on a platform, walking, talking to each other, docking at a bank,
          a stock market, a firm or a home for a moment (borrow, trade, work, spend), then letting go. The
          buildings themselves slide to new cells now and then and snap into place.
      L3  Economic environment & institutions: mechanism modules around market clearing, wired by pipes of data.
@@ -20,6 +20,9 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+import { clone as cloneSkinned } from "three/addons/utils/SkeletonUtils.js";
 
 const section = document.querySelector(".scene-stack");
 const host = section && section.querySelector(".stack3d");
@@ -32,10 +35,17 @@ const small = innerWidth < 760;
 if (canvas && !reduce) {
   // labels are drawn into textures, so give the web fonts a moment to arrive first
   const fontsReady = document.fonts ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]) : Promise.resolve();
-  fontsReady.then(() => { try { start(); } catch (e) { /* keep the CSS stack */ } });
+  // people and buildings: low-poly models by Quaternius (CC0), see assets/models/LICENSE.txt
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  const load = (n) => new Promise((res, rej) => loader.load("assets/models/" + n + ".glb", res, undefined, rej));
+  const assets = Promise.all([
+    Promise.all(["male-suit", "female-casual", "male-worker", "female-suit"].map(load)),
+    Promise.all(["bank", "market", "firm", "home"].map(load)),
+  ]);
+  Promise.all([fontsReady, assets]).then(([, a]) => start(a)).catch(() => { /* keep the CSS stack */ });
 }
 
-function start() {
+function start([charGltf, bldGltf]) {
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x000000, 0.008);
 
@@ -54,7 +64,7 @@ function start() {
     composer.addPass(new ShaderPass({
       uniforms: { tDiffuse: { value: null } },
       vertexShader: "varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-      fragmentShader: "uniform sampler2D tDiffuse; varying vec2 vUv; void main() { vec3 c = texture2D(tDiffuse, vUv).rgb; gl_FragColor = vec4(c, clamp(max(c.r, max(c.g, c.b)), 0.0, 1.0)); }",
+      fragmentShader: "uniform sampler2D tDiffuse; varying vec2 vUv; void main() { vec3 c = texture2D(tDiffuse, vUv).rgb; vec4 s = texture2D(tDiffuse, vUv); gl_FragColor = vec4(c, clamp(max(max(c.r, max(c.g, c.b)), smoothstep(0.82, 1.0, s.a)), 0.0, 1.0)); }",
     }));
     const v = { cv, el, renderer, camera, composer, bloom, ghost, visible: false, pS: ghost ? 1 : 0, pix: 1, hpx: 600 };
     new IntersectionObserver((e) => { v.visible = e[0].isIntersecting; }, { rootMargin: "200px" }).observe(el);
@@ -81,7 +91,6 @@ function start() {
   const ease = (v) => 1 - Math.pow(1 - v, 3);
   const sstep = (v) => { v = clamp(v); return v * v * (3 - 2 * v); };
   const backOut = (v) => { const c = 1.7; return 1 + (c + 1) * Math.pow(v - 1, 3) + c * Math.pow(v - 1, 2); };
-  const uniT = { value: 0 };
 
   /* ---------- shared building blocks ---------- */
   const flatLabel = (title, sub, color, w, x, y, z, rotZ, parent) => {
@@ -162,17 +171,6 @@ function start() {
       },
     };
   };
-  // holographic surface: dark body, bright rim, faint scanlines -- solid-looking without any lights
-  const holo = (color, k) => new THREE.ShaderMaterial({
-    uniforms: { uC: { value: color }, uA: { value: 0 }, uT: uniT, uK: { value: k == null ? 1 : k } }, ...ADD, side: THREE.DoubleSide,
-    vertexShader: `varying vec3 vN, vV; varying float vY;
-      void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz);
-        vY = (modelMatrix * vec4(position, 1.0)).y; gl_Position = projectionMatrix * mv; }`,
-    fragmentShader: `uniform vec3 uC; uniform float uA, uT, uK; varying vec3 vN, vV; varying float vY;
-      void main() { float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.2);
-        float scan = 0.82 + 0.18 * sin(vY * 70.0 - uT * 5.0);
-        gl_FragColor = vec4(uC * (0.1 + 1.0 * f) * scan * uK, uA); }`,
-  });
   // a hexagonal module with a live ring of bars and a label on top
   const makeModule = (d, x, y, z, r, h) => {
     const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = Math.PI / 6;
@@ -204,56 +202,45 @@ function start() {
     }
   };
 
-  /* ---------- L2 · the agent platform: holographic figures and buildings ---------- */
-  const FIG_S = 1.25, figMats = [], bldMats = [], bldEdges = [];
-  const capsule = (r, len) => new THREE.CapsuleGeometry(r, len, 4, 10);
-  const makeFigure = (color) => {
-    const g = new THREE.Group(), mat = holo(color); figMats.push(mat);
-    const part = (geo, x, y, parent) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, 0); (parent || g).add(m); return m; };
-    const pivot = (x, y) => { const p = new THREE.Group(); p.position.set(x, y, 0); g.add(p); return p; };
-    const legL = pivot(-0.08, 0.46), legR = pivot(0.08, 0.46), armL = pivot(-0.2, 0.9), armR = pivot(0.2, 0.9);
-    part(capsule(0.055, 0.3), 0, -0.21, legL); part(capsule(0.055, 0.3), 0, -0.21, legR);
-    part(capsule(0.045, 0.3), 0, -0.19, armL); part(capsule(0.045, 0.3), 0, -0.19, armR);
-    part(capsule(0.14, 0.28), 0, 0.72); part(new THREE.SphereGeometry(0.11, 16, 12), 0, 1.05);
-    const heart = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color, ...ADD, opacity: 0 })); heart.scale.setScalar(0.14); heart.position.set(0, 0.74, 0.02); g.add(heart);
-    g.scale.setScalar(FIG_S); scene.add(g);
-    return { g, mat, heart, legL, legR, armL, armR, c: color };
+  /* ---------- L2 · the agent platform: low-poly people and buildings ---------- */
+  scene.add(new THREE.HemisphereLight(0xe6f2ff, 0x202a3a, 2.2));
+  const sun = new THREE.DirectionalLight(0xffffff, 2.4); sun.position.set(6, 12, 9); scene.add(sun);
+  const CHAR_H = 1.45, CHEST = 0.9, bldMats = new Set();
+  const fit = (obj, size, byHeight) => {   // scale a model to a height (people) or a footprint (buildings), standing on y = 0
+    obj.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(obj), d = box.getSize(new THREE.Vector3());
+    const s = size / (byHeight ? d.y : Math.max(d.x, d.z)); obj.scale.multiplyScalar(s);
+    obj.updateMatrixWorld(true); box.setFromObject(obj); obj.position.y -= box.min.y; obj.position.x -= (box.min.x + box.max.x) / 2; obj.position.z -= (box.min.z + box.max.z) / 2;
+    return box.max.y - box.min.y;
   };
-  const makeBuilding = (kind) => {
-    const g = new THREE.Group(); let c, name;
-    const add = (geo, x, y, z, mat, edge) => {
-      const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); g.add(m);
-      if (edge) { const em = new THREE.LineBasicMaterial({ color: c, ...ADD, opacity: 0 }); bldEdges.push(em); m.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 25), em)); }
-      return m;
+  const makeFigure = (i) => {
+    const src = charGltf[i % charGltf.length], model = cloneSkinned(src.scene), g = new THREE.Group(), mats = [];
+    model.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.transparent = true; o.frustumCulled = false; mats.push(o.material); } });
+    g.add(model); fit(model, CHAR_H, true); scene.add(g);
+    const mixer = new THREE.AnimationMixer(model), acts = {};
+    src.animations.forEach((a) => { acts[a.name] = mixer.clipAction(a); });
+    const f = { g, mats, mixer, acts, cur: null };
+    f.play = (name, speed) => {
+      const a = acts[name] || acts.Idle; a.timeScale = speed || 1; if (f.cur === a) return;
+      a.reset().setEffectiveWeight(1).play(); if (f.cur) f.cur.crossFadeTo(a, 0.35, false); f.cur = a;
     };
-    const hm = (col, k) => { const m = holo(col, k); bldMats.push(m); return m; };
-    if (kind === "bank") {
-      c = VIOLET; name = "BANK"; const m = hm(c, 0.9);
-      add(new THREE.BoxGeometry(1.3, 0.12, 0.9), 0, 0.06, 0, m, true); add(new THREE.BoxGeometry(1.2, 0.08, 0.8), 0, 0.68, 0, m, true);
-      for (let i = 0; i < 4; i++) add(new THREE.CylinderGeometry(0.06, 0.06, 0.5, 10), -0.45 + i * 0.3, 0.37, 0.25, m);
-      const roof = new THREE.CylinderGeometry(0.4, 0.4, 1.3, 3); roof.rotateZ(Math.PI / 2); roof.rotateX(Math.PI / 6); roof.scale(1, 0.55, 1.2);
-      add(roof, 0, 0.88, 0, m, true);
-    } else if (kind === "market") {
-      c = GREEN; name = "STOCK MARKET"; const m = hm(c, 0.9);
-      add(new THREE.BoxGeometry(1.4, 0.1, 0.8), 0, 0.05, 0, m, true);
+    f.play("Idle"); mixer.update(Math.random() * 2);
+    return f;
+  };
+  const BLD = { bank: [VIOLET, "BANK", 1.55, 0], market: [GREEN, "STOCK MARKET", 1.35, 1], firm: [TEAL, "FIRM", 1.4, 2], home: [SKY, "HOME", 1.2, 3] };
+  const makeBuilding = (kind) => {
+    const [c, name, size, gi] = BLD[kind], g = new THREE.Group(), model = bldGltf[gi].scene.clone(true);
+    model.traverse((o) => { if (o.isMesh) { o.material.transparent = true; bldMats.add(o.material); } });
+    g.add(model); const top = fit(model, size, false);
+    if (kind === "market") {   // a live ticker on the roof
+      const cg = new THREE.Group(); cg.position.y = top + 0.02; g.add(cg);
       g.userData.candles = [0, 1, 2, 3, 4].map((i) => {
-        const cm = hm(i % 3 === 1 ? PINK : GREEN, 1.1);
-        const b = add(new THREE.BoxGeometry(0.16, 1, 0.16).translate(0, 0.5, 0), -0.48 + i * 0.24, 0.1, 0, cm);
-        const wick = add(new THREE.BoxGeometry(0.02, 1, 0.02).translate(0, 0.5, 0), -0.48 + i * 0.24, 0.1, 0, cm);
-        return { b, wick, ph: i * 1.3 };
+        const m = new THREE.MeshStandardMaterial({ color: i % 3 === 1 ? 0xff4d8d : 0x18d67a, emissive: i % 3 === 1 ? 0x5a0a28 : 0x064d2a, roughness: 0.5, transparent: true }); bldMats.add(m);
+        const b = new THREE.Mesh(new THREE.BoxGeometry(0.14, 1, 0.14).translate(0, 0.5, 0), m), wick = new THREE.Mesh(new THREE.BoxGeometry(0.025, 1, 0.025).translate(0, 0.5, 0), m);
+        b.position.x = wick.position.x = -0.44 + i * 0.22; cg.add(b, wick); return { b, wick, ph: i * 1.3 };
       });
-    } else if (kind === "firm") {
-      c = TEAL; name = "FIRM"; const m = hm(c, 0.9);
-      add(new THREE.BoxGeometry(1.2, 0.5, 0.8), 0, 0.25, 0, m, true);
-      for (let i = 0; i < 3; i++) { const t = new THREE.CylinderGeometry(0.0, 0.28, 0.24, 4, 1); t.rotateY(Math.PI / 4); t.scale(1, 1, 2.6); add(t, -0.4 + i * 0.4, 0.62, 0, m); }
-      add(new THREE.CylinderGeometry(0.07, 0.08, 0.6, 10), 0.42, 0.8, -0.22, m); add(new THREE.CylinderGeometry(0.06, 0.07, 0.45, 10), 0.2, 0.72, -0.25, m);
-    } else {
-      c = SKY; name = "HOME"; const m = hm(c, 0.9);
-      add(new THREE.BoxGeometry(0.7, 0.45, 0.6), 0, 0.225, 0, m, true);
-      const roof = new THREE.ConeGeometry(0.56, 0.34, 4); roof.rotateY(Math.PI / 4); add(roof, 0, 0.62, 0, m, true);
     }
     const label = tag(name, c, 0.26);
-    scene.add(g); return { g, kind, c, label, cell: null, from: null, to: null, k: 1, docks: 0 };
+    scene.add(g); return { g, kind, c, label, top: top + (kind === "market" ? 0.55 : 0), cell: null, from: null, to: null, k: 1, docks: 0 };
   };
   const CELLS = []; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) if (i || j) CELLS.push([i * 2.3, j * 2.3]);
   const KINDS_B = ["bank", "market", "firm", "home", "bank", "market", "home", "firm"].slice(0, small ? 5 : 8);
@@ -262,7 +249,7 @@ function start() {
   const FCOL = [WHITE, ICE, WHITE, LILAC, ICE, WHITE, SKY];
   const NF = small ? 8 : 14, figs = [];
   for (let i = 0; i < NF; i++) {
-    const f = makeFigure(i === 0 ? WHITE : FCOL[i % FCOL.length]);
+    const f = makeFigure(i); f.c = i === 0 ? WHITE : FCOL[i % FCOL.length];
     Object.assign(f, { x: i === 0 ? 0 : (Math.random() - 0.5) * 9, z: i === 0 ? 2.6 : (Math.random() - 0.5) * 9, yaw: 0, state: "wander", tx: 0, tz: 0, timer: Math.random() * 2, walk: Math.random() * 6, partner: null, target: null });
     f.tag = tag("TALK", WHITE, 0.24); f.tag.userData.word = "TALK|" + WHITE.getHex();
     f.tether = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: f.c, ...ADD, opacity: 0 }));
@@ -270,7 +257,7 @@ function start() {
     figs.push(f);
   }
   const hero = figs[0];
-  const coins = [0, 1, 2, 3].map(() => { const mat = holo(GOLD, 1.4); bldMats.push(mat); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.035, 18), mat); m.visible = false; scene.add(m); return { m, k: 1, a: new THREE.Vector3(), b: new THREE.Vector3() }; });
+  const coins = [0, 1, 2, 3].map(() => { const mat = new THREE.MeshStandardMaterial({ color: 0xffc857, emissive: 0x5a3a00, metalness: 0.6, roughness: 0.3, transparent: true }); bldMats.add(mat); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.035, 18), mat); m.visible = false; scene.add(m); return { m, k: 1, a: new THREE.Vector3(), b: new THREE.Vector3() }; });
   const ACT = { bank: "BORROW", market: "TRADE", firm: "WORK", home: "SPEND · SAVE" };
   const setTag = (f, word, color) => {
     const key = word + "|" + color.getHex(); if (f.tag.userData.word === key) return;
@@ -461,7 +448,7 @@ function start() {
 
   /* ---------- camera path ---------- */
   // [progress, target x, target y, target z, radius, azimuth, elevation]; the radius is interpolated in log space
-  const HC = [0, 0.74 * FIG_S, 2.6];   // the hero's chest
+  const HC = [0, CHEST, 2.6];   // the hero's chest
   const KEYS = [
     [0.00, HC[0], HC[1], HC[2], 0.13, 0.35, 0.12],
     [0.07, HC[0], HC[1], HC[2], 0.3, 0.05, 0.22],
@@ -543,20 +530,21 @@ function start() {
     }
     if (f.state === "dock") { const o = f.target ? f.target.g.position : f.partner; if (o) turnTo(f, Math.atan2(o.x - f.x, o.z - f.z), 0.01, dt); }
     if (f.state === "hold") turnTo(f, 0, 0.01, dt);
-    f.walk += moving ? dt * 7 : 0;
-    const sw = moving ? Math.sin(f.walk) : 0;
-    f.legL.rotation.x = sw * 0.55; f.legR.rotation.x = -sw * 0.55; f.armL.rotation.set(-sw * 0.45, 0, -0.08);
-    if (f.state === "hold") f.armR.rotation.set(0, 0, 2.5 + Math.sin(t * 7) * 0.4);
-    else f.armR.rotation.set(sw * 0.45, 0, f.state === "dock" && f.partner ? 0.5 + 0.3 * Math.sin(t * 5 + f.x) : 0.08);
-    f.g.position.set(f.x, PY + (moving ? Math.abs(Math.sin(f.walk)) * 0.035 : 0), f.z); f.g.rotation.y = f.yaw;
+    // animation: walk while moving, wave hello, reach out at a building, idle otherwise
+    if (moving) f.play("Walk", 1.15);
+    else if (f.state === "hold") f.play("Wave");
+    else if (f.state === "dock") f.play(f.target ? "Interact" : "Wave", f.target ? 1 : 0.8);
+    else f.play("Idle");
+    f.mixer.update(dt);
+    f.g.position.set(f.x, PY, f.z); f.g.rotation.y = f.yaw;
     const docked = f.state === "dock";
     f.tetherA += ((docked ? 1 : 0) - f.tetherA) * (1 - Math.pow(0.02, dt));
     if (docked) {
       const o = f.target ? f.target.g.position : f.partner, tp = f.tether.geometry.attributes.position;
-      tp.setXYZ(0, f.x, 0.9, f.z); tp.setXYZ(1, o.x, f.target ? 0.55 : 0.9, o.z); tp.needsUpdate = true;
+      tp.setXYZ(0, f.x, 1.0, f.z); tp.setXYZ(1, o.x, f.target ? 0.7 : 1.0, o.z); tp.needsUpdate = true;
       setTag(f, f.target ? ACT[f.target.kind] : "TALK", f.target ? f.target.c : WHITE);
     }
-    f.tag.position.set(f.x, PY + 1.62, f.z);
+    f.tag.position.set(f.x, PY + CHAR_H + 0.3, f.z);
   };
 
   /* ---------- loop ---------- */
@@ -570,7 +558,7 @@ function start() {
     requestAnimationFrame(tick);
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     if (document.hidden || !views.some((v) => v.visible)) return;
-    t += dt; frameN++; uniT.value = t;
+    t += dt; frameN++;
     const main = views[0], p = parseFloat(section.style.getPropertyValue("--p")) || 0;
     main.pS += (p - main.pS) * (1 - Math.pow(0.004, dt));
     ptr.x += (ptr.tx - ptr.x) * (1 - Math.pow(0.02, dt)); ptr.y += (ptr.ty - ptr.y) * (1 - Math.pow(0.02, dt));
@@ -594,10 +582,10 @@ function start() {
     }
     buildings.forEach((b) => {
       if (b.k < 1) { b.k = Math.min(1, b.k + dt / 1.3); b.g.position.lerpVectors(b.from, b.to, backOut(b.k)); }
-      b.label.position.set(b.g.position.x, PY + 1.35, b.g.position.z);
+      b.label.position.set(b.g.position.x, PY + b.top + 0.35, b.g.position.z);
       if (b.g.userData.candles) b.g.userData.candles.forEach((c, i) => {
         const h = 0.18 + 0.32 * (0.5 + 0.5 * Math.sin(t * (1.4 + i * 0.3) * (b.docks > 0 ? 2.5 : 1) + c.ph));
-        c.b.scale.y = h; c.b.position.y = 0.22; c.wick.scale.y = h + 0.24; c.wick.position.y = 0.1;
+        c.b.scale.y = h; c.b.position.y = 0.12; c.wick.scale.y = h + 0.24; c.wick.position.y = 0;
       });
     });
     coins.forEach((c) => {
@@ -607,7 +595,7 @@ function start() {
     });
 
     // L1 · carried in the hero's chest
-    hero.g.updateMatrixWorld(); chest.set(0, 0.74, 0.0); hero.g.localToWorld(chest);
+    hero.g.updateMatrixWorld(); chest.set(0, CHEST, 0.0); hero.g.localToWorld(chest);
     l1G.position.copy(chest); l1G.position.y -= 1.0 * S1; l1G.rotation.y = hero.yaw;
     tokens.forEach((tk) => {
       tk.k += tk.sp * dt; if (tk.k >= 1) { tk.k -= 1; tk.pick(); }
@@ -705,8 +693,8 @@ function start() {
   // neural lines for a given growth g (0..1): head -> node, then node -> mid -> module for each branch
   const growNeural = (g) => {
     figs.forEach((f, i) => {
-      headV.set(f.x, PY + 1.45, f.z);
-      nodeV.set(f.x * 0.85, PY + 1.45 + (Y3 - PY - 1.45) * 0.4, f.z * 0.85);
+      headV.set(f.x, PY + CHAR_H + 0.08, f.z);
+      nodeV.set(f.x * 0.85, PY + CHAR_H + (Y3 - PY - CHAR_H) * 0.4, f.z * 0.85);
       const g1 = clamp(g * 2), g2 = clamp(g * 2 - 1), base = i * NSEG * 6, bright = 0.5 + 0.5 * Math.sin(t * 2 + i);
       const seg = (k, A, B, gg, c, f0) => {
         const o = base + k * 6; nlPos.set([A.x, A.y, A.z, A.x + (B.x - A.x) * gg, A.y + (B.y - A.y) * gg, A.z + (B.z - A.z) * gg], o);
@@ -753,14 +741,13 @@ function start() {
     // L2
     const figA = (0.25 + 0.75 * f2);
     // seen from inside, the hero's own body is only a faint shell; the others arrive as we pull out
-    const heroA = v.ghost ? figA : (0.05 + 0.95 * clamp((pS - 0.1) / 0.08)) * figA, othersA = v.ghost ? figA : clamp((pS - 0.12) / 0.1) * figA;
+    const heroA = v.ghost ? figA : (0.12 + 0.88 * clamp((pS - 0.12) / 0.1)) * figA, othersA = v.ghost ? figA : clamp((pS - 0.12) / 0.1) * figA;
     figs.forEach((f) => {
-      const a = f === hero ? heroA : othersA; f.mat.uniforms.uA.value = a;
-      f.heart.material.opacity = (f === hero ? 0.5 : 0.9) * a;
+      const a = f === hero ? heroA : othersA; f.mats.forEach((m) => { m.opacity = a; m.depthWrite = a > 0.97; });
+      f.g.visible = a > 0.01;
       f.tether.material.opacity = f.tetherA * 0.7 * r2 * f2; f.tag.material.opacity = f.tetherA * r2 * (0.15 + 0.85 * f2);
     });
-    bldMats.forEach((m) => { m.uniforms.uA.value = r2 * (0.2 + 0.8 * f2); });
-    bldEdges.forEach((m) => { m.opacity = 0.45 * r2 * f2; });
+    const bA = r2 * (0.3 + 0.7 * f2); bldMats.forEach((m) => { m.opacity = bA; m.depthWrite = bA > 0.97; });
     buildings.forEach((b) => { b.g.visible = r2 > 0.01; b.label.material.opacity = lab(r2, f2) * 0.8; });
     grid.material.opacity = r2 * 0.12 * f2; frames[0].opacity = r2 * 0.4 * f2; tags[0].opacity = lab(r2, f2);
     // neural lines
