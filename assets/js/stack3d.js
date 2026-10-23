@@ -1,13 +1,14 @@
 /* SimuWorld home · the economic world model, in WebGL.
    The story the camera tells, scrolled by the pinned scene's progress (--p on .scene-stack):
-     L1  Intelligence foundation lives inside every agent. We start inside one agent's chest -- an LLM as stacked
-         transformer sheets with word tokens rising and attention arcs, an RL objective landscape with a ball
-         climbing it inside an action -> environment -> reward loop -- and pull out to find a waving figure.
+     L1  Intelligence foundation lives inside every agent. We start inside one agent's chest -- a machined
+         transformer stack with attention heads and tokens riding its residual stream, wrapped in branching RL
+         neuron circuits -- which folds into a small orb as we pull out to find a waving figure.
      L2  Economic agents: low-poly people on a platform, walking, talking to each other, docking at a bank,
          a stock market, a firm or a home for a moment (borrow, trade, work, spend), then letting go. The
          buildings themselves slide to new cells now and then and snap into place.
      L3  Economic environment & institutions: mechanism modules around market clearing, wired by pipes of data.
-         Neural-network-like lines grow from the agents' heads up into these modules.
+         Neural-network-like lines grow from the agents' heads up into these modules. While the camera visits
+         the upper layers they float further apart; in the finished view they settle back close together.
      L4  Equilibrium & reality discipline: an armillary of three rings (behaviour, data, learned environment)
          converging on the data-driven generative equilibrium, beside real data the simulated curve learns to fit.
    A light spine runs through the model and "ECONOMIC WORLD MODEL" turns around its top and bottom. Around it,
@@ -104,11 +105,11 @@ function start([charGltf, bldGltf]) {
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0, depthWrite: false }));
     s.scale.set(h * tex.image.width / tex.image.height, h, 1); (parent || scene).add(s); return s;
   };
-  const frame = (y, color, dashed) => {
+  const frame = (y, color, dashed, parent) => {
     const pts = [[-HALF, y, -HALF], [HALF, y, -HALF], [HALF, y, HALF], [-HALF, y, HALF], [-HALF, y, -HALF]].map((p) => new THREE.Vector3(...p));
     const mat = dashed ? new THREE.LineDashedMaterial({ color, dashSize: 0.3, gapSize: 0.25, transparent: true, opacity: 0 })
                        : new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0 });
-    const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat); if (dashed) l.computeLineDistances(); scene.add(l); return mat;
+    const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat); if (dashed) l.computeLineDistances(); (parent || scene).add(l); return mat;
   };
   const SEG = 40;
   const pipe = (a, b, color, lift, opacity) => {
@@ -266,67 +267,80 @@ function start([charGltf, bldGltf]) {
   };
   const grid = new THREE.GridHelper(HALF * 2, 12, ICE, ICE); grid.position.y = PY; grid.material.transparent = true; grid.material.opacity = 0; grid.material.depthWrite = false; scene.add(grid);
 
-  /* ---------- L1 · intelligence foundation, built at its own scale and carried in the hero's chest ---------- */
+  /* ---------- L1 · intelligence foundation, built at its own scale and carried in the hero's chest ----------
+     A machined transformer stack (blocks, attention heads, a residual stream that tokens ride up) wrapped in
+     branching reinforcement-learning neuron circuits. As the camera pulls out, it all folds into one small orb. */
   const S1 = 0.021, l1G = new THREE.Group(); l1G.scale.setScalar(S1); scene.add(l1G);
-  const LX = -3.0, SHEETS = [0.35, 1.05, 1.75], L1TOP = 3.3;
-  const sheetMats = SHEETS.map((y) => {
-    const g = new THREE.PlaneGeometry(4.6, 3.6); g.rotateX(-Math.PI / 2);
-    const fill = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: ICE, ...ADD, opacity: 0, side: THREE.DoubleSide }));
-    const edge = new THREE.LineSegments(new THREE.EdgesGeometry(g), new THREE.LineBasicMaterial({ color: ICE, transparent: true, opacity: 0 }));
-    fill.position.set(LX, y, 0); edge.position.set(LX, y, 0); l1G.add(fill, edge);
-    return [fill.material, edge.material];
+  const L1C = 1.8, l1In = new THREE.Group(); l1In.position.y = L1C; l1G.add(l1In);
+  const l1C = new THREE.Group(); l1C.position.y = -L1C; l1In.add(l1C);
+  const metal = new THREE.MeshStandardMaterial({ color: 0x223044, metalness: 0.85, roughness: 0.32, emissive: 0x06121e, transparent: true });
+  const l1Line = []; const lineMat = (c, o) => { const m = new THREE.LineBasicMaterial({ color: c, ...ADD, opacity: 0 }); m.userData.base = o; l1Line.push(m); return m; };
+  const BLK = [0.3, 1.2, 2.1, 3.0], heads = [], headMats = [];
+  BLK.forEach((y, bi) => {
+    const geo = new THREE.BoxGeometry(2.6, 0.3, 1.8), blk = new THREE.Mesh(geo, metal); blk.position.y = y; l1C.add(blk);
+    blk.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), lineMat(ICE, 0.85)));
+    const strip = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.06), new THREE.MeshBasicMaterial({ color: bi % 2 ? VIOLET : ICE, ...ADD, opacity: 0 }));
+    strip.position.set(0, 0, 0.905); blk.add(strip); headMats.push(strip.material);
+    for (let h = 0; h < 6; h++) {   // attention heads: small spinning rings on top of each block
+      const m = new THREE.MeshBasicMaterial({ color: h % 3 === 0 ? WHITE : bi % 2 ? VIOLET : ICE, ...ADD, opacity: 0 }); headMats.push(m);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.025, 6, 32), m);
+      ring.position.set(-0.8 + (h % 3) * 0.8, y + 0.32, -0.4 + Math.floor(h / 3) * 0.8); l1C.add(ring);
+      heads.push({ ring, sp: 0.8 + Math.random() * 1.6, ax: Math.random() < 0.5 });
+    }
   });
+  [[-1.2, -0.82], [1.2, -0.82], [-1.2, 0.82], [1.2, 0.82]].forEach(([x, z]) => {   // frame pillars
+    const pl = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.4, 8), metal); pl.position.set(x, 1.65, z); l1C.add(pl);
+  });
+  const resid = { pts: [new THREE.Vector3(0, -0.8, 0), new THREE.Vector3(0, 4.3, 0)], c: ICE, speed: 0.9 };
+  l1C.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(resid.pts), lineMat(ICE, 0.55)));
+  const residFlow = packets([resid], 10, 0.3 * S1, true, l1C);
   const WORDS = ["BELIEF", "PRICE", "PLAN", "RISK", "WHY", "IF", "WAGE", "RATE", "TRUST", "DEBT", "SAVE", "BUY", "EXPECT", "SIGNAL"];
-  const NT = small ? 8 : 12, tokens = [];
+  const NT = small ? 7 : 10, tokens = [];
   for (let i = 0; i < NT; i++) {
-    const s = tag(WORDS[i % WORDS.length], i % 4 === 0 ? WHITE : ICE, 0.3, l1G);
+    const s = tag(WORDS[i % WORDS.length], i % 4 === 0 ? WHITE : ICE, 0.26, l1C);
     const tk = { s, k: i / NT, sp: 1 / (7 + Math.random() * 3), path: [], fade: 0 };
-    tk.pick = () => { tk.path = [new THREE.Vector3(LX - 3.0, SHEETS[0] + 0.12, (Math.random() - 0.5) * 2.8)];
-      SHEETS.forEach((y) => tk.path.push(new THREE.Vector3(LX + (Math.random() - 0.5) * 3.6, y + 0.14, (Math.random() - 0.5) * 2.8)));
-      tk.path.push(new THREE.Vector3(LX + (Math.random() - 0.5) * 2, L1TOP, (Math.random() - 0.5) * 2)); };
+    tk.pick = () => { tk.path = [new THREE.Vector3((Math.random() - 0.5) * 2, -0.9, 1.4)];
+      BLK.forEach((y) => tk.path.push(new THREE.Vector3((Math.random() - 0.5) * 1.8, y + 0.55, 1.15)));
+      tk.path.push(new THREE.Vector3((Math.random() - 0.5) * 1.2, 4.4, 0.6)); };
     tk.pick(); tokens.push(tk);
   }
   const AR = small ? 5 : 8, ARS = 14, arPos = new Float32Array(AR * ARS * 6), arCol = new Float32Array(AR * ARS * 6), arGeo = new THREE.BufferGeometry();
   arGeo.setAttribute("position", new THREE.BufferAttribute(arPos, 3)); arGeo.setAttribute("color", new THREE.BufferAttribute(arCol, 3));
   const arMat = new THREE.LineBasicMaterial({ vertexColors: true, ...ADD, opacity: 0 });
-  l1G.add(new THREE.LineSegments(arGeo, arMat));
-  const arcs = []; for (let i = 0; i < AR; i++) arcs.push({ a: 0, b: 1, life: Math.random(), dur: 1.4 + Math.random() });
-  const RX = 3.0, GN = small ? 24 : 34, GS = 4.6;
-  const hgt = (x, z) => { x -= RX;
-    return 1.25 * Math.exp(-((x - 0.9) ** 2 + (z + 0.6) ** 2) / 0.9) + 0.75 * Math.exp(-((x + 1.0) ** 2 + (z - 0.9) ** 2) / 0.7)
-      + 0.35 * Math.exp(-((x + 0.2) ** 2 + (z + 1.4) ** 2) / 0.5) + 0.06 * Math.sin(x * 3) * Math.cos(z * 3); };
-  const tPos = [], tCol = [];
-  const tv = (i, j) => { const x = RX - GS / 2 + i / (GN - 1) * GS, z = -GS / 2 + j / (GN - 1) * GS, h = hgt(x, z); return [x, 0.05 + h, z, h]; };
-  for (let i = 0; i < GN; i++) for (let j = 0; j < GN; j++) {
-    const a = tv(i, j);
-    [[i + 1, j], [i, j + 1]].forEach(([i2, j2]) => {
-      if (i2 >= GN || j2 >= GN) return; const b = tv(i2, j2);
-      tPos.push(a[0], a[1], a[2], b[0], b[1], b[2]);
-      [a[3], b[3]].forEach((h) => { const f = 0.25 + 0.75 * Math.min(1, h / 1.2); tCol.push(GREEN.r * f, GREEN.g * f + 0.05, GREEN.b * f + 0.1 * (1 - f)); });
-    });
+  l1C.add(new THREE.LineSegments(arGeo, arMat));
+  const arcs = []; for (let i = 0; i < AR; i++) arcs.push({ a: 0, b: 1, life: Math.random(), dur: 1.2 + Math.random() });
+  // RL: branching neuron circuits that grow out from the stack and carry reward signals back and forth
+  const nPos = [], nCol = [], nodes = [], rlPaths = [];
+  const grow = (from, dir, len, depth, path, col) => {
+    const to = from.clone().addScaledVector(dir, len); const c = col.clone().multiplyScalar(0.55 + 0.45 * depth / 4);
+    nPos.push(from.x, from.y, from.z, to.x, to.y, to.z); nCol.push(c.r, c.g, c.b, c.r * 0.7, c.g * 0.7, c.b * 0.7);
+    nodes.push(to); const p = path.concat([to]);
+    if (depth <= 1) { rlPaths.push({ pts: p, c: col, speed: 0.55 }); return; }
+    const n = depth > 2 ? 2 : 2 + (Math.random() < 0.4 ? 1 : 0);
+    for (let k = 0; k < n; k++) {
+      const d = dir.clone().add(new THREE.Vector3((Math.random() - 0.5) * 1.3, (Math.random() - 0.35) * 1.0, (Math.random() - 0.5) * 1.3)).normalize();
+      grow(to, d, len * (0.62 + Math.random() * 0.15), depth - 1, p, col);
+    }
+  };
+  for (let k = 0; k < (small ? 5 : 7); k++) {
+    const a = k / (small ? 5 : 7) * Math.PI * 2 + 0.4, y = 0.3 + (k % 4) * 0.9;
+    const root = new THREE.Vector3(Math.cos(a) * 1.35, y, Math.sin(a) * 0.95), dir = new THREE.Vector3(Math.cos(a), 0.25, Math.sin(a)).normalize();
+    grow(root, dir, 0.9, 4, [root], k % 3 === 0 ? TEAL : GREEN); nodes.push(root);
   }
-  const terGeo = new THREE.BufferGeometry();
-  terGeo.setAttribute("position", new THREE.Float32BufferAttribute(tPos, 3)); terGeo.setAttribute("color", new THREE.Float32BufferAttribute(tCol, 3));
-  const terMat = new THREE.LineBasicMaterial({ vertexColors: true, ...ADD, opacity: 0 });
-  l1G.add(new THREE.LineSegments(terGeo, terMat));
-  const ball = { x: RX - 1.6, z: 1.6, trail: [], pause: 0 };
-  const BT = 40, btPos = new Float32Array(BT * 3), btCol = new Float32Array(BT * 3), btGeo = new THREE.BufferGeometry();
-  btGeo.setAttribute("position", new THREE.BufferAttribute(btPos, 3)); btGeo.setAttribute("color", new THREE.BufferAttribute(btCol, 3));
-  const btMat = new THREE.PointsMaterial({ size: 0.22 * S1, vertexColors: true, ...ADD, opacity: 0, map: dot });
-  l1G.add(new THREE.Points(btGeo, btMat));
-  const ballGeo = new THREE.BufferGeometry(); ballGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(3), 3));
-  const ballMat = new THREE.PointsMaterial({ size: 0.7 * S1, color: WHITE, ...ADD, opacity: 0, map: dot });
-  l1G.add(new THREE.Points(ballGeo, ballMat));
-  const loopPts = []; for (let i = 0; i <= 80; i++) { const a = i / 80 * Math.PI * 2; loopPts.push(new THREE.Vector3(RX + Math.cos(a) * 2.9, 0.08, Math.sin(a) * 2.9)); }
-  const loopMat = new THREE.LineBasicMaterial({ color: GREEN, ...ADD, opacity: 0 });
-  l1G.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(loopPts), loopMat));
-  const loopFlow = packets([{ pts: loopPts, c: GREEN, speed: 0.5 }], small ? 5 : 8, 0.34 * S1, true, l1G);
-  const loopTags = [["ACTION", 0.6], ["ENVIRONMENT", 2.7], ["REWARD", 4.8]].map(([w, a]) => { const s = tag(w, GREEN, 0.3, l1G); s.position.set(RX + Math.cos(a) * 3.35, 0.35, Math.sin(a) * 3.35); return s; });
-  const l1Labels = [
-    flatLabel("LLM", "BELIEFS · REASONING · LANGUAGE", ICE, 3.4, LX, 0.02, 2.65, 0, l1G),
-    flatLabel("RL", "GOALS · OPTIMISATION · ADAPTATION", GREEN, 3.4, RX, 0.02, 3.7, 0, l1G),
-  ];
-  const l1Tag = tag("L1 · INTELLIGENCE FOUNDATION · INSIDE EVERY AGENT", ICE, 0.42, l1G); l1Tag.position.set(0, 4.4, 0);
+  const rlGeo = new THREE.BufferGeometry();
+  rlGeo.setAttribute("position", new THREE.Float32BufferAttribute(nPos, 3)); rlGeo.setAttribute("color", new THREE.Float32BufferAttribute(nCol, 3));
+  const rlMat = new THREE.LineBasicMaterial({ vertexColors: true, ...ADD, opacity: 0 });
+  l1C.add(new THREE.LineSegments(rlGeo, rlMat));
+  const ndGeo = new THREE.BufferGeometry(); ndGeo.setAttribute("position", new THREE.Float32BufferAttribute(nodes.flatMap((v) => [v.x, v.y, v.z]), 3));
+  const ndMat = new THREE.PointsMaterial({ size: 0.16 * S1 * 1.6, color: GREEN, ...ADD, opacity: 0, map: dot });
+  l1C.add(new THREE.Points(ndGeo, ndMat));
+  const rlFlow = packets(rlPaths, 1, 0.26 * S1 * 1.3, false, l1C);
+  const l1Tags = [["LLM · TRANSFORMER", ICE, [0, 4.9, 0]], ["RL · REWARD CIRCUITS", GREEN, [2.9, 2.8, 0.4]], ["ACTION", GREEN, [-3.0, 1.2, 0.6]], ["REWARD", GREEN, [2.6, 0.2, -1.0]]]
+    .map(([w, c, p]) => { const s = tag(w, c, 0.3, l1C); s.position.set(...p); return s; });
+  const l1Tag = tag("L1 · INTELLIGENCE FOUNDATION · INSIDE EVERY AGENT", ICE, 0.36, l1C); l1Tag.position.set(0, 5.5, 0);
+  // the orb everything folds into; it keeps glowing faintly in the agent's chest
+  const orb = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0xcfeeff, ...ADD, opacity: 0, depthTest: false })); orb.position.y = L1C; l1G.add(orb);
+  const orbRing = new THREE.Mesh(new THREE.TorusGeometry(1, 0.06, 6, 48), new THREE.MeshBasicMaterial({ color: GREEN, ...ADD, opacity: 0, depthTest: false })); orbRing.position.y = L1C; l1G.add(orbRing);
   const chest = new THREE.Vector3();
 
   /* ---------- L3 · economic environment & institutions ---------- */
@@ -334,6 +348,10 @@ function start([charGltf, bldGltf]) {
     { n: "AUCTIONS", c: GREEN }, { n: "MATCHING", c: TEAL }, { n: "PRICES", c: GREEN }, { n: "ACCOUNTING", c: SKY },
     { n: "BUDGETS", c: SKY }, { n: "POLICY RULES", c: VIOLET }, { n: "INSTITUTIONS", c: VIOLET },
   ];
+  // L3 and L4 live in their own groups so the gaps between layers can open up while the camera visits them
+  const l3G = new THREE.Group(), l4G = new THREE.Group(); scene.add(l3G, l4G);
+  const adopt = (from, into) => { scene.children.slice(from).filter((o) => o !== l3G && o !== l4G).forEach((o) => into.attach(o)); };
+  let mark = scene.children.length;
   const core = makeModule({ n: "MARKET CLEARING", c: ICE }, 0, Y3 + 0.1, 0, 1.55, 0.55);
   const mods = MODS.map((d, i) => { const a = i / MODS.length * Math.PI * 2 + 0.35; return makeModule(d, Math.cos(a) * 4.3, Y3 + 0.1, Math.sin(a) * 4.3, 0.98, 0.36); });
   const inst = mods[6];
@@ -353,6 +371,7 @@ function start([charGltf, bldGltf]) {
   [[0, 5, VIOLET], [1, 3, TEAL], [2, 4, SKY], [6, 0, VIOLET]].forEach(([a, b, c]) => l3Pipes.push(edgePipe(mods[a], mods[b], c, false)));
   l3Pipes.forEach((pp, j) => { pp.ordered = j; });
   const l3Flow = packets(l3Pipes, small ? 8 : 14, 0.4);
+  adopt(mark, l3G);
 
   // neural lines: from each agent's head, a trunk to a node, then branches into a few L3 modules
   const BR = 3, NSEG = 1 + BR * 2;
@@ -371,6 +390,7 @@ function start([charGltf, bldGltf]) {
   figs.forEach((f, i) => { f.links = [0, 1, 2].map((k) => (i * 3 + k * 2 + 1) % l3Mods.length); f.nph = Math.random(); });
 
   /* ---------- L4 · equilibrium & reality discipline ---------- */
+  mark = scene.children.length;
   const AC = new THREE.Vector3(-0.6, Y4 + 1.7, 0), AR_R = 1.9;
   const ARM = [
     { n: "BEHAVIOUR", c: WHITE, tilt: [1.05, 0.0, 0.45], spin: 0.55 },
@@ -406,6 +426,7 @@ function start([charGltf, bldGltf]) {
   rdTag.position.set(RDX + RDW / 2, Y4 + 2.7, -0.4);
   const calPipe = pipe(new THREE.Vector3(RDX + 0.2, Y4 + 1.5, -0.4), AC.clone().add(new THREE.Vector3(AR_R * 0.7, 0, 0)), GOLD, 0.6, 0.45);
   const calFlow = packets([calPipe], small ? 4 : 7, 0.34);
+  adopt(mark, l4G);
   const l3Up = risers([{ x: 0, z: 0, y0: Y3 + 0.4, y1: Y4, c: ICE }, { x: inst.x, z: inst.z, y0: Y3 + 0.3, y1: Y4, c: VIOLET }], 5, 0.26);
 
   /* ---------- the model as one thing: a light spine, and its name turning around the top and bottom ---------- */
@@ -416,17 +437,17 @@ function start([charGltf, bldGltf]) {
     scene.add(m); return { m, tex, k };
   });
   const spine = risers([{ x: 0, z: 0, y0: PY + 1.4, y1: Y4 + 2.4, c: ICE }, { x: 0.06, z: 0.06, y0: Y4 + 2.4, y1: PY + 1.4, c: VIOLET }], 9, 0.12, 0.22);
-  const frames = [frame(PY, WHITE), frame(Y3, ICE), frame(Y4, ICE, true)];
+  const frames = [frame(PY, WHITE), frame(Y3, ICE, false, l3G), frame(Y4, ICE, true, l4G)];
   const tags = [
     flatLabel("L2", "ECONOMIC AGENTS", WHITE, 3.8, -HALF + 1.9, PY + 0.02, HALF + 0.75),
-    flatLabel("L3", "ENVIRONMENT & INSTITUTIONS", ICE, 3.8, -HALF + 1.9, Y3 + 0.02, HALF + 0.75),
-    flatLabel("L4", "EQUILIBRIUM & REALITY", ICE, 3.8, -HALF + 1.9, Y4 + 0.02, HALF + 0.75),
+    flatLabel("L3", "ENVIRONMENT & INSTITUTIONS", ICE, 3.8, -HALF + 1.9, Y3 + 0.02, HALF + 0.75, 0, l3G),
+    flatLabel("L4", "EQUILIBRIUM & REALITY", ICE, 3.8, -HALF + 1.9, Y4 + 0.02, HALF + 0.75, 0, l4G),
   ];
 
   /* ---------- outer layer · SimuWorld Challenge: the name itself circles the model ---------- */
   // big upright letters on a gently tilted circle well clear of the model; stacked copies set slightly inward and
   // darker give the letters real depth, like a sign around a globe. No band, no rails: just the lettering.
-  const RR = 15.5, RH = 3.4, DEPTH = 8;
+  const RR = 18.5, RH = 4.8, DEPTH = 8;
   const ringG = new THREE.Group(); ringG.position.y = RING_Y; ringG.rotation.set(0.1, 0, -0.05, "ZXY"); scene.add(ringG);
   const spinG = new THREE.Group(); ringG.add(spinG);
   const nameTex = ringNameTexture(); nameTex.wrapS = THREE.RepeatWrapping; nameTex.repeat.set(2, 1);
@@ -449,27 +470,30 @@ function start([charGltf, bldGltf]) {
   /* ---------- camera path ---------- */
   // [progress, target x, target y, target z, radius, azimuth, elevation]; the radius is interpolated in log space
   const HC = [0, CHEST, 2.6];   // the hero's chest
+  // [progress, target x, target y, target z, radius, azimuth, elevation, layer]; the radius is interpolated in log
+  // space, and the target height follows the layer (3 or 4) as it floats up
   const KEYS = [
-    [0.00, HC[0], HC[1], HC[2], 0.13, 0.35, 0.12],
-    [0.07, HC[0], HC[1], HC[2], 0.3, 0.05, 0.22],
-    [0.13, HC[0], HC[1] - 0.1, HC[2], 1.3, -0.15, 0.2],
-    [0.19, HC[0], 0.75, HC[2], 3.6, -0.3, 0.2],
-    [0.27, 0, 0.6, 1.2, 11, 0.05, 0.42],
-    [0.35, 0, 0.5, 0, 18, 0.4, 0.6],
-    [0.43, 0, Y3 - 1.6, 0, 21, 0.7, 0.42],
-    [0.50, 0, Y3, 0, 18, 1.0, 0.62],
-    [0.58, 0.8, Y4 + 1.2, 0, 20, 0.55, 0.42],
-    [0.68, 0.4, Y4 + 1.4, 0, 16.5, 0.1, 0.34],
-    [0.80, 0, 3.6, 0, 70, 0.35, 0.2],
-    [0.92, 0, 3.4, 0, 64, 0.7, 0.17],
-    [1.00, 0, 3.4, 0, 64, 0.85, 0.17],
+    [0.00, HC[0], HC[1], HC[2], 0.13, 0.35, 0.12, 0],
+    [0.07, HC[0], HC[1], HC[2], 0.3, 0.05, 0.22, 0],
+    [0.13, HC[0], HC[1] - 0.1, HC[2], 1.3, -0.15, 0.2, 0],
+    [0.19, HC[0], 0.75, HC[2], 3.6, -0.3, 0.2, 0],
+    [0.27, 0, 0.6, 1.2, 11, 0.05, 0.42, 0],
+    [0.35, 0, 0.5, 0, 18, 0.4, 0.6, 0],
+    [0.43, 0, Y3 - 3.2, 0, 27, 0.7, 0.38, 3],
+    [0.50, 0, Y3, 0, 18, 1.0, 0.62, 3],
+    [0.58, 0.8, Y4 + 1.2, 0, 20, 0.55, 0.42, 4],
+    [0.68, 0.4, Y4 + 1.4, 0, 16.5, 0.1, 0.34, 4],
+    [0.80, 0, 3.8, 0, 80, 0.35, 0.2, 0],
+    [0.92, 0, 3.6, 0, 74, 0.7, 0.17, 0],
+    [1.00, 0, 3.6, 0, 74, 0.85, 0.17, 0],
   ].map((k) => { const c = k.slice(); c[4] = Math.log(c[4]); return c; });
   const cr = (p0, p1, p2, p3, s) => 0.5 * ((2 * p1) + (-p0 + p2) * s + (2 * p0 - 5 * p1 + 4 * p2 - p3) * s * s + (-p0 + 3 * p1 - 3 * p2 + p3) * s * s * s);
-  const camAt = (p) => {
+  const camAt = (p, E3, E4) => {
     p = clamp(p); let i = 0; while (i < KEYS.length - 2 && p > KEYS[i + 1][0]) i++;
     const a = KEYS[Math.max(0, i - 1)], b = KEYS[i], c = KEYS[i + 1], d = KEYS[Math.min(KEYS.length - 1, i + 2)];
     const s = (p - b[0]) / (c[0] - b[0]), e = s * s * (3 - 2 * s) * 0.35 + s * 0.65;
-    const out = []; for (let k = 1; k < 7; k++) out.push(cr(a[k], b[k], c[k], d[k], e)); out[3] = Math.exp(out[3]); return out;
+    const val = (key, k) => k === 2 ? key[2] + (key[7] === 3 ? E3 : key[7] === 4 ? E4 : 0) : key[k];
+    const out = []; for (let k = 1; k < 7; k++) out.push(cr(val(a, k), val(b, k), val(c, k), val(d, k), e)); out[3] = Math.exp(out[3]); return out;
   };
 
   /* ---------- drag to turn the finished model ---------- */
@@ -596,7 +620,9 @@ function start([charGltf, bldGltf]) {
 
     // L1 · carried in the hero's chest
     hero.g.updateMatrixWorld(); chest.set(0, CHEST, 0.0); hero.g.localToWorld(chest);
-    l1G.position.copy(chest); l1G.position.y -= 1.0 * S1; l1G.rotation.y = hero.yaw;
+    l1G.position.copy(chest); l1G.position.y -= L1C * S1; l1G.rotation.y = hero.yaw;
+    heads.forEach((h, i) => { h.ring.rotation[h.ax ? "x" : "y"] = t * h.sp; h.ring.rotation.z = Math.sin(t * 0.7 + i) * 0.4; });
+    l1C.rotation.y = Math.sin(t * 0.25) * 0.25;
     tokens.forEach((tk) => {
       tk.k += tk.sp * dt; if (tk.k >= 1) { tk.k -= 1; tk.pick(); }
       const seg = tk.k * (tk.path.length - 1), i0 = Math.min(tk.path.length - 2, Math.floor(seg)), w = sstep(seg - i0);
@@ -607,29 +633,16 @@ function start([charGltf, bldGltf]) {
       const a = arcs[i]; a.life += dt / a.dur;
       if (a.life >= 1) { a.life = 0; a.a = Math.floor(Math.random() * NT); a.b = Math.floor(Math.random() * NT); if (a.b === a.a) a.b = (a.a + 1) % NT; }
       const A = tokens[a.a].s.position, B = tokens[a.b].s.position, f = Math.sin(Math.PI * a.life) * Math.min(tokens[a.a].fade, tokens[a.b].fade);
-      const lift = 0.5 + A.distanceTo(B) * 0.25;
+      const lift = 0.35 + A.distanceTo(B) * 0.2;
       for (let q = 0; q < ARS; q++) {
         const u0 = q / ARS, u1 = (q + 1) / ARS, o = (i * ARS + q) * 6;
-        const P = (u) => [A.x + (B.x - A.x) * u, A.y + (B.y - A.y) * u + Math.sin(Math.PI * u) * lift, A.z + (B.z - A.z) * u];
+        const P = (u) => [A.x + (B.x - A.x) * u, A.y + (B.y - A.y) * u, A.z + (B.z - A.z) * u + Math.sin(Math.PI * u) * lift];
         arPos.set(P(u0).concat(P(u1)), o);
         const c = i % 3 === 0 ? WHITE : ICE; arCol.set([c.r * f, c.g * f, c.b * f, c.r * f, c.g * f, c.b * f], o);
       }
     }
     arGeo.attributes.position.needsUpdate = true; arGeo.attributes.color.needsUpdate = true;
-    if (ball.pause > 0) { ball.pause -= dt; if (ball.pause <= 0) { const a = Math.random() * 6.28; ball.x = RX + Math.cos(a) * 2.0; ball.z = Math.sin(a) * 2.0; ball.trail.length = 0; } }
-    else {
-      const e = 0.02, gx = (hgt(ball.x + e, ball.z) - hgt(ball.x - e, ball.z)) / (2 * e), gz = (hgt(ball.x, ball.z + e) - hgt(ball.x, ball.z - e)) / (2 * e), g = Math.hypot(gx, gz);
-      const stepLen = Math.min(0.9, 0.35 + g) * dt;
-      if (g < 0.05) ball.pause = 1.4; else { ball.x += gx / g * stepLen; ball.z += gz / g * stepLen; }
-    }
-    if (frameN % 3 === 0) { ball.trail.unshift(ball.x, ball.z); if (ball.trail.length > BT * 2) ball.trail.length = BT * 2; }
-    ballGeo.attributes.position.setXYZ(0, ball.x, 0.12 + hgt(ball.x, ball.z), ball.z); ballGeo.attributes.position.needsUpdate = true;
-    for (let q = 0; q < BT; q++) {
-      const has = ball.trail.length > q * 2, x = has ? ball.trail[q * 2] : ball.x, z = has ? ball.trail[q * 2 + 1] : ball.z, f = has ? 1 - q / BT : 0;
-      btPos.set([x, 0.1 + hgt(x, z), z], q * 3); btCol.set([GREEN.r * f + 0.4 * f, GREEN.g * f, GREEN.b * f + 0.3 * f], q * 3);
-    }
-    btGeo.attributes.position.needsUpdate = true; btGeo.attributes.color.needsUpdate = true;
-    loopFlow.update(dt);
+    residFlow.update(dt); rlFlow.update(dt);
 
     // L3 · the machine runs; the institutions module evolves every few seconds
     l3Flow.update(dt);
@@ -646,13 +659,13 @@ function start([charGltf, bldGltf]) {
       const k = 1 - conv;
       r.g.rotation.set(Math.PI / 2 + r.tilt[0] * k, t * r.spin * k + t * 0.5 * conv, r.tilt[2] * k, "YXZ");
       r.ang += dt * (0.9 + ri * 0.35 * k);
-      r.g.updateMatrixWorld();
+      r.g.updateMatrix();
       for (let b = 0; b < BEADS; b++) {
         const a = r.ang + b / BEADS * Math.PI * 2, o = (ri * BEADS + b) * 3;
-        tmp.set(Math.cos(a) * AR_R, Math.sin(a) * AR_R, 0).applyMatrix4(r.g.matrixWorld);
+        tmp.set(Math.cos(a) * AR_R, Math.sin(a) * AR_R, 0).applyMatrix4(r.g.matrix);
         bdPos.set([tmp.x, tmp.y, tmp.z], o); bdCol.set([r.c.r, r.c.g, r.c.b], o);
       }
-      tmp.set(Math.cos(0.8 + ri * 2.1) * (AR_R + 0.35), Math.sin(0.8 + ri * 2.1) * (AR_R + 0.35), 0).applyMatrix4(r.g.matrixWorld);
+      tmp.set(Math.cos(0.8 + ri * 2.1) * (AR_R + 0.35), Math.sin(0.8 + ri * 2.1) * (AR_R + 0.35), 0).applyMatrix4(r.g.matrix);
       r.label.position.copy(tmp);
     });
     bdGeo.attributes.position.needsUpdate = true; bdGeo.attributes.color.needsUpdate = true;
@@ -694,7 +707,7 @@ function start([charGltf, bldGltf]) {
   const growNeural = (g) => {
     figs.forEach((f, i) => {
       headV.set(f.x, PY + CHAR_H + 0.08, f.z);
-      nodeV.set(f.x * 0.85, PY + CHAR_H + (Y3 - PY - CHAR_H) * 0.4, f.z * 0.85);
+      nodeV.set(f.x * 0.85, PY + CHAR_H + (Y3 + l3G.position.y - PY - CHAR_H) * 0.4, f.z * 0.85);
       const g1 = clamp(g * 2), g2 = clamp(g * 2 - 1), base = i * NSEG * 6, bright = 0.5 + 0.5 * Math.sin(t * 2 + i);
       const seg = (k, A, B, gg, c, f0) => {
         const o = base + k * 6; nlPos.set([A.x, A.y, A.z, A.x + (B.x - A.x) * gg, A.y + (B.y - A.y) * gg, A.z + (B.z - A.z) * gg], o);
@@ -704,7 +717,7 @@ function start([charGltf, bldGltf]) {
       const no = i * (1 + BR) * 3; nnPos.set([nodeV.x, nodeV.y, nodeV.z], no); nnCol.set([f.c.r * g1, f.c.g * g1, f.c.b * g1], no);
       f.links.forEach((mi, k) => {
         const m = l3Mods[mi];
-        endV.set(m.x, m.y - m.h / 2, m.z);
+        endV.set(m.x, m.y - m.h / 2 + l3G.position.y, m.z);
         midV.set((nodeV.x + endV.x) / 2 + (k - 1) * 0.5, nodeV.y + (endV.y - nodeV.y) * 0.55, (nodeV.z + endV.z) / 2);
         const ga = clamp(g2 * 2), gb = clamp(g2 * 2 - 1);
         seg(1 + k * 2, nodeV, midV, ga, m.c, 1.2); seg(2 + k * 2, midV, endV, gb, m.c, 1.0);
@@ -721,8 +734,14 @@ function start([charGltf, bldGltf]) {
     npGeo.attributes.position.needsUpdate = true; npGeo.attributes.color.needsUpdate = true;
   };
 
+  // how far the upper layers float above their resting height: wide while the camera visits, tight at the end
+  const gaps = (pS) => {
+    const out = 1 - sstep((pS - 0.72) / 0.1), e3 = 5 * sstep((pS - 0.3) / 0.08) * out, e4 = e3 + 5 * sstep((pS - 0.5) / 0.08) * out;
+    return [e3, e4];
+  };
   function pose(v) {
-    const pS = v.pS, camera = v.camera;
+    const pS = v.pS, camera = v.camera, [E3, E4] = v.ghost ? [0, 0] : gaps(pS);
+    l3G.position.y = E3; l4G.position.y = E4;
     const L = v.ghost ? 0.25 : 1 - clamp((pS - 0.2) / 0.1) * 0.75;      // L1 is the star at first, then a glow inside the agent
     const r2 = v.ghost ? 1 : ease(clamp((pS - 0.1) / 0.12)), r3 = clamp((pS - 0.38) / 0.13), g3 = clamp((pS - 0.36) / 0.12);
     const r4 = ease(clamp((pS - 0.53) / 0.1)), r5 = clamp((pS - 0.71) / 0.12);
@@ -731,13 +750,18 @@ function start([charGltf, bldGltf]) {
     const f2 = dimAfter(0.45), f3 = dimAfter(0.55), f4 = dimAfter(0.73);
     const lab = (r, f) => r * (0.15 + 0.85 * f);
 
-    // L1 inside the hero
-    sheetMats.forEach(([fill, edge]) => { fill.opacity = 0.06 * L; edge.opacity = 0.6 * L; });
-    tokens.forEach((tk) => { tk.s.material.opacity = L * tk.fade; });
-    arMat.opacity = L; terMat.opacity = 0.8 * L; ballMat.opacity = L; btMat.opacity = 0.9 * L;
-    loopMat.opacity = 0.45 * L; loopFlow.mat.opacity = L; loopTags.forEach((s) => { s.material.opacity = L; });
-    l1Labels.forEach((m) => { m.opacity = L; });
-    l1Tag.material.opacity = v.ghost ? 0 : clamp((0.17 - pS) / 0.06) * clamp(pS / 0.02 + 0.3);
+    // L1 inside the hero: shown in full, then folded into an orb as the camera pulls out
+    const mg = v.ghost ? 1 : sstep((pS - 0.08) / 0.09), Lc = L * (1 - mg);
+    l1In.scale.setScalar(1 - 0.97 * mg); l1C.visible = Lc > 0.005;
+    metal.opacity = Lc; metal.depthWrite = Lc > 0.97;
+    l1Line.forEach((m) => { m.opacity = m.userData.base * Lc; }); headMats.forEach((m) => { m.opacity = 0.9 * Lc; });
+    tokens.forEach((tk) => { tk.s.material.opacity = Lc * tk.fade; });
+    arMat.opacity = Lc; rlMat.opacity = 0.95 * Lc; ndMat.opacity = Lc; rlFlow.mat.opacity = Lc; residFlow.mat.opacity = Lc;
+    l1Tags.forEach((s) => { s.material.opacity = Lc; });
+    l1Tag.material.opacity = v.ghost ? 0 : clamp((0.12 - pS) / 0.05) * clamp(pS / 0.02 + 0.3);
+    const orbA = v.ghost ? 0 : mg * (1 - 0.55 * clamp((pS - 0.2) / 0.08));
+    orb.material.opacity = orbA; orb.scale.setScalar(1.2 + 1.6 * Math.sin(Math.PI * clamp(mg)) + 0.15 * Math.sin(t * 4));
+    orbRing.material.opacity = orbA * 0.8; orbRing.rotation.set(t * 1.3, t * 0.9, 0); orbRing.scale.setScalar(0.9 + 0.25 * Math.sin(t * 2));
     // L2
     const figA = (0.25 + 0.75 * f2);
     // seen from inside, the hero's own body is only a faint shell; the others arrive as we pull out
@@ -769,11 +793,12 @@ function start([charGltf, bldGltf]) {
     rdTag.material.opacity = lab(clamp((r4 - 0.4) / 0.5), f4);
     calPipe.mat.opacity = r4 * 0.35 * f4; calFlow.mat.opacity = clamp((r4 - 0.5) / 0.4) * f4;
     frames[2].opacity = r4 * 0.45 * f4; tags[2].opacity = lab(r4, f4);
-    l3Up.mat.opacity = r4 * 0.9 * f4; l3Up.smat.opacity = r4 * 0.3 * f4;
+    const tight = 1 - clamp(Math.max(E3, E4 - E3) / 1.2);   // links that span the layers only show once the gaps close
+    l3Up.mat.opacity = r4 * 0.9 * f4 * tight; l3Up.smat.opacity = r4 * 0.3 * f4 * tight;
     // the name rings appear with the full view
-    const topY = PY + 2.6 + (Y3 - PY) * r3 + (Y4 - Y3) * r4;
+    const topY = PY + 2.6 + (Y3 - PY) * r3 + (Y4 - Y3) * r4 + E4;
     nameRings.forEach((r) => { r.m.position.y = r.k ? topY + 0.6 * r4 + 0.4 : SB - 0.2; r.m.material.opacity = all * 0.8; });
-    spine.mat.opacity = clamp(r3 * 0.6 + r4 * 0.4); spine.smat.opacity = spine.mat.opacity * 0.4;
+    spine.mat.opacity = clamp(r3 * 0.6 + r4 * 0.4) * tight; spine.smat.opacity = spine.mat.opacity * 0.4;
     // outer lettering
     const nA5 = clamp((r5 - 0.1) / 0.5);
     letterLayers.forEach((l) => { l.m.opacity = nA5 * (l.k === 0 ? 1 : l.k < 0 ? 0 : 0.9); });
@@ -782,9 +807,9 @@ function start([charGltf, bldGltf]) {
 
     // camera
     let tx, ty, tz, rad, th, ph;
-    if (v.ghost) { tx = 0; ty = 3.4; tz = 0; rad = 54; th = 0.4 + t * 0.06 + ptr.x * 0.08; ph = 0.2; }
+    if (v.ghost) { tx = 0; ty = 3.6; tz = 0; rad = 62; th = 0.4 + t * 0.06 + ptr.x * 0.08; ph = 0.2; }
     else {
-      [tx, ty, tz, rad, th, ph] = camAt(pS);
+      [tx, ty, tz, rad, th, ph] = camAt(pS, E3, E4);
       const far = clamp((pS - 0.2) / 0.1);   // no pointer sway while we are inside the agent
       th += (t * 0.02 + ptr.x * 0.1) * far + user.th * all; ph = Math.max(0.05, Math.min(1.25, ph - ptr.y * 0.04 * far + user.ph * all));
       if (pS < 0.3) { const k = 1 - clamp((pS - 0.22) / 0.08); tx += (hero.x - HC[0]) * k; tz += (hero.z - HC[2]) * k; }
@@ -846,14 +871,15 @@ function tagTex(text, color) {
 
 // "SIMUWORLD · CHALLENGE ·", the lettering that circles the model
 function ringNameTexture() {
-  const c = document.createElement("canvas"); c.width = 4096; c.height = 288;
+  const c = document.createElement("canvas"); c.width = 4096; c.height = 400;
   const g = c.getContext("2d");
-  g.textBaseline = "middle"; g.textAlign = "center"; g.font = "700 236px 'Space Grotesk', sans-serif";
-  if ("letterSpacing" in g) g.letterSpacing = "30px";
-  const grd = g.createLinearGradient(0, 30, 0, 260); grd.addColorStop(0, "#ffffff"); grd.addColorStop(0.5, "#cfeeff"); grd.addColorStop(1, "#73bcff");
-  g.shadowColor = "rgba(143,214,255,.9)"; g.shadowBlur = 20; g.fillStyle = grd;
-  g.fillText("SIMUWORLD", 1024, 150); g.fillText("CHALLENGE", 3072, 150);
-  g.shadowBlur = 0; g.fillStyle = "rgba(143,214,255,.85)"; g.beginPath(); g.arc(2048, 144, 18, 0, 7); g.arc(4078, 144, 18, 0, 7); g.fill();
+  g.textBaseline = "middle"; g.textAlign = "center"; g.font = "600 380px 'Space Grotesk', sans-serif";
+  if ("letterSpacing" in g) g.letterSpacing = "70px";
+  const grd = g.createLinearGradient(0, 20, 0, 380); grd.addColorStop(0, "#ffffff"); grd.addColorStop(0.5, "#cfeeff"); grd.addColorStop(1, "#73bcff");
+  g.shadowColor = "rgba(143,214,255,.9)"; g.shadowBlur = 18; g.fillStyle = grd;
+  // tall, narrow letters: draw squeezed horizontally
+  [["SIMUWORLD", 1024], ["CHALLENGE", 3072]].forEach(([w, x]) => { g.save(); g.translate(x, 214); g.scale(0.52, 1); g.fillText(w, 0, 0); g.restore(); });
+  g.shadowBlur = 0; g.fillStyle = "rgba(143,214,255,.85)"; g.beginPath(); g.arc(2048, 200, 16, 0, 7); g.arc(4080, 200, 16, 0, 7); g.fill();
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
 }
 
