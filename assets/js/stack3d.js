@@ -428,20 +428,20 @@ function start([charGltf, bldGltf]) {
   // rises to a node, then branches into a few L3 modules
   const ents = figs.map((f) => ({ c: f.c, head: (v) => v.set(f.x, PY + CHAR_H + 0.08, f.z) }))
     .concat(buildings.map((b) => ({ c: b.c, head: (v) => v.set(b.g.position.x, PY + b.top + 0.1, b.g.position.z) })));
-  const NF2 = ents.length, BR = 3, NSEG = 1 + BR * 2;
+  const NF2 = ents.length, BR = 2, NSEG = 1 + BR * 2;
   const nlPos = new Float32Array(NF2 * NSEG * 6), nlCol = new Float32Array(NF2 * NSEG * 6), nlGeo = new THREE.BufferGeometry();
   nlGeo.setAttribute("position", new THREE.BufferAttribute(nlPos, 3)); nlGeo.setAttribute("color", new THREE.BufferAttribute(nlCol, 3));
   const nlMat = new THREE.LineBasicMaterial({ vertexColors: true, ...ADD, opacity: 0 });
   scene.add(new THREE.LineSegments(nlGeo, nlMat));
   const NN = NF2 * (1 + BR), nnPos = new Float32Array(NN * 3), nnCol = new Float32Array(NN * 3), nnGeo = new THREE.BufferGeometry();
   nnGeo.setAttribute("position", new THREE.BufferAttribute(nnPos, 3)); nnGeo.setAttribute("color", new THREE.BufferAttribute(nnCol, 3));
-  const nnMat = new THREE.PointsMaterial({ size: 0.34, vertexColors: true, ...ADD, opacity: 0, map: dot });
+  const nnMat = new THREE.PointsMaterial({ size: 0.24, vertexColors: true, ...ADD, opacity: 0, map: dot });
   scene.add(new THREE.Points(nnGeo, nnMat));
   const NP = NF2 * 2, npPos = new Float32Array(NP * 3), npCol = new Float32Array(NP * 3), npGeo = new THREE.BufferGeometry();
   npGeo.setAttribute("position", new THREE.BufferAttribute(npPos, 3)); npGeo.setAttribute("color", new THREE.BufferAttribute(npCol, 3));
   const npMat = new THREE.PointsMaterial({ size: 0.3, vertexColors: true, ...ADD, opacity: 0, map: dot });
   scene.add(new THREE.Points(npGeo, npMat));
-  ents.forEach((f, i) => { f.links = [0, 1, 2].map((k) => (i * 3 + k * 2 + 1) % l3Mods.length); f.nph = Math.random(); });
+  ents.forEach((f, i) => { f.links = [0, 1].map((k) => (i * 3 + k * 4 + 1) % l3Mods.length); f.nph = Math.random(); });
 
   /* ---------- L4 · equilibrium & reality discipline ---------- */
   mark = scene.children.length;
@@ -459,10 +459,10 @@ function start([charGltf, bldGltf]) {
   const BEADS = 3, bdPos = new Float32Array(ARM.length * BEADS * 3), bdCol = new Float32Array(ARM.length * BEADS * 3), bdGeo = new THREE.BufferGeometry();
   bdGeo.setAttribute("position", new THREE.BufferAttribute(bdPos, 3)); bdGeo.setAttribute("color", new THREE.BufferAttribute(bdCol, 3));
   const bdMat = new THREE.PointsMaterial({ size: 0.42, vertexColors: true, ...ADD, opacity: 0, map: dot });
-  scene.add(new THREE.Points(bdGeo, bdMat));
+  const bdGeoObj = new THREE.Points(bdGeo, bdMat); scene.add(bdGeoObj);
   const fpGeo = new THREE.BufferGeometry(); fpGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([AC.x, AC.y, AC.z]), 3));
   const fpMat = new THREE.PointsMaterial({ size: 1.2, color: WHITE, ...ADD, opacity: 0, map: dot });
-  scene.add(new THREE.Points(fpGeo, fpMat));
+  const fpObj = new THREE.Points(fpGeo, fpMat); scene.add(fpObj);
   const fpTag = tag("DATA-DRIVEN GENERATIVE EQUILIBRIUM", WHITE, 0.27), fpTag2 = tag("FIXED POINT", ICE, 0.22);
   fpTag.position.set(AC.x, AC.y - AR_R - 0.45, AC.z); fpTag2.position.set(AC.x, AC.y - AR_R - 0.78, AC.z);
   const RDX = 2.6, RDN = 12, RDW = 3.4, series = [];
@@ -480,6 +480,14 @@ function start([charGltf, bldGltf]) {
   rdTag.position.set(RDX + RDW / 2, Y4 + 2.7, -0.4);
   const calPipe = pipe(new THREE.Vector3(RDX + 0.2, Y4 + 1.5, -0.4), AC.clone().add(new THREE.Vector3(AR_R * 0.7, 0, 0)), GOLD, 0.6, 0.45);
   const calFlow = packets([calPipe], small ? 4 : 7, 0.34);
+  // the armillary and the real-data chart turn to face the camera, so both always read head-on
+  const pivotAround = (centre, objs) => {
+    const pivot = new THREE.Group(), inner = new THREE.Group(); pivot.position.copy(centre); inner.position.copy(centre).negate();
+    pivot.add(inner); objs.forEach((o) => inner.add(o)); scene.add(pivot); return pivot;
+  };
+  const armPivot = pivotAround(AC, ARM.map((r) => r.g).concat(ARM.map((r) => r.label), [bdGeoObj, fpObj, fpTag, fpTag2]));
+  const chartPivot = pivotAround(new THREE.Vector3(RDX + RDW / 2, Y4, -0.4), [rdBars, realLine, simLine, rdTag]);
+  const billboards = [armPivot, chartPivot], bbW = new THREE.Vector3();
   adopt(mark, l4G);
   const l3Up = risers([{ x: 0, z: 0, y0: Y3 + 0.4, y1: Y4, c: ICE }, { x: inst.x, z: inst.z, y0: Y3 + 0.3, y1: Y4, c: VIOLET }], 5, 0.26);
 
@@ -615,7 +623,7 @@ function start([charGltf, bldGltf]) {
     else if (f.state === "dock") f.play(f.target ? "interact-right" : "emote-yes", f.target ? 0.8 : 0.7);
     else f.play("idle");
     f.mixer.update(dt);
-    if (f.state === "hold" && f.armR) f.armR.rotation.set(0, 0, 2.5 + Math.sin(t * 8) * 0.35);
+    if (f.state === "hold" && f.armR) f.armR.rotation.set(0, 0, -(2.55 + Math.sin(t * 7) * 0.35));   // the right arm sits at -x: raise it outward
     f.g.position.set(f.x, PY, f.z); f.g.rotation.y = f.yaw;
     const docked = f.state === "dock";
     f.tetherA += ((docked ? 1 : 0) - f.tetherA) * (1 - Math.pow(0.02, dt));
@@ -772,14 +780,14 @@ function start([charGltf, bldGltf]) {
         const o = base + k * 6; nlPos.set([A.x, A.y, A.z, A.x + (B.x - A.x) * gg, A.y + (B.y - A.y) * gg, A.z + (B.z - A.z) * gg], o);
         nlCol.set([c.r * f0, c.g * f0, c.b * f0, c.r * f0 * 0.6, c.g * f0 * 0.6, c.b * f0 * 0.6], o);
       };
-      seg(0, headV, nodeV, g1, f.c, 1.4);
+      seg(0, headV, nodeV, g1, f.c, 0.8);
       const no = i * (1 + BR) * 3; nnPos.set([nodeV.x, nodeV.y, nodeV.z], no); nnCol.set([f.c.r * g1, f.c.g * g1, f.c.b * g1], no);
       f.links.forEach((mi, k) => {
         const m = l3Mods[mi];
         endV.set(m.x, m.y - m.h / 2 + l3G.position.y, m.z);
-        midV.set((nodeV.x + endV.x) / 2 + (k - 1) * 0.5, nodeV.y + (endV.y - nodeV.y) * 0.55, (nodeV.z + endV.z) / 2);
+        midV.set((nodeV.x + endV.x) / 2 + (k - 0.5) * 0.6, nodeV.y + (endV.y - nodeV.y) * 0.55, (nodeV.z + endV.z) / 2);
         const ga = clamp(g2 * 2), gb = clamp(g2 * 2 - 1);
-        seg(1 + k * 2, nodeV, midV, ga, m.c, 1.2); seg(2 + k * 2, midV, endV, gb, m.c, 1.0);
+        seg(1 + k * 2, nodeV, midV, ga, m.c, 0.65); seg(2 + k * 2, midV, endV, gb, m.c, 0.5);
         const o2 = no + (k + 1) * 3; nnPos.set([midV.x, midV.y, midV.z], o2); nnCol.set([m.c.r * ga, m.c.g * ga, m.c.b * ga], o2);
         if (k < 2) {   // a pulse travelling up this branch
           const u = (t * 0.45 + f.nph + k * 0.5) % 1, po = (i * 2 + k) * 3, vis = g >= 1 ? bright : 0;
@@ -878,6 +886,7 @@ function start([charGltf, bldGltf]) {
     rad *= Math.max(1, (small ? 1.0 : 1.3) / camera.aspect);
     camera.position.set(tx + Math.cos(ph) * Math.sin(th) * rad, ty + Math.sin(ph) * rad, tz + Math.cos(ph) * Math.cos(th) * rad);
     camera.lookAt(tx, ty, tz);
+    billboards.forEach((b) => { b.getWorldPosition(bbW); b.rotation.y = Math.atan2(camera.position.x - bbW.x, camera.position.z - bbW.z); });
     // the giant agent only shows once the camera is clear of its body: no faces sliding through the near plane
     if (!v.ghost) {
       const size = (hero.hk || 1) * CHAR_H, d = camera.position.distanceTo(chest), a = v.heroA * clamp((d - 0.6 * size) / (0.12 * size));
