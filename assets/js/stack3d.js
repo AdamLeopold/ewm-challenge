@@ -641,6 +641,10 @@ function start([charGltf, bldGltf]) {
     const heroHold = main.visible && main.pS < 0.24;
     if (heroHold) { hero.x += (0 - hero.x) * (1 - Math.pow(0.05, dt)); hero.z += (2.6 - hero.z) * (1 - Math.pow(0.05, dt)); }
     figs.forEach((f) => stepFigure(f, dt, t, heroHold));
+    // the agent is not shown around its intelligence at first; as the camera pulls out it appears very large and
+    // shrinks to its real size, its chest staying where the orb is
+    const hk = 1 + 7 * Math.pow(1 - sstep((main.pS - 0.09) / 0.14), 2);
+    hero.g.scale.setScalar(hk); hero.g.position.y += CHEST * (1 - hk);
     buildings.forEach((b) => {
       b.label.position.set(b.g.position.x, PY + b.top + 0.35, b.g.position.z);
       if (b.g.userData.candles) b.g.userData.candles.forEach((c, i) => {
@@ -802,7 +806,7 @@ function start([charGltf, bldGltf]) {
     // L2
     const figA = (0.25 + 0.75 * f2);
     // seen from inside, the hero's own body is only a faint shell; the others arrive as we pull out
-    const heroA = v.ghost ? figA : (0.3 + 0.7 * clamp((pS - 0.12) / 0.1)) * figA, othersA = v.ghost ? figA : clamp((pS - 0.12) / 0.1) * figA;
+    const heroA = v.ghost ? figA : clamp((pS - 0.115) / 0.06) * figA, othersA = v.ghost ? figA : clamp((pS - 0.12) / 0.1) * figA;
     figs.forEach((f) => {
       const a = f === hero ? heroA : othersA; f.mats.forEach((m) => { m.opacity = a; m.depthWrite = a > 0.97; });
       f.g.visible = a > 0.01;
