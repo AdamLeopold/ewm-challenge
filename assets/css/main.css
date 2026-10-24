@@ -1,4 +1,4 @@
-/* SimuWorld — shared styles */
+/* EWM Challenge — shared styles */
 :root {
   --bg: #050608;
   --fg: #eef2ee;
@@ -11,7 +11,7 @@
   --city: #b06bff;
   --city-2: #ff5fd2;
   --city-deep: #0d0519;
-  --sw: #8fd6ff;          /* SimuWorld: ice blue, above the two worlds' green and violet */
+  --sw: #8fd6ff;          /* EWM Challenge: ice blue, above the two worlds' green and violet */
   --sw-2: #e4f3ff;
   --sw-deep: #04121c;
   --accent: var(--holo);
@@ -502,7 +502,7 @@ footer a:hover { color: var(--fg); }
 
 
 
-/* ---------- SimuWorld home ---------- */
+/* ---------- EWM Challenge home ---------- */
 .hero canvas.hero-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
 .hero-sw h1 { font-size: clamp(40px, 6.2vw, 100px); max-width: 13ch; }
 .hero-sw .lede { max-width: 54ch; }

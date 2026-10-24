@@ -1,4 +1,4 @@
-/* SimuWorld home · the economic world model, in WebGL.
+/* EWM Challenge home · the economic world model, in WebGL.
    The story the camera tells, scrolled by the pinned scene's progress (--p on .scene-stack):
      L1  Intelligence foundation lives inside every agent. We start inside one agent's chest -- a machined
          transformer stack with attention heads and tokens riding its residual stream, and beside it, wired to it,
@@ -12,7 +12,7 @@
      L4  Equilibrium & reality discipline: an armillary of three rings (behaviour, data, learned environment)
          converging on the data-driven generative equilibrium, beside real data the simulated curve learns to fit.
    A light spine runs through the model and "ECONOMIC WORLD MODEL" turns around its top and bottom. Around it,
-   SIMUWORLD CHALLENGE circles as big lettering with depth; now and then your agent flies in from it.
+   ECONOMIC WORLD MODEL CHALLENGE circles as big lettering with depth; now and then your agent flies in from it.
    Once the model is complete it can be dragged around. A faint copy turns behind the foundation section.
    Falls back to the CSS stack when WebGL is unavailable or motion is reduced. */
 import * as THREE from "three";
@@ -506,13 +506,13 @@ function start([charGltf, bldGltf]) {
     flatLabel("L4", "EQUILIBRIUM & REALITY", ICE, 3.8, -HALF + 1.9, Y4 + 0.02, HALF + 0.75, 0, l4G),
   ];
 
-  /* ---------- outer layer · SimuWorld Challenge: the name itself circles the model ---------- */
+  /* ---------- outer layer · Economic World Model Challenge: the name itself circles the model ---------- */
   // big upright letters on a gently tilted circle well clear of the model; stacked copies set slightly inward and
   // darker give the letters real depth, like a sign around a globe. No band, no rails: just the lettering.
   const RR = 18.5, RH = 4.8, DEPTH = 8;
   const ringG = new THREE.Group(); ringG.position.y = RING_Y; ringG.rotation.set(0.1, 0, -0.05, "ZXY"); scene.add(ringG);
   const spinG = new THREE.Group(); ringG.add(spinG);
-  const nameTex = ringNameTexture(); nameTex.wrapS = THREE.RepeatWrapping; nameTex.repeat.set(2, 1);
+  const nameTex = ringNameTexture(); nameTex.wrapS = THREE.RepeatWrapping; nameTex.repeat.set(1, 1);
   const letterLayers = [];
   for (let k = DEPTH - 1; k >= 0; k--) {
     const shade = k === 0 ? 1 : 0.34 - k * 0.03, geo = new THREE.CylinderGeometry(RR - k * 0.06, RR - k * 0.06, RH, 256, 1, true);
@@ -944,17 +944,18 @@ function tagTex(text, color) {
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 
-// "SIMUWORLD · CHALLENGE ·", the lettering that circles the model
+// "ECONOMIC WORLD MODEL CHALLENGE ·", the lettering that circles the model
 function ringNameTexture() {
-  const c = document.createElement("canvas"); c.width = 4096; c.height = 400;
-  const g = c.getContext("2d");
+  // the full name runs once around the ring, in tall narrow letters
+  const c = document.createElement("canvas"); c.width = 8192; c.height = 400;
+  const g = c.getContext("2d"), text = "ECONOMIC WORLD MODEL CHALLENGE";
   g.textBaseline = "middle"; g.textAlign = "center"; g.font = "600 380px 'Space Grotesk', sans-serif";
-  if ("letterSpacing" in g) g.letterSpacing = "70px";
+  if ("letterSpacing" in g) g.letterSpacing = "60px";
   const grd = g.createLinearGradient(0, 20, 0, 380); grd.addColorStop(0, "#ffffff"); grd.addColorStop(0.5, "#cfeeff"); grd.addColorStop(1, "#73bcff");
   g.shadowColor = "rgba(143,214,255,.9)"; g.shadowBlur = 18; g.fillStyle = grd;
-  // tall, narrow letters: draw squeezed horizontally
-  [["SIMUWORLD", 1024], ["CHALLENGE", 3072]].forEach(([w, x]) => { g.save(); g.translate(x, 214); g.scale(0.52, 1); g.fillText(w, 0, 0); g.restore(); });
-  g.shadowBlur = 0; g.fillStyle = "rgba(143,214,255,.85)"; g.beginPath(); g.arc(2048, 200, 16, 0, 7); g.arc(4080, 200, 16, 0, 7); g.fill();
+  const k = Math.min(0.62, 7600 / g.measureText(text).width);
+  g.save(); g.translate(3996, 214); g.scale(k, 1); g.fillText(text, 0, 0); g.restore();
+  g.shadowBlur = 0; g.fillStyle = "rgba(143,214,255,.85)"; g.beginPath(); g.arc(8092, 200, 18, 0, 7); g.fill();
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
 }
 

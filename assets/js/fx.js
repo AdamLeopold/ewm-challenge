@@ -1,4 +1,4 @@
-/* SimuWorld — canvas backgrounds and page interactions. No dependencies. */
+/* EWM Challenge — canvas backgrounds and page interactions. No dependencies. */
 (function () {
   var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var small = window.innerWidth < 760;
@@ -374,7 +374,7 @@
     return (spriteCache[key] = c);
   }
 
-  /* ---------- SimuWorld: a dotted globe (the world model) with agents arcing between places ---------- */
+  /* ---------- EWM Challenge: a dotted globe (the world model) with agents arcing between places ---------- */
   function worldFX(canvas, opts) {
     opts = opts || {};
     var cxr = parseFloat(canvas.dataset.cx || "0.68"), cyr = parseFloat(canvas.dataset.cy || "0.52");

@@ -1,4 +1,4 @@
-/* SimuWorld — the one file for dates, links and switches.
+/* EWM Challenge — the one file for dates, links and switches.
    Dates are ISO strings in UTC. `label` overrides the printed date (e.g. "10 月底").
    Edit here; pages render timelines and countdowns from this file. */
 window.SW_CONFIG = {
@@ -8,14 +8,14 @@ window.SW_CONFIG = {
   starterKitUrl: "",
 
   holobit: {
-    name: "SimuWorld Challenge",
+    name: "Economic World Model Challenge",
     hostLine: { zh: "Track 1–2 · 世界由 HoloBit 提供", en: "Tracks 1–2 · world provided by HoloBit" },
     timeline: [
       { date: "2026-11-02T00:00:00Z", zh: "比赛公告 · 开放报名", en: "Announcement · Registration opens",
         dzh: "发布规则、接口规格、文档预览与历史数据。", den: "Rules, interface spec, docs preview and historical data released." },
       { date: "2026-11-02T00:00:00Z", end: "2026-11-06T23:59:00Z", label: { zh: "11/02–06", en: "2–6 Nov" },
         zh: "香港金融科技周 · 现场宣讲", en: "Hong Kong FinTech Week · Showcase",
-        dzh: "SimuWorld Challenge 两条赛道现场介绍。", den: "Both SimuWorld Challenge tracks presented on site." },
+        dzh: "Economic World Model Challenge 两条赛道现场介绍。", den: "Both Economic World Model Challenge tracks presented on site." },
       { date: "2026-11-03T00:00:00Z", zh: "练习平台开放", en: "Practice platform opens",
         dzh: "远程练习接口与托管试跑开放，可查看练习排行榜。", den: "Remote practice API and hosted trial runs open, with a practice leaderboard." },
       { date: "2026-11-06T23:59:00Z", zh: "报名截止", en: "Registration closes",
