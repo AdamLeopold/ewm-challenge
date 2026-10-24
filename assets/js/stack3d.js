@@ -576,6 +576,7 @@ function start([charGltf, bldGltf]) {
   canvas.addEventListener("pointerup", endDrag); canvas.addEventListener("pointercancel", endDrag);
 
   /* ---------- agent behaviour: wander, pick an errand, dock for a moment, let go ---------- */
+  const waveE = new THREE.Euler(), waveQ = new THREE.Quaternion();
   const turnTo = (f, want, rate, dt) => { let dy = want - f.yaw; while (dy > Math.PI) dy -= 2 * Math.PI; while (dy < -Math.PI) dy += 2 * Math.PI; f.yaw += dy * (1 - Math.pow(rate, dt)); };
   const choose = (f) => {
     if (Math.random() < 0.3) {
@@ -623,7 +624,9 @@ function start([charGltf, bldGltf]) {
     else if (f.state === "dock") f.play(f.target ? "interact-right" : "emote-yes", f.target ? 0.8 : 0.7);
     else f.play("idle");
     f.mixer.update(dt);
-    if (f.state === "hold" && f.armR) f.armR.rotation.set(0, 0, -(2.55 + Math.sin(t * 7) * 0.35));   // the right arm sits at -x: raise it outward
+    if (f.state === "hold" && f.armR) {   // wave: lift the animated right arm out to the side and swing it, below the big head
+      waveE.set(-0.3, 0, -(1.35 + Math.sin(t * 7) * 0.25), "ZXY"); f.armR.quaternion.premultiply(waveQ.setFromEuler(waveE));
+    }
     f.g.position.set(f.x, PY, f.z); f.g.rotation.y = f.yaw;
     const docked = f.state === "dock";
     f.tetherA += ((docked ? 1 : 0) - f.tetherA) * (1 - Math.pow(0.02, dt));
