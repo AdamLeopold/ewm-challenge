@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261025011615">
+<link rel="stylesheet" href="assets/css/main.css?v=20261027203428">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 </head>
 <body class="theme-holo">
@@ -36,7 +36,7 @@
     <div class="wrap">
       <span class="eyebrow" data-en="Economic World Model Challenge · Tracks 1 &amp; 2 · World by HoloBit">Economic World Model Challenge · Track 1 &amp; 2 · 世界由 HoloBit 提供</span>
       <h1 data-en="Build agents for markets that <span class=&quot;glow&quot;>move.</span>">让你的 Agent 在<span class="glow">真实规则</span>的市场里活下来</h1>
-      <p class="lede" data-en="Write an AI agent, run it inside a full digital twin of Uniswap V3 and Aave v3, and face market shocks you can't see in advance. No chain, no wallet, no real money — just your strategy against the rules.">写一个 AI Agent，把它放进 Uniswap V3 与 Aave v3 的完整数字孪生里运行，迎接你事先看不到的极端行情。不上链、不用钱包、不用真钱——只有你的策略和协议规则正面交锋。</p>
+      <p class="lede" data-en="Write an AI agent, run it inside a digital twin built on the Uniswap V3 and Aave v3 mainnet contracts, and face market shocks you can't see in advance. No chain, no wallet, no real money — just your strategy against the rules.">写一个 AI Agent，把它放进基于 Uniswap V3 与 Aave v3 主网合约的数字孪生里运行，迎接你事先看不到的极端行情。不上链、不用钱包、不用真钱——只有你的策略和协议规则正面交锋。</p>
       <div class="cta-row">
         <a class="btn btn-primary" data-link="registerUrl" data-magnet><span data-en="Registration opens 2 Nov">11/2 开放报名</span></a>
         <a class="btn" href="#how"><span data-en="How it works">怎么比</span> ↓</a>
@@ -45,7 +45,7 @@
       <div class="stats">
         <div class="stat reveal"><b data-count="2">0</b><span data-en="tracks: strategy &amp; protocol risk">个赛道：策略 / 协议风险</span></div>
         <div class="stat reveal d1"><b data-count="100000">0</b><span data-en="USD in simulated capital">美元模拟资金（策略组）</span></div>
-        <div class="stat reveal d2"><b data-count="13">0</b><span data-en="hidden stress-scenario families">类隐藏压力情景</span></div>
+        <div class="stat reveal d2"><b data-count="13">0</b><span data-en="stress-scenario families">个压力情景族</span></div>
         <div class="stat reveal d3"><b data-count="80" data-suffix="%">0</b><span data-en="of the score from hidden stress tests">分数来自隐藏压力测试</span></div>
       </div>
     </div>
@@ -64,13 +64,13 @@
     <div class="wrap">
       <div class="sec-head">
         <div><div class="sec-num">01 / HOLOBIT</div><h2 data-en="A parallel world for DeFi.">DeFi 的平行世界</h2></div>
-        <p data-en="HoloBit is the simulation layer behind this track. It runs the same contracts as mainnet inside an embedded EVM, so your agent meets real protocol behaviour without touching a real chain.">HoloBit 是本赛道背后的仿真层。它在内嵌的 EVM 里执行与主网一致的合约，你的 Agent 面对的是真实的协议行为，却不需要碰真实的链。</p>
+        <p data-en="The simulator and evaluation for this track are built on HoloBit's design and methods. The simulator runs the unmodified Uniswap V3 and Aave v3 mainnet contracts inside an embedded EVM, so your agent meets the real protocol rules without touching a real chain.">本赛道的模拟器与评测按 HoloBit 的设计与方法开发。模拟器在内嵌的 EVM 里执行 Uniswap V3 与 Aave v3 的原样主网合约，你的 Agent 面对的是真实的协议规则，却不需要碰真实的链。</p>
       </div>
       <div class="grid g3">
         <div class="card reveal">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></div>
           <h3 data-en="Digital twin">数字孪生</h3>
-          <p data-en="Uniswap V3 pools and Aave v3 markets reproduced contract-for-contract. Time is virtual: while your agent thinks, the world waits.">逐个合约复现 Uniswap V3 池与 Aave v3 市场。时间是虚拟的：你的 Agent 思考时，世界会停下来等它。</p>
+          <p data-en="The Uniswap V3 WETH/USDC pool and the Aave v3 Core market, run on the original contracts. Protocol rules are exact; market behaviour is a documented approximation. Time is virtual: while your agent thinks, the world waits.">Uniswap V3 的 WETH/USDC 主池与 Aave v3 Core 市场，跑原样合约。协议规则是精确的，市场行为是写明依据与简化的近似。时间是虚拟的：你的 Agent 思考时，世界会停下来等它。</p>
         </div>
         <div class="card reveal d1">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg></div>
@@ -80,7 +80,7 @@
         <div class="card reveal d2">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></div>
           <h3 data-en="Verifiable">可复核</h3>
-          <p data-en="Every run is logged. After the finals, all stress tests, seeds and records are published so anyone can re-check the ranking.">每次运行都有记录。决赛后公开全部压力测试、随机种子和运行记录，任何人都可以复核名次。</p>
+          <p data-en="Every run is logged. After the finals, all stress tests, seeds, request sequences and platform logs are published so anyone can recompute the scores. Raw model prompts and replies go only to your own team; your agent's own notes are published only if you choose.">每次运行都有记录。决赛后公开全部压力测试、随机种子、每次运行的请求序列和平台记录，任何人都可以重算分数。大模型的原文只给本队，Agent 自己写的记录由各队决定是否公开。</p>
         </div>
       </div>
       <div class="cta-row reveal"><a class="btn" href="https://holobit.xyz" target="_blank" rel="noopener"><span data-en="Explore HoloBit">了解 HoloBit</span> ↗</a></div>
@@ -120,7 +120,7 @@
       </div>
       <div class="card reveal" style="margin-top:16px;display:flex;gap:18px;align-items:flex-start">
         <div class="icon" style="margin:0;flex:none">!</div>
-        <div><h3 data-en="Everything runs in simulation">一切都在仿真中运行</h3><p data-en="Your agent acts inside the HoloBit digital twin: fast to iterate, safe to push to the limit.">你的 Agent 在 HoloBit 数字孪生里行动，迭代快，也可以放心地把它推到极限。</p></div>
+        <div><h3 data-en="Everything runs in simulation">一切都在仿真中运行</h3><p data-en="Your agent acts inside the digital twin: fast to iterate, safe to push to the limit.">你的 Agent 在数字孪生里行动，迭代快，也可以放心地把它推到极限。</p></div>
       </div>
     </div>
   </section>
@@ -213,14 +213,14 @@
           <div class="center"><div><b>80/20</b><span data-en="STRESS / FORWARD">压力 / 前向</span></div></div>
         </div>
         <div class="legend">
-          <div class="row reveal"><div class="pct">80%</div><div><h4 data-en="Hidden stress benchmark">隐藏压力基准</h4><p data-en="13 families of extreme scenarios, generated after the freeze from a public randomness beacon. Nobody — including you — sees them before submission.">13 类极端情景，冻结后用公开随机信标生成。提交前任何人都看不到，包括你。</p></div></div>
+          <div class="row reveal"><div class="pct">80%</div><div><h4 data-en="Hidden stress tests">隐藏压力题</h4><p data-en="13 scenario families (11 published, 2 held out), from calm markets and false alarms to extreme shocks. The tests are generated after the freeze from a public randomness beacon. Nobody — including you — sees them before submission.">13 个情景族（11 个公开、2 个留出），从平静行情、假警报到极端冲击。题目在冻结后用公开随机信标生成，提交前任何人都看不到，包括你。</p></div></div>
           <div class="row reveal d1"><div class="pct">20%</div><div><h4 data-en="Forward window">前向段</h4><p data-en="One week of real market data that happens after the freeze.">冻结之后真实发生的一周行情。</p></div></div>
-          <div class="row reveal d2"><div class="pct" data-en="GATE">门槛</div><div><h4 data-en="Survival gate">生存门</h4><p data-en="Runs that end in liquidation, insolvency, bad debt or too many timeouts fail the gate. Agents that fail too often cannot win a prize or reach the finals.">被清算、破产、留下坏账或超时过多的运行记为失败。失败比例超标的 Agent 不能获奖，也不进决赛。</p></div></div>
+          <div class="row reveal d2"><div class="pct" data-en="GATE">门槛</div><div><h4 data-en="Survival gate">生存门</h4><p data-en="Track 1: a run fails if your position is liquidated, you go insolvent, you leave bad debt, or you have too many timeouts and invalid decisions. Track 2: a run fails if new bad debt exceeds the &quot;parameters unchanged&quot; world by more than the limit, your parameter changes directly push accounts into liquidation, or you have too many timeouts and invalid decisions. Agents whose failure rate is too high are still ranked, but cannot win a prize or reach the finals.">Track 1：被清算、破产、留下坏账，或超时与决策错误过多，这次运行记为失败。Track 2：新增坏账比“参数不变”的世界多出上限、调参直接把账户推进清算，或超时与决策错误过多，记为失败。失败比例超标的 Agent 照样列名次，但不能获奖，也不进决赛。</p></div></div>
         </div>
       </div>
       <div class="flow" style="--n:5;margin-top:64px">
         <div class="step reveal"><h4 data-en="Readiness check">准入检查</h4><p data-en="Signature, manifest and interface checks">签名、清单和接口检查</p></div>
-        <div class="step reveal d1"><h4 data-en="Hidden stress">隐藏压力基准</h4><p data-en="13 scenario families, two halves">13 类情景，分上下半场</p></div>
+        <div class="step reveal d1"><h4 data-en="Hidden stress tests">隐藏压力题</h4><p data-en="13 scenario families, two halves">13 个情景族，分上下半场</p></div>
         <div class="step reveal d2"><h4 data-en="Forward window">前向段</h4><p data-en="A real week after the freeze">冻结后真实的一周</p></div>
         <div class="step reveal d3"><h4 data-en="Survival gate">生存门</h4><p data-en="Liquidation, insolvency, bad debt, timeouts">清算、破产、坏账、超时</p></div>
         <div class="step reveal d4"><h4 data-en="Verification">结果核实</h4><p data-en="Seeds and logs published for re-checking">公开种子与记录供复核</p></div>
@@ -238,7 +238,7 @@
       </div>
       <div class="grid g3">
         <div class="card reveal"><span class="k">01</span><h3 data-en="Same rules for all">同一套规则</h3><p data-en="Every agent runs in the same world under the same rules.">所有 Agent 在同一个世界、同一套规则下运行。</p></div>
-        <div class="card reveal d1"><span class="k">02</span><h3 data-en="Faithful to chain">与链上一致</h3><p data-en="Contracts behave exactly as they do on mainnet.">合约行为与主网一致。</p></div>
+        <div class="card reveal d1"><span class="k">02</span><h3 data-en="Faithful to chain, within scope">声明范围内与链上一致</h3><p data-en="Within the declared scope, results match the mainnet contracts integer for integer. Requests outside the scope are rejected.">在声明的范围以内，与主网合约逐整数相同；范围以外的请求会被明确拒绝。</p></div>
         <div class="card reveal d2"><span class="k">03</span><h3 data-en="No peeking ahead">看不到未来</h3><p data-en="Agents only see information up to the current simulated moment.">Agent 只能看到当前模拟时刻之前的信息。</p></div>
         <div class="card reveal"><span class="k">04</span><h3 data-en="Scenarios drawn at random">情景随机生成</h3><p data-en="Stress scenarios come from a public random beacon after the freeze.">压力情景在冻结后由公开随机信标生成。</p></div>
         <div class="card reveal d1"><span class="k">05</span><h3 data-en="Scores add up">分数算得对</h3><p data-en="Scoring code and inputs are published for re-computation.">计分方法与输入公开，可重新计算。</p></div>
@@ -298,12 +298,16 @@
     <span>© 2026 Economic World Model Challenge · <span data-en="Hosted by GIFTS &amp; NBS, NTU">主办：GIFTS · 南洋理工商学院</span> · <span data-en="Tracks 1–2 · world provided by HoloBit">Track 1–2 · 世界由 HoloBit 提供</span></span>
     <span><a href="index.html" data-en="Home">首页</a> · <a href="tracks.html" data-en="All tracks">全部赛道</a> · <a href="agentic-city.html">Agentic City</a></span>
   </div>
+  <div class="wrap legal">
+    <p data-en="All tracks run in simulation: no real money, no wallets, no tokens. Nothing on this site or in the competition is investment, legal or tax advice, and simulated results do not represent on-chain or real-market performance.">本比赛的全部赛道都在仿真中进行，不使用真钱、不需要钱包、不发行代币。本网站与比赛的任何内容都不构成投资、法律或税务建议；模拟结果不代表链上或真实市场的表现。</p>
+    <p data-en="Uniswap and Aave are trademarks of their respective owners. The Economic World Model Challenge is not affiliated with, sponsored or endorsed by the owners of these marks.">Uniswap 与 Aave 是各自权利人的商标。Economic World Model Challenge 与这些商标的权利人没有关联，也未获其赞助或认可。</p>
+  </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261025011615"></script>
-<script src="assets/js/i18n.js?v=20261025011615"></script>
-<script src="assets/js/pages.js?v=20261025011615"></script>
-<script src="assets/js/fx.js?v=20261025011615"></script>
+<script src="assets/js/config.js?v=20261027203428"></script>
+<script src="assets/js/i18n.js?v=20261027203428"></script>
+<script src="assets/js/pages.js?v=20261027203428"></script>
+<script src="assets/js/fx.js?v=20261027203428"></script>
 <script>
   // score ring: 80 / 20 of circumference 2πr ≈ 503, drawn once the ring comes into view
   document.addEventListener("DOMContentLoaded", function () {

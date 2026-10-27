@@ -439,6 +439,8 @@ section.block { padding: clamp(72px, 11vw, 140px) 0; position: relative; }
 footer { padding: 48px 0 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
 footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
 footer a:hover { color: var(--fg); }
+footer .wrap.legal { display: block; margin-top: 18px; font-size: 12px; line-height: 1.6; opacity: .85; }
+footer .legal p { margin: 0 0 6px; max-width: 880px; }
 
 /* track switcher pill (inner pages) */
 .switch-track { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 12px; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); }
