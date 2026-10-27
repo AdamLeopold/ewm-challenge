@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261027203428">
+<link rel="stylesheet" href="assets/css/main.css?v=20261027211145">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 </head>
 <body class="theme-holo">
@@ -33,6 +33,7 @@
 <main class="page">
   <!-- HERO -->
   <section class="hero">
+    <canvas class="hero-term" data-fx="terminal" aria-hidden="true"></canvas>
     <div class="wrap">
       <span class="eyebrow" data-en="Economic World Model Challenge · Tracks 1 &amp; 2 · World by HoloBit">Economic World Model Challenge · Track 1 &amp; 2 · 世界由 HoloBit 提供</span>
       <h1 data-en="Build agents for markets that <span class=&quot;glow&quot;>move.</span>">让你的 Agent 在<span class="glow">真实规则</span>的市场里活下来</h1>
@@ -68,17 +69,17 @@
       </div>
       <div class="grid g3">
         <div class="card reveal">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></div>
+          <div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M12 2 3 7v10l9 5 9-5V7z"/><path pathLength="1" d="M3 7l9 5 9-5M12 12v10"/></svg></div>
           <h3 data-en="Digital twin">数字孪生</h3>
           <p data-en="The Uniswap V3 WETH/USDC pool and the Aave v3 Core market, run on the original contracts. Protocol rules are exact; market behaviour is a documented approximation. Time is virtual: while your agent thinks, the world waits.">Uniswap V3 的 WETH/USDC 主池与 Aave v3 Core 市场，跑原样合约。协议规则是精确的，市场行为是写明依据与简化的近似。时间是虚拟的：你的 Agent 思考时，世界会停下来等它。</p>
         </div>
         <div class="card reveal d1">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg></div>
+          <div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg></div>
           <h3 data-en="Headless SDK">无界面 SDK</h3>
           <p data-en="No dashboard to click through. Use the open SDK, iterate with your favourite AI coding assistant, and ship an agent.">不需要点界面。用开源 SDK，配合你常用的 AI 编程助手对话式迭代，直接产出 Agent。</p>
         </div>
         <div class="card reveal d2">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></div>
+          <div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M9 12l2 2 4-4"/><path pathLength="1" d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></div>
           <h3 data-en="Verifiable">可复核</h3>
           <p data-en="Every run is logged. After the finals, all stress tests, seeds, request sequences and platform logs are published so anyone can recompute the scores. Raw model prompts and replies go only to your own team; your agent's own notes are published only if you choose.">每次运行都有记录。决赛后公开全部压力测试、随机种子、每次运行的请求序列和平台记录，任何人都可以重算分数。大模型的原文只给本队，Agent 自己写的记录由各队决定是否公开。</p>
         </div>
@@ -96,6 +97,7 @@
       </div>
       <div class="grid g2">
         <article class="card big reveal" id="track-1">
+          <div class="card-art" aria-hidden="true"><canvas data-fx="holo"></canvas></div>
           <span class="k">Track 1</span>
           <h3 data-en="Strategy agent">策略 Agent</h3>
           <p data-en="Manage a simulated portfolio across Uniswap V3 and Aave v3 and earn the best risk-adjusted return.">在 Uniswap V3 与 Aave v3 之间管理一笔模拟资金，追求风险调整后的最好收益。</p>
@@ -107,6 +109,7 @@
           </ul>
         </article>
         <article class="card big reveal d1" id="track-2">
+          <div class="card-art" aria-hidden="true"><canvas data-fx="holo" data-variant="risk"></canvas></div>
           <span class="k">Track 2</span>
           <h3 data-en="Protocol risk agent">协议风险 Agent</h3>
           <p data-en="Act as Aave's risk steward: tune risk parameters to keep the protocol solvent through stress.">扮演 Aave 的风险管理者：调节风险参数，让协议在压力下保持稳健。</p>
@@ -144,13 +147,13 @@
         <div><div class="sec-num">03 / HOW IT WORKS</div><h2 data-en="From laptop to live finals.">从本地到现场决赛</h2></div>
         <p data-en="Build locally, practise against the hosted simulator, then freeze a signed agent for evaluation.">先在本地搭好，再连托管仿真器练习，最后签名冻结，交给评测。</p>
       </div>
-      <div class="flow" style="--n:6">
-        <div class="step reveal"><h4 data-en="Register">报名组队</h4><p data-en="Teams of 1–5. Pick Track 1, Track 2 or both.">1–5 人一队，选择 Track 1、Track 2 或两个都报。</p></div>
-        <div class="step reveal d1"><h4 data-en="Build locally">本地开发</h4><p data-en="Starter kits in Python and TypeScript with a local API stub and example agents.">起步包提供 Python 与 TypeScript 两版，含本地接口桩和示例 Agent。</p></div>
-        <div class="step reveal d2"><h4 data-en="Practise">远程练习</h4><p data-en="Hosted trial runs and a practice leaderboard.">托管试跑，查看练习排行榜。</p></div>
-        <div class="step reveal d3"><h4 data-en="Warm-up">热身轮</h4><p data-en="An unscored run that qualifies you for the main round.">不计分，完成即获得正式赛资格。</p></div>
-        <div class="step reveal d4"><h4 data-en="Freeze">签名冻结</h4><p data-en="Sign and freeze your final agent.">签名并冻结最终版本的 Agent。</p></div>
-        <div class="step reveal d4"><h4 data-en="Evaluate &amp; finals">评测与决赛</h4><p data-en="Hidden stress tests and the forward window, then live finals.">隐藏压力测试与前向段，之后进入现场决赛。</p></div>
+      <div class="flow" style="--n:6" data-scene data-pass>
+        <div data-at="0.02" class="step reveal"><h4 data-en="Register">报名组队</h4><p data-en="Teams of 1–5. Pick Track 1, Track 2 or both.">1–5 人一队，选择 Track 1、Track 2 或两个都报。</p></div>
+        <div data-at="0.19" class="step reveal d1"><h4 data-en="Build locally">本地开发</h4><p data-en="Starter kits in Python and TypeScript with a local API stub and example agents.">起步包提供 Python 与 TypeScript 两版，含本地接口桩和示例 Agent。</p></div>
+        <div data-at="0.35" class="step reveal d2"><h4 data-en="Practise">远程练习</h4><p data-en="Hosted trial runs and a practice leaderboard.">托管试跑，查看练习排行榜。</p></div>
+        <div data-at="0.52" class="step reveal d3"><h4 data-en="Warm-up">热身轮</h4><p data-en="An unscored run that qualifies you for the main round.">不计分，完成即获得正式赛资格。</p></div>
+        <div data-at="0.69" class="step reveal d4"><h4 data-en="Freeze">签名冻结</h4><p data-en="Sign and freeze your final agent.">签名并冻结最终版本的 Agent。</p></div>
+        <div data-at="0.85" class="step reveal d4"><h4 data-en="Evaluate &amp; finals">评测与决赛</h4><p data-en="Hidden stress tests and the forward window, then live finals.">隐藏压力测试与前向段，之后进入现场决赛。</p></div>
       </div>
       <div class="grid g2" style="margin-top:56px">
         <div class="card reveal">
@@ -210,20 +213,20 @@
             <circle class="a" cx="100" cy="100" r="80" stroke-dasharray="0 503"/>
             <circle class="b" cx="100" cy="100" r="80" stroke-dasharray="0 503" stroke-dashoffset="0"/>
           </svg>
-          <div class="center"><div><b>80/20</b><span data-en="STRESS / FORWARD">压力 / 前向</span></div></div>
+          <div class="center"><div><b><span data-count="80">80</span>/<span data-count="20">20</span></b><span data-en="STRESS / FORWARD">压力 / 前向</span></div></div>
         </div>
         <div class="legend">
-          <div class="row reveal"><div class="pct">80%</div><div><h4 data-en="Hidden stress tests">隐藏压力题</h4><p data-en="13 scenario families (11 published, 2 held out), from calm markets and false alarms to extreme shocks. The tests are generated after the freeze from a public randomness beacon. Nobody — including you — sees them before submission.">13 个情景族（11 个公开、2 个留出），从平静行情、假警报到极端冲击。题目在冻结后用公开随机信标生成，提交前任何人都看不到，包括你。</p></div></div>
-          <div class="row reveal d1"><div class="pct">20%</div><div><h4 data-en="Forward window">前向段</h4><p data-en="One week of real market data that happens after the freeze.">冻结之后真实发生的一周行情。</p></div></div>
+          <div class="row reveal"><div class="pct" data-count="80" data-suffix="%">80%</div><div><h4 data-en="Hidden stress tests">隐藏压力题</h4><p data-en="13 scenario families (11 published, 2 held out), from calm markets and false alarms to extreme shocks. The tests are generated after the freeze from a public randomness beacon. Nobody — including you — sees them before submission.">13 个情景族（11 个公开、2 个留出），从平静行情、假警报到极端冲击。题目在冻结后用公开随机信标生成，提交前任何人都看不到，包括你。</p></div></div>
+          <div class="row reveal d1"><div class="pct" data-count="20" data-suffix="%">20%</div><div><h4 data-en="Forward window">前向段</h4><p data-en="One week of real market data that happens after the freeze.">冻结之后真实发生的一周行情。</p></div></div>
           <div class="row reveal d2"><div class="pct" data-en="GATE">门槛</div><div><h4 data-en="Survival gate">生存门</h4><p data-en="Track 1: a run fails if your position is liquidated, you go insolvent, you leave bad debt, or you have too many timeouts and invalid decisions. Track 2: a run fails if new bad debt exceeds the &quot;parameters unchanged&quot; world by more than the limit, your parameter changes directly push accounts into liquidation, or you have too many timeouts and invalid decisions. Agents whose failure rate is too high are still ranked, but cannot win a prize or reach the finals.">Track 1：被清算、破产、留下坏账，或超时与决策错误过多，这次运行记为失败。Track 2：新增坏账比“参数不变”的世界多出上限、调参直接把账户推进清算，或超时与决策错误过多，记为失败。失败比例超标的 Agent 照样列名次，但不能获奖，也不进决赛。</p></div></div>
         </div>
       </div>
-      <div class="flow" style="--n:5;margin-top:64px">
-        <div class="step reveal"><h4 data-en="Readiness check">准入检查</h4><p data-en="Signature, manifest and interface checks">签名、清单和接口检查</p></div>
-        <div class="step reveal d1"><h4 data-en="Hidden stress tests">隐藏压力题</h4><p data-en="13 scenario families, two halves">13 个情景族，分上下半场</p></div>
-        <div class="step reveal d2"><h4 data-en="Forward window">前向段</h4><p data-en="A real week after the freeze">冻结后真实的一周</p></div>
-        <div class="step reveal d3"><h4 data-en="Survival gate">生存门</h4><p data-en="Liquidation, insolvency, bad debt, timeouts">清算、破产、坏账、超时</p></div>
-        <div class="step reveal d4"><h4 data-en="Verification">结果核实</h4><p data-en="Seeds and logs published for re-checking">公开种子与记录供复核</p></div>
+      <div class="flow" style="--n:5;margin-top:64px" data-scene data-pass>
+        <div data-at="0.02" class="step reveal"><h4 data-en="Readiness check">准入检查</h4><p data-en="Signature, manifest and interface checks">签名、清单和接口检查</p></div>
+        <div data-at="0.22" class="step reveal d1"><h4 data-en="Hidden stress tests">隐藏压力题</h4><p data-en="13 scenario families, two halves">13 个情景族，分上下半场</p></div>
+        <div data-at="0.42" class="step reveal d2"><h4 data-en="Forward window">前向段</h4><p data-en="A real week after the freeze">冻结后真实的一周</p></div>
+        <div data-at="0.62" class="step reveal d3"><h4 data-en="Survival gate">生存门</h4><p data-en="Liquidation, insolvency, bad debt, timeouts">清算、破产、坏账、超时</p></div>
+        <div data-at="0.82" class="step reveal d4"><h4 data-en="Verification">结果核实</h4><p data-en="Seeds and logs published for re-checking">公开种子与记录供复核</p></div>
       </div>
       <p class="note" data-en="Rankings are published with confidence intervals; teams that can't be separated share a place. After the finals every stress test, seed and log is released so you can verify your own score.">名次带置信区间公布，分不开的队伍并列。决赛后公开全部压力测试、种子和记录，你可以自己复核分数。</p>
     </div>
@@ -237,12 +240,12 @@
         <p data-en="What every team can rely on.">每支队伍都可以依赖的底线。</p>
       </div>
       <div class="grid g3">
-        <div class="card reveal"><span class="k">01</span><h3 data-en="Same rules for all">同一套规则</h3><p data-en="Every agent runs in the same world under the same rules.">所有 Agent 在同一个世界、同一套规则下运行。</p></div>
-        <div class="card reveal d1"><span class="k">02</span><h3 data-en="Faithful to chain, within scope">声明范围内与链上一致</h3><p data-en="Within the declared scope, results match the mainnet contracts integer for integer. Requests outside the scope are rejected.">在声明的范围以内，与主网合约逐整数相同；范围以外的请求会被明确拒绝。</p></div>
-        <div class="card reveal d2"><span class="k">03</span><h3 data-en="No peeking ahead">看不到未来</h3><p data-en="Agents only see information up to the current simulated moment.">Agent 只能看到当前模拟时刻之前的信息。</p></div>
-        <div class="card reveal"><span class="k">04</span><h3 data-en="Scenarios drawn at random">情景随机生成</h3><p data-en="Stress scenarios come from a public random beacon after the freeze.">压力情景在冻结后由公开随机信标生成。</p></div>
-        <div class="card reveal d1"><span class="k">05</span><h3 data-en="Scores add up">分数算得对</h3><p data-en="Scoring code and inputs are published for re-computation.">计分方法与输入公开，可重新计算。</p></div>
-        <div class="card reveal d2"><span class="k">06</span><h3 data-en="Honest rankings">名次如实</h3><p data-en="Ties are declared, not broken arbitrarily.">分不开就并列，不随意排先后。</p></div>
+        <div class="card reveal"><span class="k">01</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle pathLength="1" cx="12" cy="12" r="9"/><path pathLength="1" d="M8 10h8"/><path pathLength="1" d="M8 14h8"/></svg></div><h3 data-en="Same rules for all">同一套规则</h3><p data-en="Every agent runs in the same world under the same rules.">所有 Agent 在同一个世界、同一套规则下运行。</p></div>
+        <div class="card reveal d1"><span class="k">02</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path pathLength="1" d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></div><h3 data-en="Faithful to chain, within scope">声明范围内与链上一致</h3><p data-en="Within the declared scope, results match the mainnet contracts integer for integer. Requests outside the scope are rejected.">在声明的范围以内，与主网合约逐整数相同；范围以外的请求会被明确拒绝。</p></div>
+        <div class="card reveal d2"><span class="k">03</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle pathLength="1" cx="12" cy="12" r="3"/><path pathLength="1" d="M4 4l16 16"/></svg></div><h3 data-en="No peeking ahead">看不到未来</h3><p data-en="Agents only see information up to the current simulated moment.">Agent 只能看到当前模拟时刻之前的信息。</p></div>
+        <div class="card reveal"><span class="k">04</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect pathLength="1" x="4" y="4" width="16" height="16" rx="3"/><path pathLength="1" d="M9 9h.01"/><path pathLength="1" d="M15 9h.01"/><path pathLength="1" d="M12 12h.01"/><path pathLength="1" d="M9 15h.01"/><path pathLength="1" d="M15 15h.01"/></svg></div><h3 data-en="Scenarios drawn at random">情景随机生成</h3><p data-en="Stress scenarios come from a public random beacon after the freeze.">压力情景在冻结后由公开随机信标生成。</p></div>
+        <div class="card reveal d1"><span class="k">05</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect pathLength="1" x="5" y="3" width="14" height="18" rx="2"/><path pathLength="1" d="M8 7h8"/><path pathLength="1" d="M9 12h.01"/><path pathLength="1" d="M12 12h.01"/><path pathLength="1" d="M15 12h.01"/><path pathLength="1" d="M9 16h.01"/><path pathLength="1" d="M12 16h.01"/><path pathLength="1" d="M15 16h.01"/></svg></div><h3 data-en="Scores add up">分数算得对</h3><p data-en="Scoring code and inputs are published for re-computation.">计分方法与输入公开，可重新计算。</p></div>
+        <div class="card reveal d2"><span class="k">06</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M12 4v16"/><path pathLength="1" d="M7 20h10"/><path pathLength="1" d="M5 7h14"/><path pathLength="1" d="M5 7l-3 6a3 3 0 0 0 6 0z"/><path pathLength="1" d="M19 7l-3 6a3 3 0 0 0 6 0z"/></svg></div><h3 data-en="Honest rankings">名次如实</h3><p data-en="Ties are declared, not broken arbitrarily.">分不开就并列，不随意排先后。</p></div>
       </div>
     </div>
   </section>
@@ -304,10 +307,10 @@
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261027203428"></script>
-<script src="assets/js/i18n.js?v=20261027203428"></script>
-<script src="assets/js/pages.js?v=20261027203428"></script>
-<script src="assets/js/fx.js?v=20261027203428"></script>
+<script src="assets/js/config.js?v=20261027211145"></script>
+<script src="assets/js/i18n.js?v=20261027211145"></script>
+<script src="assets/js/pages.js?v=20261027211145"></script>
+<script src="assets/js/fx.js?v=20261027211145"></script>
 <script>
   // score ring: 80 / 20 of circumference 2πr ≈ 503, drawn once the ring comes into view
   document.addEventListener("DOMContentLoaded", function () {

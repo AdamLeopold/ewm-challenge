@@ -696,8 +696,10 @@
       var sceneFrame = function () {
         sceneTick = false;
         scenes.forEach(function (sc) {
-          var r = sc.getBoundingClientRect(), run = r.height - innerHeight;
-          var p = reduce ? 1 : (run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 1);
+          var r = sc.getBoundingClientRect(), run = r.height - innerHeight, p;
+          if (reduce) p = 1;
+          else if (sc.hasAttribute("data-pass")) p = Math.min(1, Math.max(0, (innerHeight * 0.92 - r.top) / (innerHeight * 0.6)));   // short blocks: progress as they slide up through the view
+          else p = run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 1;
           sc.style.setProperty("--p", p.toFixed(4));
           var now = null;
           sc.querySelectorAll("[data-at]").forEach(function (el) { var on = p >= parseFloat(el.dataset.at); el.classList.toggle("on", on); if (on) now = el; });
