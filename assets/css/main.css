@@ -419,6 +419,26 @@ section.block { padding: clamp(72px, 11vw, 140px) 0; position: relative; }
 .embed .fallback { position: absolute; inset: 44px 0 0 0; display: none; place-items: center; text-align: center; padding: 24px; background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--accent) 18%, #000), #000); }
 .embed.failed .fallback { display: grid; }
 
+/* Agentic City studio: load its map and 3D assets only on request. */
+.city-demo .sec-head { margin-bottom: 30px; }
+.city-demo-cover { min-height: 420px; display: flex; align-items: center; padding: clamp(28px, 6vw, 76px); background: linear-gradient(90deg, rgba(13,5,25,.96), rgba(13,5,25,.8) 46%, rgba(13,5,25,.3)), url(../media/agentic-city-demo-map.svg) center / cover; }
+.city-demo-intro { max-width: 620px; }
+.city-demo-intro h3 { margin: 20px 0 16px; font-family: var(--font-display); font-size: clamp(30px, 4vw, 48px); line-height: 1.08; letter-spacing: -.03em; }
+.city-demo-intro p { max-width: 46ch; color: rgba(255,255,255,.76); }
+.city-demo-shell iframe { display: block; height: clamp(600px, 82vh, 940px); }
+.city-demo-shell [hidden] { display: none; }
+.city-demo-note, .city-demo-loading { margin-top: 18px; color: var(--muted); font-size: 13px; line-height: 1.7; max-width: 90ch; }
+.city-demo-loading { color: var(--accent); }
+@media (max-width: 640px) {
+  .city-demo-cover { min-height: 400px; }
+  .city-demo .embed-bar { flex-wrap: wrap; }
+  .city-demo .embed-bar .url { flex-basis: calc(100% - 74px); }
+  .city-demo .embed-bar a { margin-left: auto; }
+  .city-demo .cta-row { gap: 10px; }
+  .city-demo .btn { font-size: 11px; padding: 12px 16px; }
+  .city-demo-shell iframe { height: 760px; }
+}
+
 .demo-frame { border-radius: 18px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); position: relative; background: #000; }
 .demo-frame video { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
 .demo-frame .tag { position: absolute; left: 16px; top: 16px; }

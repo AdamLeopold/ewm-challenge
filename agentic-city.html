@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261027211145">
+<link rel="stylesheet" href="assets/css/main.css?v=20261030133933">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 <style>
   /* builder mock */
@@ -58,6 +58,7 @@
   <a class="brand" href="index.html"><span class="brand-mark"></span>EWM <span class="brand-sub">Challenge</span></a>
   <nav class="nav">
     <div class="nav-links">
+      <a href="#demo">Demo</a>
       <a href="#play" data-en="How to play">怎么玩</a>
       <a href="#submit" data-en="Submit">提交</a>
       <a href="#evaluate" data-en="Evaluation">评估</a>
@@ -81,7 +82,8 @@
       <h1 data-en="Plan a city by <span class=&quot;glow&quot;>talking to it.</span>">一句话，<span class="glow">建一座城</span></h1>
       <p class="lede" data-en="Become the chief planner of a 17.73 km² core district in Hong Kong's Northern Metropolis — San Tin, the Loop's Hong Kong Park and Ngau Tam Mei — and design it for 2035. Tell the AI agent where to zone, what to build and which bus routes to add, then write your policies. Within a fixed budget, you build the city; we then run it through scenario simulations and see how residents, firms and investors respond.">成为香港北部都会区核心区的“首席规划师”：以新田、落马洲河套香港园区和牛潭尾为核心，约 17.73 平方公里，面向 2035 年。告诉 AI Agent 在哪里划区、建什么、加哪条公交线，再写下你的政策。你在固定预算内把城市建好，我们把它放进多种场景里模拟，看居民、企业和投资者如何回应。</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#play" data-magnet><span data-en="See how it works">看看怎么玩</span> ↓</a>
+        <a class="btn btn-primary" href="demo/agentic-city/" target="_blank" rel="noopener" data-magnet><span data-en="Try the demo">体验 Demo</span> ↗</a>
+        <a class="btn" href="#play"><span data-en="See how it works">看看怎么玩</span> ↓</a>
         <a class="btn" href="#submit"><span data-en="What you submit">提交什么</span> ↓</a>
       </div>
       <div class="countdown" data-countdown="city"></div>
@@ -101,6 +103,36 @@
     <span><b>◆</b> 17.73 km² · 2035</span><span><b>◆</b> Chat-to-build 3D city</span><span><b>◆</b> Zoning · Buildings · Transit</span><span><b>◆</b> Policy design</span><span><b>◆</b> Fixed budget</span><span><b>◆</b> Scenario simulation</span><span><b>◆</b> Economic World Model</span><span><b>◆</b> Shenzhen–Hong Kong teams welcome</span>
     <span><b>◆</b> 17.73 km² · 2035</span><span><b>◆</b> Chat-to-build 3D city</span><span><b>◆</b> Zoning · Buildings · Transit</span><span><b>◆</b> Policy design</span><span><b>◆</b> Fixed budget</span><span><b>◆</b> Scenario simulation</span><span><b>◆</b> Economic World Model</span><span><b>◆</b> Shenzhen–Hong Kong teams welcome</span>
   </div></div>
+
+  <section class="block city-demo" id="demo" aria-labelledby="city-demo-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="sec-num">DEMO / PLANNING STUDIO</div><h2 id="city-demo-title" data-en="Step inside Agentic City.">走进 Agentic City</h2></div>
+        <p data-en="Explore the 2D map and 3D city, then try the fire-station planning walkthrough. Open the English-language studio here or in a full browser tab.">浏览 2D 地图与 3D 城市，体验消防站规划流程。可在本页加载英文版工作台，也可在独立标签页全屏体验。</p>
+      </div>
+      <div class="embed city-demo-shell">
+        <div class="embed-bar">
+          <i></i><i></i><i></i><span class="url">Agentic City · Planning Studio</span>
+          <a href="demo/agentic-city/" target="_blank" rel="noopener" data-en="Open full demo ↗">打开完整 Demo ↗</a>
+        </div>
+        <div class="city-demo-cover" id="city-demo-cover">
+          <div class="city-demo-intro">
+            <span class="eyebrow" data-en="Interactive demo · Available now">交互 Demo · 现已开放</span>
+            <h3 data-en="A city you can explore.">一座可以亲自探索的城市</h3>
+            <p data-en="Inspect neighbourhoods, switch map layers and see your plan take shape in 3D.">查看城区、切换地图图层，观察规划方案在 3D 城市中成形。</p>
+            <div class="cta-row">
+              <button class="btn btn-primary" id="load-city-demo" type="button" aria-controls="city-demo-frame"><span data-en="Load demo here">在本页加载 Demo</span> →</button>
+              <a class="btn" href="demo/agentic-city/" target="_blank" rel="noopener"><span data-en="Open in new tab">新标签页打开</span> ↗</a>
+            </div>
+          </div>
+        </div>
+        <iframe id="city-demo-frame" title="Agentic City planning studio demo" allow="fullscreen" hidden></iframe>
+      </div>
+      <p class="city-demo-loading" id="city-demo-loading" role="status" hidden data-en="Loading the studio… You can also open the full demo using the link above.">正在加载工作台……也可使用上方链接打开完整 Demo。</p>
+      <p class="city-demo-note" data-en="Scripted demo: planning dialogue and assessment values are illustrative. Live AI and full simulation services are not connected. The map and 3D model load when you launch the demo; a desktop browser is recommended.">本 Demo 使用预设规划对话与示例评估数值，尚未接入真实 AI 和完整仿真服务。启动后加载地图与 3D 模型，建议使用电脑浏览器体验。</p>
+      <noscript><p class="city-demo-note"><a href="demo/agentic-city/">Open Agentic City demo ↗</a></p></noscript>
+    </div>
+  </section>
 
   <!-- 01 THE SITE -->
   <section class="block" id="site">
@@ -142,7 +174,7 @@
           <div class="budget"><span data-en="Budget remaining">剩余预算</span> <span id="budget-pct">100%</span><div class="bar"><i id="budget-bar"></i></div></div>
         </div>
       </div>
-      <p class="scene-cap" data-en="The playable demo arrives at the end of October">可体验的 Demo 将于 10 月底上线</p>
+      <p class="scene-cap" data-en="Explore the interactive demo above">在上方体验交互 Demo</p>
       </div></div>
     </div>
     <div class="wrap">
@@ -340,7 +372,7 @@
         <details class="reveal"><summary data-en="Are the basic checks my score?">基础检查的结果就是我的成绩吗？</summary><p data-en="Basic checks are your guide while you build. Your ranking comes from scenario simulation, agent ratings and expert review.">基础检查是你搭建过程中的参考，名次由场景模拟、Agent 评价和专家评审综合确定。</p></details>
         <details class="reveal"><summary data-en="Is there a separate track for school students?">青少年有单独的赛道吗？</summary><p data-en="No. Everyone follows the same process and rules. The platform's chat, cards and checks make it accessible to newcomers.">没有。所有人走同一套流程和规则，平台的对话、卡片和自动检查让新手也能完成方案。</p></details>
         <details class="reveal"><summary data-en="Can I team up across Shenzhen and Hong Kong, or join from overseas?">可以深港跨境组队、或者从海外参加吗？</summary><p data-en="Yes to both. Cross-border teams are especially encouraged, and overseas youth teams are welcome.">都可以。特别鼓励深港跨境组队，也欢迎海外青年团队。</p></details>
-        <details class="reveal"><summary data-en="When can I start building?">什么时候可以开始搭？</summary><p data-en="A demo video and a playable demo arrive at the end of October. The full platform, registration and submissions open in late November.">10 月底先上线演示视频和可体验 Demo；完整平台、正式报名与提交预计在 11 月下旬开放。</p></details>
+        <details class="reveal"><summary data-en="When can I start building?">什么时候可以开始搭？</summary><p data-en="The <a href=&quot;demo/agentic-city/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>interactive demo is available now ↗</a>. It offers city exploration and a scripted planning walkthrough. The full platform, registration and submissions are expected to open in late November."><a href="demo/agentic-city/" target="_blank" rel="noopener">交互 Demo 现已开放 ↗</a>，可浏览城市并体验预设规划流程；完整平台、正式报名与提交预计在 11 月下旬开放。</p></details>
         <details class="reveal"><summary data-en="What are the prizes?">奖项是什么？</summary><p data-en="Prizes are announced at the challenge launch.">奖项将在比赛正式发布时公布。</p></details>
       </div>
     </div>
@@ -367,7 +399,7 @@
       <div class="contact reveal">
         <span class="eyebrow" data-en="Get ready">准备出发</span>
         <h2 style="margin-top:16px" data-en="Imagine the city you want to live in.">想象你想生活的那座城市。</h2>
-        <p data-en="Watch for the demo at the end of October. Questions or partnership ideas? Reach us below.">10 月底的 Demo 敬请期待。有问题或合作意向，欢迎联系我们。</p>
+        <p data-en="Explore the planning demo above. Questions or partnership ideas? Reach us below.">欢迎体验上方的规划 Demo。有问题或合作意向，欢迎联系我们。</p>
         <div class="cta-row" data-contact></div>
       </div>
     </div>
@@ -384,10 +416,10 @@
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261027211145"></script>
-<script src="assets/js/i18n.js?v=20261027211145"></script>
-<script src="assets/js/pages.js?v=20261027211145"></script>
-<script src="assets/js/fx.js?v=20261027211145"></script>
+<script src="assets/js/config.js?v=20261030133933"></script>
+<script src="assets/js/i18n.js?v=20261030133933"></script>
+<script src="assets/js/pages.js?v=20261030133933"></script>
+<script src="assets/js/fx.js?v=20261030133933"></script>
 <script>
 (function () {
   var t = function (zh, en) { return window.SW_t(zh, en); };
@@ -431,6 +463,20 @@
 
   // builder mock: the conversation advances with the scroll through the builder scene
   document.addEventListener("DOMContentLoaded", function () {
+    var demoButton = document.getElementById("load-city-demo"),
+        demoCover = document.getElementById("city-demo-cover"),
+        demoFrame = document.getElementById("city-demo-frame"),
+        demoLoading = document.getElementById("city-demo-loading");
+    demoButton.addEventListener("click", function () {
+      demoButton.disabled = true;
+      demoCover.hidden = true;
+      demoFrame.hidden = false;
+      demoLoading.hidden = false;
+      demoFrame.addEventListener("load", function () { demoLoading.hidden = true; }, { once: true });
+      demoFrame.src = "demo/agentic-city/";
+      demoFrame.focus();
+    });
+
     var sc = document.getElementById("builder-scene"), b = document.getElementById("builder"), msgs = b.querySelectorAll(".msg"),
         bar = document.getElementById("budget-bar"), pct = document.getElementById("budget-pct");
     var at = [0.3, 0.44, 0.6, 0.74];

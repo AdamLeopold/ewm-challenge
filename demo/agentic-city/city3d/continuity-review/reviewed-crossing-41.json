@@ -1,0 +1,20 @@
+{
+  "revision": 41,
+  "vertex_count": 42,
+  "center_local": [
+    -842.5729088851949,
+    -77.09703622898087,
+    4.771711349487305
+  ],
+  "source_gap_m": 9.034130627747375,
+  "surface_footprint_approximate": true,
+  "type": "imagery_supported_surface_crossing",
+  "hydraulic_structure_confirmed": false,
+  "source_geometry_modified": false,
+  "ground_elevations_unchanged": true,
+  "evidence": [
+    "imagery-gap.png",
+    "source-gap.json"
+  ],
+  "reviewText": "已核查跨渠通道：两段明渠源面间隔约 9.03 米；地政总署航拍显示硬地横跨渠线。这里按有盖／跨渠地表表达，不补成露天水面。覆盖范围为影像示意，地下过水结构未实测确认。"
+}

@@ -1,0 +1,1787 @@
+{
+  "revision": 40,
+  "files": [
+    {
+      "file": "context_0-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 1857
+    },
+    {
+      "file": "context_1-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 441
+    },
+    {
+      "file": "context_1-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 99
+    },
+    {
+      "file": "context_1-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 24
+    },
+    {
+      "file": "context_2-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 1002
+    },
+    {
+      "file": "context_3-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 4299
+    },
+    {
+      "file": "context_4-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 147
+    },
+    {
+      "file": "context_4-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 2511
+    },
+    {
+      "file": "context_4-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 630
+    },
+    {
+      "file": "context_5-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 20622
+    },
+    {
+      "file": "context_5-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 5142
+    },
+    {
+      "file": "context_5-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 294
+    },
+    {
+      "file": "context_6-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 8736
+    },
+    {
+      "file": "context_6-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 13083
+    },
+    {
+      "file": "context_6-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 1005
+    },
+    {
+      "file": "context_7-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 10110
+    },
+    {
+      "file": "context_7-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 19359
+    },
+    {
+      "file": "context_7-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 2271
+    },
+    {
+      "file": "context_8-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 6984
+    },
+    {
+      "file": "context_8-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 756
+    },
+    {
+      "file": "context_9-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 954
+    },
+    {
+      "file": "context_9-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 132
+    },
+    {
+      "file": "context_10-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 528
+    },
+    {
+      "file": "context_10-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 126
+    },
+    {
+      "file": "context_11-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 29787
+    },
+    {
+      "file": "context_11-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 82173
+    },
+    {
+      "file": "context_11-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 7986
+    },
+    {
+      "file": "context_12-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 7374
+    },
+    {
+      "file": "context_12-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1104
+    },
+    {
+      "file": "context_13-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1092
+    },
+    {
+      "file": "context_13-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 222
+    },
+    {
+      "file": "context_14-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 8958
+    },
+    {
+      "file": "context_14-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1950
+    },
+    {
+      "file": "context_15-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 13326
+    },
+    {
+      "file": "context_15-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 63150
+    },
+    {
+      "file": "context_15-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 5121
+    },
+    {
+      "file": "context_16-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 12066
+    },
+    {
+      "file": "context_16-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1350
+    },
+    {
+      "file": "context_17-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 16263
+    },
+    {
+      "file": "context_17-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 606
+    },
+    {
+      "file": "context_18-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 55755
+    },
+    {
+      "file": "context_18-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 2706
+    },
+    {
+      "file": "context_19-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 47862
+    },
+    {
+      "file": "context_19-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 129168
+    },
+    {
+      "file": "context_19-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 4923
+    },
+    {
+      "file": "context_20-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 11157
+    },
+    {
+      "file": "context_20-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 948
+    },
+    {
+      "file": "context_21-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1272
+    },
+    {
+      "file": "context_21-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 54
+    },
+    {
+      "file": "context_22-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 483
+    },
+    {
+      "file": "context_23-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 516
+    },
+    {
+      "file": "context_23-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 84
+    },
+    {
+      "file": "context_24-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 14028
+    },
+    {
+      "file": "context_24-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 270
+    },
+    {
+      "file": "context_25-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 40236
+    },
+    {
+      "file": "context_25-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 82860
+    },
+    {
+      "file": "context_25-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 3534
+    },
+    {
+      "file": "context_26-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 19827
+    },
+    {
+      "file": "context_26-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 72876
+    },
+    {
+      "file": "context_26-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 1536
+    },
+    {
+      "file": "context_27-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 6450
+    },
+    {
+      "file": "context_27-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 26901
+    },
+    {
+      "file": "context_27-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 354
+    },
+    {
+      "file": "context_28-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 396
+    },
+    {
+      "file": "context_29-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 3828
+    },
+    {
+      "file": "context_29-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 26508
+    },
+    {
+      "file": "context_29-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 1833
+    },
+    {
+      "file": "context_30-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 2007
+    },
+    {
+      "file": "context_30-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 8214
+    },
+    {
+      "file": "context_30-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 42
+    },
+    {
+      "file": "context_31-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 147
+    },
+    {
+      "file": "context_31-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 24
+    },
+    {
+      "file": "context_32-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 1878
+    },
+    {
+      "file": "context_32-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 8553
+    },
+    {
+      "file": "context_32-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 1218
+    },
+    {
+      "file": "context_33-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 14226
+    },
+    {
+      "file": "context_33-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 474
+    },
+    {
+      "file": "context_34-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 13248
+    },
+    {
+      "file": "context_34-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 2580
+    },
+    {
+      "file": "context_35-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 7509
+    },
+    {
+      "file": "context_35-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 78636
+    },
+    {
+      "file": "context_35-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 3462
+    },
+    {
+      "file": "context_36-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 9768
+    },
+    {
+      "file": "context_36-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 288
+    },
+    {
+      "file": "context_37-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 11274
+    },
+    {
+      "file": "context_37-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1704
+    },
+    {
+      "file": "context_38-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 48348
+    },
+    {
+      "file": "context_38-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 1968
+    },
+    {
+      "file": "context_39-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 20514
+    },
+    {
+      "file": "context_39-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 49080
+    },
+    {
+      "file": "context_39-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 5214
+    },
+    {
+      "file": "context_40-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 513
+    },
+    {
+      "file": "context_41-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 267
+    },
+    {
+      "file": "context_42-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1377
+    },
+    {
+      "file": "context_42-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 48
+    },
+    {
+      "file": "context_43-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1362
+    },
+    {
+      "file": "context_43-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 138
+    },
+    {
+      "file": "context_44-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 34722
+    },
+    {
+      "file": "context_44-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 48141
+    },
+    {
+      "file": "context_44-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 4788
+    },
+    {
+      "file": "context_45-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 84
+    },
+    {
+      "file": "context_46-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 32253
+    },
+    {
+      "file": "context_46-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 2625
+    },
+    {
+      "file": "context_47-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 486
+    },
+    {
+      "file": "context_47-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 15459
+    },
+    {
+      "file": "context_47-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 873
+    },
+    {
+      "file": "context_48-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 74286
+    },
+    {
+      "file": "context_48-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 82320
+    },
+    {
+      "file": "context_48-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 3345
+    },
+    {
+      "file": "context_49-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 195
+    },
+    {
+      "file": "context_50-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 90
+    },
+    {
+      "file": "context_51-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 42
+    },
+    {
+      "file": "context_52-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 177
+    },
+    {
+      "file": "context_53-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 102
+    },
+    {
+      "file": "context_53-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 72
+    },
+    {
+      "file": "context_54-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 633
+    },
+    {
+      "file": "context_55-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 15501
+    },
+    {
+      "file": "context_55-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 30750
+    },
+    {
+      "file": "context_55-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 3351
+    },
+    {
+      "file": "context_56-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 6177
+    },
+    {
+      "file": "context_56-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 186
+    },
+    {
+      "file": "context_57-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 5043
+    },
+    {
+      "file": "context_57-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 366
+    },
+    {
+      "file": "context_58-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 5499
+    },
+    {
+      "file": "context_58-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 27846
+    },
+    {
+      "file": "context_58-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 2376
+    },
+    {
+      "file": "context_59-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 273
+    },
+    {
+      "file": "context_60-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 351
+    },
+    {
+      "file": "context_60-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 30
+    },
+    {
+      "file": "context_61-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 9414
+    },
+    {
+      "file": "context_61-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1146
+    },
+    {
+      "file": "context_62-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 3417
+    },
+    {
+      "file": "context_62-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 36894
+    },
+    {
+      "file": "context_62-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 3357
+    },
+    {
+      "file": "context_63-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 35070
+    },
+    {
+      "file": "context_63-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 31491
+    },
+    {
+      "file": "context_63-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 3093
+    },
+    {
+      "file": "context_65-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 6612
+    },
+    {
+      "file": "context_65-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 228
+    },
+    {
+      "file": "context_66-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 25593
+    },
+    {
+      "file": "context_66-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 29076
+    },
+    {
+      "file": "context_66-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 1524
+    },
+    {
+      "file": "context_67-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 60
+    },
+    {
+      "file": "context_68-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 1941
+    },
+    {
+      "file": "context_68-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 24
+    },
+    {
+      "file": "context_69-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 1527
+    },
+    {
+      "file": "context_69-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 3966
+    },
+    {
+      "file": "context_69-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 360
+    },
+    {
+      "file": "context_70-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 26691
+    },
+    {
+      "file": "context_70-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 6456
+    },
+    {
+      "file": "context_70-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 978
+    },
+    {
+      "file": "context_71-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 234
+    },
+    {
+      "file": "context_71-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 48
+    },
+    {
+      "file": "context_72-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 114
+    },
+    {
+      "file": "context_72-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 66
+    },
+    {
+      "file": "context_73-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 80679
+    },
+    {
+      "file": "context_73-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 70656
+    },
+    {
+      "file": "context_73-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 8991
+    },
+    {
+      "file": "context_74-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 7656
+    },
+    {
+      "file": "context_74-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 72
+    },
+    {
+      "file": "context_75-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 558
+    },
+    {
+      "file": "context_76-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 3768
+    },
+    {
+      "file": "context_76-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 651
+    },
+    {
+      "file": "context_77-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 5547
+    },
+    {
+      "file": "context_77-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 438
+    },
+    {
+      "file": "context_78-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 4527
+    },
+    {
+      "file": "context_78-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 624
+    },
+    {
+      "file": "context_79-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 144
+    },
+    {
+      "file": "context_79-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 30
+    },
+    {
+      "file": "context_80-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 25863
+    },
+    {
+      "file": "context_80-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1590
+    },
+    {
+      "file": "context_82-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 13125
+    },
+    {
+      "file": "context_82-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 2517
+    },
+    {
+      "file": "context_83-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 846
+    },
+    {
+      "file": "context_83-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 108
+    },
+    {
+      "file": "context_84-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 8022
+    },
+    {
+      "file": "context_84-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1302
+    },
+    {
+      "file": "context_85-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 3282
+    },
+    {
+      "file": "context_85-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 270
+    },
+    {
+      "file": "context_86-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 705
+    },
+    {
+      "file": "context_86-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 138
+    },
+    {
+      "file": "context_87-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 41433
+    },
+    {
+      "file": "context_87-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 1137
+    },
+    {
+      "file": "context_87-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 117
+    },
+    {
+      "file": "context_88-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 28482
+    },
+    {
+      "file": "context_88-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 19173
+    },
+    {
+      "file": "context_88-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 2652
+    },
+    {
+      "file": "context_89-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 6222
+    },
+    {
+      "file": "context_89-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 594
+    },
+    {
+      "file": "context_90-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 6222
+    },
+    {
+      "file": "context_90-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 594
+    },
+    {
+      "file": "context_91-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 46656
+    },
+    {
+      "file": "context_91-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 47802
+    },
+    {
+      "file": "context_91-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 5253
+    },
+    {
+      "file": "context_92-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 171
+    },
+    {
+      "file": "context_93-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 3765
+    },
+    {
+      "file": "context_93-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 132
+    },
+    {
+      "file": "context_94-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 126
+    },
+    {
+      "file": "context_94-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 36
+    },
+    {
+      "file": "context_95-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 21378
+    },
+    {
+      "file": "context_95-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 17433
+    },
+    {
+      "file": "context_95-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 915
+    },
+    {
+      "file": "context_96-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 48
+    },
+    {
+      "file": "context_97-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 79395
+    },
+    {
+      "file": "context_97-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 119646
+    },
+    {
+      "file": "context_97-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 9423
+    },
+    {
+      "file": "context_98-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 807
+    },
+    {
+      "file": "context_98-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 120
+    },
+    {
+      "file": "context_99-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 2433
+    },
+    {
+      "file": "context_99-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 528
+    },
+    {
+      "file": "context_100-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 1641
+    },
+    {
+      "file": "context_100-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 29436
+    },
+    {
+      "file": "context_100-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 987
+    },
+    {
+      "file": "context_101-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 2115
+    },
+    {
+      "file": "context_101-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 14487
+    },
+    {
+      "file": "context_101-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 36
+    },
+    {
+      "file": "context_102-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 1101
+    },
+    {
+      "file": "context_102-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 30765
+    },
+    {
+      "file": "context_102-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 807
+    },
+    {
+      "file": "context_103-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 219
+    },
+    {
+      "file": "context_104-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 288
+    },
+    {
+      "file": "context_105-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 1749
+    },
+    {
+      "file": "context_105-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 819
+    },
+    {
+      "file": "context_105-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 96
+    },
+    {
+      "file": "context_106-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 72111
+    },
+    {
+      "file": "context_106-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 11661
+    },
+    {
+      "file": "context_106-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 2055
+    },
+    {
+      "file": "context_107-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 31344
+    },
+    {
+      "file": "context_107-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 8637
+    },
+    {
+      "file": "context_107-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 1062
+    },
+    {
+      "file": "context_108-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 60300
+    },
+    {
+      "file": "context_108-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 24819
+    },
+    {
+      "file": "context_108-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 4584
+    },
+    {
+      "file": "context_109-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 33387
+    },
+    {
+      "file": "context_109-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 79896
+    },
+    {
+      "file": "context_109-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 7641
+    },
+    {
+      "file": "context_110-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 177
+    },
+    {
+      "file": "context_110-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 96
+    },
+    {
+      "file": "context_112-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 80628
+    },
+    {
+      "file": "context_112-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 158670
+    },
+    {
+      "file": "context_112-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 15150
+    },
+    {
+      "file": "context_113-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 66
+    },
+    {
+      "file": "context_114-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 6621
+    },
+    {
+      "file": "context_114-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1350
+    },
+    {
+      "file": "context_115-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 711
+    },
+    {
+      "file": "context_115-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 36
+    },
+    {
+      "file": "context_116-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 3624
+    },
+    {
+      "file": "context_116-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 69
+    },
+    {
+      "file": "context_117-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1257
+    },
+    {
+      "file": "context_117-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 66
+    },
+    {
+      "file": "context_118-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 246
+    },
+    {
+      "file": "context_119-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 930
+    },
+    {
+      "file": "context_120-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 93
+    },
+    {
+      "file": "context_121-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 7545
+    },
+    {
+      "file": "context_121-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1158
+    },
+    {
+      "file": "context_122-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 3321
+    },
+    {
+      "file": "context_122-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 270
+    },
+    {
+      "file": "context_123-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1146
+    },
+    {
+      "file": "context_123-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 324
+    },
+    {
+      "file": "context_124-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 43872
+    },
+    {
+      "file": "context_124-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 5850
+    },
+    {
+      "file": "context_125-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 32325
+    },
+    {
+      "file": "context_125-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 154080
+    },
+    {
+      "file": "context_125-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 7809
+    },
+    {
+      "file": "context_126-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 2586
+    },
+    {
+      "file": "context_126-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 294
+    },
+    {
+      "file": "context_127-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 9294
+    },
+    {
+      "file": "context_127-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1188
+    },
+    {
+      "file": "context_128-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 111282
+    },
+    {
+      "file": "context_128-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 100770
+    },
+    {
+      "file": "context_128-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 8718
+    },
+    {
+      "file": "context_129-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 105
+    },
+    {
+      "file": "context_129-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 18
+    },
+    {
+      "file": "context_130-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1221
+    },
+    {
+      "file": "context_130-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 192
+    },
+    {
+      "file": "context_131-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 2538
+    },
+    {
+      "file": "context_131-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 792
+    },
+    {
+      "file": "context_132-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 6003
+    },
+    {
+      "file": "context_132-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 846
+    },
+    {
+      "file": "context_133-0-water.bin",
+      "kind": "water",
+      "group": "TERRAIN",
+      "vertices": 11283
+    },
+    {
+      "file": "context_133-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 31461
+    },
+    {
+      "file": "context_133-0-markings.bin",
+      "kind": "markings",
+      "group": "TERRAIN",
+      "vertices": 3975
+    },
+    {
+      "file": "context_134-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 36
+    },
+    {
+      "file": "context_135-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 12
+    },
+    {
+      "file": "context_136-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 1242
+    },
+    {
+      "file": "context_136-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 120
+    },
+    {
+      "file": "context_137-0-road.bin",
+      "kind": "road",
+      "group": "INFRASTRUCTURE",
+      "vertices": 7545
+    },
+    {
+      "file": "context_137-0-markings.bin",
+      "kind": "markings",
+      "group": "INFRASTRUCTURE",
+      "vertices": 2352
+    },
+    {
+      "file": "context_138-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 6999
+    },
+    {
+      "file": "context_139-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 861
+    },
+    {
+      "file": "context_140-0-road.bin",
+      "kind": "road",
+      "group": "TERRAIN",
+      "vertices": 3195
+    }
+  ],
+  "triangles": {
+    "water": 400173,
+    "road": 803267,
+    "markings": 63617
+  },
+  "projected_triangle_area_m2": {
+    "water": 1770665.5277173703,
+    "road": 1661577.1237473802,
+    "markings": 6356.859087203797
+  },
+  "source_area_m2": {
+    "water": 1772428.4857291405,
+    "road": 1589157.683579293,
+    "markings": 5964.808006199261
+  },
+  "routes_accepted": 2282,
+  "routes_rejected_overlap_or_outside": 123,
+  "dash_count": 11046,
+  "dash_width_m": 0.18,
+  "dash_length_m": 3,
+  "dash_gap_m": 6,
+  "source_meshes_modified": false,
+  "road_source": "surveyed pavement plus continuous buffered existing routes; excludes access reservations; widths remain illustrative",
+  "water_types": [
+    "V5 ponds",
+    "RIV",
+    "NUL"
+  ],
+  "excluded_water_types": [
+    "CUL",
+    "SLU",
+    "CAP",
+    "WEI",
+    "DAM"
+  ],
+  "markings_status": "illustrative route centerlines, not surveyed lane allocation"
+}

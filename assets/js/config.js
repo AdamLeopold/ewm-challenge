@@ -37,9 +37,9 @@ window.SW_CONFIG = {
   city: {
     name: "Agentic City",
     timeline: [
-      { date: "2026-10-31T00:00:00Z", label: { zh: "10 月底", en: "End of Oct" },
-        zh: "演示视频与体验 Demo 上线", en: "Demo video & playable demo",
-        dzh: "先看平台怎么工作：用对话搭一片城区，并跑一项评估（如居民容纳率）。", den: "See how it works: build a district by chat and run one evaluation, such as resident capacity." },
+      { date: "2026-10-30T00:00:00Z", label: { zh: "10/30", en: "30 Oct" },
+        zh: "交互 Demo 上线", en: "Interactive demo available",
+        dzh: "浏览 2D 地图与 3D 城市，体验消防站规划与示例评估流程。", den: "Explore the 2D map and 3D city, then try the scripted fire-station planning and assessment walkthrough." },
       { date: "2026-11-02T00:00:00Z", end: "2026-11-06T23:59:00Z", label: { zh: "11/02–06", en: "2–6 Nov" },
         zh: "香港金融科技周 · 现场展示", en: "Hong Kong FinTech Week · Showcase",
         dzh: "与 HoloBit 赛道一同亮相，现场演示 Agentic City 平台。", den: "Showcased alongside the HoloBit track, with a live demo of the Agentic City platform." },

@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "actual_binary_building_ids": 12339,
+  "one_mesh_range_per_v5_id": true,
+  "all_current_v5_capacities_and_tenures_match": true,
+  "all_1541_adopted_heights_match": true,
+  "actual_mesh_projection_overlap_pairs_gt_1m2": [],
+  "note": "1m2 tolerance for float32 coordinates and schematic canopy posts; does not claim measured geometry",
+  "source_hashes_still_match": true
+}
