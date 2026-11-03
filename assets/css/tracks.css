@@ -1,0 +1,47 @@
+/* Background boundaries move independently of the three fixed reading columns. */
+.track-chooser .split { --copy-c1: 33.33%; --copy-c2: 66.67%; transition-duration: .8s; }
+.track-chooser .side { background: none; }
+.track-chooser .side::after { display: none; }
+.track-chooser .track-media { position: absolute; inset: 0; isolation: isolate; transform: scale(1); transition: transform .8s cubic-bezier(.22,1,.36,1); }
+.track-chooser .side-t1 .track-media { background: radial-gradient(120% 90% at 18% 30%, #063a22 0%, #02140c 45%, #000 100%); transform-origin: 18% 70%; }
+.track-chooser .side-t2 .track-media { background: radial-gradient(90% 80% at 50% 40%, #04302c 0%, #021412 45%, #000 100%); transform-origin: 50% 70%; }
+.track-chooser .side-t3 .track-media { background: radial-gradient(120% 90% at 82% 70%, #2a0e4a 0%, #0d0519 45%, #000 100%); transform-origin: 82% 70%; }
+.track-chooser .split:has(.track-copy-t1:is(:hover,:focus-visible), .side-t1:hover) { --c1: 40%; --c2: 70%; }
+.track-chooser .split:has(.track-copy-t2:is(:hover,:focus-visible), .side-t2:hover) { --c1: 28%; --c2: 72%; }
+.track-chooser .split:has(.track-copy-t3:is(:hover,:focus-visible), .side-t3:hover) { --c1: 30%; --c2: 60%; }
+.track-chooser .split:has(.track-copy-t1:is(:hover,:focus-visible), .side-t1:hover) .side-t1 .track-media,
+.track-chooser .split:has(.track-copy-t2:is(:hover,:focus-visible), .side-t2:hover) .side-t2 .track-media,
+.track-chooser .split:has(.track-copy-t3:is(:hover,:focus-visible), .side-t3:hover) .side-t3 .track-media { transform: scale(1.03); }
+.track-chooser .track-copy { z-index: 4; display: block; transition: none; transform: none; opacity: 1; clip-path: none; }
+.track-chooser .track-copy-t1 { --c-col: var(--holo); left: clamp(20px, 3vw, 48px); width: calc(var(--copy-c1) - clamp(20px, 3vw, 48px) - 28px); }
+.track-chooser .track-copy-t2 { --c-col: #3ff2c8; left: calc(var(--copy-c1) + 28px); width: calc(var(--copy-c2) - var(--copy-c1) - 56px); }
+.track-chooser .track-copy-t3 { --c-col: var(--city); left: calc(var(--copy-c2) + 28px); width: calc(100% - var(--copy-c2) - 28px - clamp(20px, 3vw, 48px)); }
+.track-chooser .track-copy h2 { font-family: var(--font-display); font-weight: 700; line-height: .98; letter-spacing: -.035em; font-size: clamp(32px, 3.6vw, 60px); color: #fff; text-shadow: 0 0 60px color-mix(in srgb, var(--c-col) 45%, transparent); }
+.track-chooser .track-copy .world { margin-top: 10px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #fff9; }
+.track-chooser .track-copy .lede { margin-top: 14px; max-width: 36ch; color: #fffc; font-size: clamp(14px, 1.05vw, 16px); }
+.track-chooser .track-copy .enter, .track-chooser .track-copy .enter .arrow { transition: none; transform: none; translate: none; }
+.track-chooser .track-copy:focus-visible { outline: 2px solid var(--c-col); outline-offset: 12px; border-radius: 4px; }
+.track-chooser .track-tag .dot { animation: none; }
+.track-chooser .chooser-head, .track-chooser .split:has(.side:hover) .chooser-head { opacity: 1; transition: none; }
+.chooser-footer .research-note { max-width: 90ch; font-size: 13px; line-height: 1.7; color: var(--muted); margin: 0; }
+
+@media (max-width: 860px) {
+  .track-chooser .split { display: grid; grid-template-columns: minmax(0,1fr); grid-template-rows: auto repeat(3, minmax(72svh, auto)); }
+  .track-chooser .chooser-head { grid-column: 1; grid-row: 1; }
+  .track-chooser .side { position: relative; grid-column: 1; inset: auto; clip-path: none; min-height: 72svh; }
+  .track-chooser .side-t1, .track-chooser .track-copy-t1 { grid-row: 2; }
+  .track-chooser .side-t2, .track-chooser .track-copy-t2 { grid-row: 3; }
+  .track-chooser .side-t3, .track-chooser .track-copy-t3 { grid-row: 4; }
+  .track-chooser .track-copy { position: relative; grid-column: 1; align-self: end; left: auto; right: auto; bottom: auto; width: auto; margin: 44px 20px 40px; }
+  .track-chooser .track-copy h2 { font-size: clamp(36px, 6vw, 58px); }
+  .track-chooser .track-copy .lede { font-size: 16px; max-width: 40ch; }
+}
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .track-chooser .split { transition: none; }
+  .track-chooser .track-media { transition: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .track-chooser .split:has(.track-copy:is(:hover,:focus-visible), .side:hover) { --c1: 33.33%; --c2: 66.67%; }
+  .track-chooser .split:has(.track-copy:is(:hover,:focus-visible), .side:hover) .track-media { transform: none; }
+}

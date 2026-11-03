@@ -8,7 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261030144139">
+<link rel="stylesheet" href="assets/css/main.css?v=20261103115328">
+<link rel="stylesheet" href="assets/css/holobit.css?v=20261103115328">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 </head>
 <body class="theme-holo">
@@ -37,17 +38,17 @@
     <div class="wrap">
       <span class="eyebrow" data-en="Economic World Model Challenge · Tracks 1 &amp; 2 · World by HoloBit">Economic World Model Challenge · Track 1 &amp; 2 · 世界由 HoloBit 提供</span>
       <h1 data-en="Build agents for markets that <span class=&quot;glow&quot;>move.</span>">让你的 Agent 在<span class="glow">真实规则</span>的市场里活下来</h1>
-      <p class="lede" data-en="Write an AI agent, run it inside a digital twin built on the Uniswap V3 and Aave v3 mainnet contracts, and face market shocks you can't see in advance. No chain, no wallet, no real money — just your strategy against the rules.">写一个 AI Agent，把它放进基于 Uniswap V3 与 Aave v3 主网合约的数字孪生里运行，迎接你事先看不到的极端行情。不上链、不用钱包、不用真钱——只有你的策略和协议规则正面交锋。</p>
+      <p class="lede" data-en="Build an AI agent for a digital twin of Uniswap V3 and Aave v3. Manage a simulated portfolio or tune protocol risk, then test your decisions against market shocks, hidden stress scenarios and a forward window.">为 Uniswap V3 与 Aave v3 的数字孪生构建 AI Agent。管理模拟投资组合，或调节协议风险参数，在市场冲击、隐藏压力情景和前向行情中检验你的决策。</p>
       <div class="cta-row">
-        <a class="btn btn-primary" data-link="registerUrl" data-magnet><span data-en="Registration opens 2 Nov">11/2 开放报名</span></a>
-        <a class="btn" href="#how"><span data-en="How it works">怎么比</span> ↓</a>
+        <a class="btn btn-primary" href="#how"><span data-en="Read the participant guide">阅读参赛指南</span> ↓</a>
+        <a class="btn" href="demo/lending.html"><span data-en="Try the learning lab">体验借贷实验室</span> ↗</a>
       </div>
       <div class="countdown" data-countdown="holobit"></div>
       <div class="stats">
         <div class="stat reveal"><b data-count="2">0</b><span data-en="tracks: strategy &amp; protocol risk">个赛道：策略 / 协议风险</span></div>
         <div class="stat reveal d1"><b data-count="100000">0</b><span data-en="USD in simulated capital">美元模拟资金（策略组）</span></div>
         <div class="stat reveal d2"><b data-count="13">0</b><span data-en="stress-scenario families">个压力情景族</span></div>
-        <div class="stat reveal d3"><b data-count="80" data-suffix="%">0</b><span data-en="of the score from hidden stress tests">分数来自隐藏压力测试</span></div>
+        <div class="stat reveal d3"><b>80%</b><span data-en="of the score from hidden stress tests">分数来自隐藏压力测试</span></div>
       </div>
     </div>
     <a class="scroll-cue" href="#about" aria-label="Scroll down" data-en-aria="Scroll down" data-zh-aria="向下滚动">
@@ -56,8 +57,8 @@
   </section>
 
   <div class="marquee" aria-hidden="true"><div class="track">
-    <span><b>◆</b> Uniswap V3</span><span><b>◆</b> Aave v3</span><span><b>◆</b> Digital twin</span><span><b>◆</b> No wallet · No real money</span><span><b>◆</b> Hidden stress tests</span><span><b>◆</b> Survival gate</span><span><b>◆</b> Verifiable results</span><span><b>◆</b> Singapore FinTech Festival</span>
-    <span><b>◆</b> Uniswap V3</span><span><b>◆</b> Aave v3</span><span><b>◆</b> Digital twin</span><span><b>◆</b> No wallet · No real money</span><span><b>◆</b> Hidden stress tests</span><span><b>◆</b> Survival gate</span><span><b>◆</b> Verifiable results</span><span><b>◆</b> Singapore FinTech Festival</span>
+    <span><b>◆</b> Uniswap V3</span><span><b>◆</b> Aave v3</span><span><b>◆</b> Digital twin</span><span><b>◆</b> Strategy · Protocol risk</span><span><b>◆</b> Hidden stress tests</span><span><b>◆</b> Survival gate</span><span><b>◆</b> Verifiable results</span><span><b>◆</b> Singapore FinTech Festival</span>
+    <span><b>◆</b> Uniswap V3</span><span><b>◆</b> Aave v3</span><span><b>◆</b> Digital twin</span><span><b>◆</b> Strategy · Protocol risk</span><span><b>◆</b> Hidden stress tests</span><span><b>◆</b> Survival gate</span><span><b>◆</b> Verifiable results</span><span><b>◆</b> Singapore FinTech Festival</span>
   </div></div>
 
   <!-- 01 WHAT IS HOLOBIT -->
@@ -65,23 +66,23 @@
     <div class="wrap">
       <div class="sec-head">
         <div><div class="sec-num">01 / HOLOBIT</div><h2 data-en="A parallel world for DeFi.">DeFi 的平行世界</h2></div>
-        <p data-en="The simulator and evaluation for this track are built on HoloBit's design and methods. The simulator runs the unmodified Uniswap V3 and Aave v3 mainnet contracts inside an embedded EVM, so your agent meets the real protocol rules without touching a real chain.">本赛道的模拟器与评测按 HoloBit 的设计与方法开发。模拟器在内嵌的 EVM 里执行 Uniswap V3 与 Aave v3 的原样主网合约，你的 Agent 面对的是真实的协议规则，却不需要碰真实的链。</p>
+        <p data-en="The competition simulator and evaluation use HoloBit's design and methods. An embedded EVM executes the unmodified Uniswap V3 and Aave v3 mainnet contracts, giving every agent the same protocol rules and a shared simulated market.">比赛模拟器与评测采用 HoloBit 的设计与方法。内嵌 EVM 执行 Uniswap V3 与 Aave v3 的原样主网合约，为所有 Agent 提供同一套协议规则和共同的模拟市场。</p>
       </div>
       <div class="grid g3">
         <div class="card reveal">
           <div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M12 2 3 7v10l9 5 9-5V7z"/><path pathLength="1" d="M3 7l9 5 9-5M12 12v10"/></svg></div>
           <h3 data-en="Digital twin">数字孪生</h3>
-          <p data-en="The Uniswap V3 WETH/USDC pool and the Aave v3 Core market, run on the original contracts. Protocol rules are exact; market behaviour is a documented approximation. Time is virtual: while your agent thinks, the world waits.">Uniswap V3 的 WETH/USDC 主池与 Aave v3 Core 市场，跑原样合约。协议规则是精确的，市场行为是写明依据与简化的近似。时间是虚拟的：你的 Agent 思考时，世界会停下来等它。</p>
+          <p data-en="Explore the Uniswap V3 WETH/USDC pool and the Aave v3 Core market under declared protocol and market settings. Simulation time advances through decisions and events, making runs reproducible.">在声明的协议与市场设定下运行 Uniswap V3 的 WETH/USDC 主池和 Aave v3 Core 市场。模拟时间按决策与事件推进，每次运行均可重放。</p>
         </div>
         <div class="card reveal d1">
           <div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg></div>
-          <h3 data-en="Headless SDK">无界面 SDK</h3>
-          <p data-en="No dashboard to click through. Use the open SDK, iterate with your favourite AI coding assistant, and ship an agent.">不需要点界面。用开源 SDK，配合你常用的 AI 编程助手对话式迭代，直接产出 Agent。</p>
+          <h3 data-en="Interface-driven agents">面向接口构建 Agent</h3>
+          <p data-en="Implement a decision loop around observations, actions and execution results. Use your preferred programming language and AI coding tools, then package the agent as a container.">围绕观测、动作和执行结果实现决策循环，使用熟悉的编程语言和 AI 编程工具迭代，再将 Agent 打包为容器。</p>
         </div>
         <div class="card reveal d2">
           <div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M9 12l2 2 4-4"/><path pathLength="1" d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></div>
           <h3 data-en="Verifiable">可复核</h3>
-          <p data-en="Every run is logged. After the finals, all stress tests, seeds, request sequences and platform logs are published so anyone can recompute the scores. Raw model prompts and replies go only to your own team; your agent's own notes are published only if you choose.">每次运行都有记录。决赛后公开全部压力测试、随机种子、每次运行的请求序列和平台记录，任何人都可以重算分数。大模型的原文只给本队，Agent 自己写的记录由各队决定是否公开。</p>
+          <p data-en="Runs produce decision and execution records. After the finals, scenarios, seeds and verification materials support score recomputation. Research use of team-authored content and model materials follows a separate authorisation choice.">每次运行产生决策与执行记录。决赛后的情景、随机种子和核对材料用于重算成绩；队伍自写内容与模型资料的研究使用由独立授权选项确定。</p>
         </div>
       </div>
       <div class="cta-row reveal"><a class="btn" href="https://holobit.xyz" target="_blank" rel="noopener"><span data-en="Explore HoloBit">了解 HoloBit</span> ↗</a></div>
@@ -95,47 +96,53 @@
         <div><div class="sec-num">02 / TRACKS</div><h2 data-en="Two tracks. One world.">两个赛道，同一个世界</h2></div>
         <p data-en="Tracks 1 and 2 of Economic World Model Challenge both run in the HoloBit world. Enter one or both; each track is ranked separately.">Economic World Model Challenge 的 Track 1 和 Track 2 都在 HoloBit 世界里进行。可以报一个，也可以两个都报，两个赛道分别排名。</p>
       </div>
-      <div class="grid g2">
+      <div class="grid g2 track-guides">
         <article class="card big reveal" id="track-1">
           <div class="card-art" aria-hidden="true"><canvas data-fx="holo"></canvas></div>
           <span class="k">Track 1</span>
           <h3 data-en="Strategy agent">策略 Agent</h3>
-          <p data-en="Manage a simulated portfolio across Uniswap V3 and Aave v3 and earn the best risk-adjusted return.">在 Uniswap V3 与 Aave v3 之间管理一笔模拟资金，追求风险调整后的最好收益。</p>
+          <p class="track-objective" data-en="Grow a simulated portfolio across Uniswap V3 and Aave v3 while controlling drawdowns and maintaining a healthy account.">在 Uniswap V3 与 Aave v3 之间管理模拟投资组合，在控制回撤、维持账户健康的同时提升收益。</p>
+          <h4 data-en="Action scope">操作范围</h4>
           <ul>
             <li data-en="Start with US$100,000 in simulated capital, half USDC, half WETH">起始 10 万美元模拟资金，USDC 与 WETH 各半</li>
             <li data-en="Provide liquidity and swap on Uniswap V3">在 Uniswap V3 做流动性和换币</li>
             <li data-en="Supply, withdraw, borrow and repay on Aave v3; flash loans allowed within a plan">在 Aave v3 存、取、借、还；一份计划内可使用闪电贷</li>
             <li data-en="Decide once per simulated hour, plus on subscribed events">每个模拟小时决策一次，另可订阅事件触发</li>
           </ul>
+          <dl class="track-guide">
+            <dt data-en="Get started">上手步骤</dt>
+            <dd data-en="Read balances, positions and market observations; produce an action plan; check execution results; save the decision record. Start by completing this loop in the lending learning lab below.">读取余额、仓位和市场观测，生成操作计划，检查执行结果并记录决策。先用下方的借贷教学示例走完这一轮。</dd>
+            <dt data-en="Deliverables">交付物</dt>
+            <dd data-en="Submit a signed Track 1 container image and its JSON manifest, including the immutable image digest. See the shared delivery checklist below.">提交签名的 Track 1 容器镜像和 JSON 清单，清单包含固定版本的镜像摘要。具体见下方通用交付清单。</dd>
+            <dt data-en="Evaluation">评价方式</dt>
+            <dd><p class="track-formula">S = r − 0.5 × MDD</p><p data-en="r is the portfolio's net return; MDD is its maximum peak-to-trough drawdown, in the same percentage units. Higher S is better. Stress tests contribute 80% and the forward window 20%, with the survival gate applied to prize and finals eligibility.">r 为投资组合净收益率，MDD 为从峰值到谷值的最大回撤，两者使用相同的百分比单位。S 越高越好。隐藏压力题占 80%，前向段占 20%；获奖和决赛资格同时适用生存门规则。</p></dd>
+            <dt data-en="Competition flow">参赛流程</dt>
+            <dd data-en="Build and practise → warm-up check → sign and freeze → stress and forward evaluation → result verification.">开发与练习 → 热身检查 → 签名冻结 → 压力题与前向段评测 → 成绩复核。</dd>
+          </dl>
         </article>
         <article class="card big reveal d1" id="track-2">
           <div class="card-art" aria-hidden="true"><canvas data-fx="holo" data-variant="risk"></canvas></div>
           <span class="k">Track 2</span>
           <h3 data-en="Protocol risk agent">协议风险 Agent</h3>
-          <p data-en="Act as Aave's risk steward: tune risk parameters to keep the protocol solvent through stress.">扮演 Aave 的风险管理者：调节风险参数，让协议在压力下保持稳健。</p>
+          <p class="track-objective" data-en="Manage the WETH and USDC reserves as Aave's risk steward: balance protocol solvency, user liquidity and protocol revenue through changing market conditions.">扮演 Aave 的风险管理者：管理 WETH 与 USDC 储备，在变化的市场中兼顾协议偿付能力、用户提款流动性和协议收入。</p>
+          <h4 data-en="Action scope">操作范围</h4>
           <ul>
-            <li data-en="Adjust risk parameters of the WETH and USDC reserves within set bounds and cooldowns">在限定幅度和冷却期内，调整 WETH 与 USDC 储备的风险参数</li>
+            <li data-en="Tune loan-to-value ratios, liquidation thresholds and bonuses, and supply and borrow caps">调整贷款价值比（LTV）、清算阈值与奖励，以及存款和借款上限</li>
+            <li data-en="Tune interest-rate curves and reserve factors, and freeze or unfreeze a reserve">调整利率曲线与储备因子，冻结或解冻储备</li>
             <li data-en="Decide every 6 simulated hours">每 6 个模拟小时决策一次</li>
-            <li data-en="Beat the “parameters unchanged” baseline: less bad debt, fewer unnecessary liquidations, no lost revenue">跑赢“参数不变”的基准：坏账更少、误伤用户更少、协议收入不减</li>
-            <li data-en="This edition focuses on risk-parameter optimisation">本届聚焦风险参数优化</li>
+            <li data-en="Apply the parameter bounds, cooldowns and governance timing defined by the competition rules and interface">按比赛规则与接口定义的参数幅度、冷却期和治理时序执行调整</li>
           </ul>
+          <dl class="track-guide">
+            <dt data-en="Get started">上手步骤</dt>
+            <dd data-en="Read reserve utilisation, account health and market observations; propose parameter changes; check when they take effect; compare the outcome with the unchanged-parameters baseline.">读取储备利用率、账户健康和市场观测，提出参数调整，检查生效时点，再与参数保持不变的基线比较结果。</dd>
+            <dt data-en="Deliverables">交付物</dt>
+            <dd data-en="Submit a signed Track 2 container image and JSON manifest with its image digest, model settings and required resources. The shared delivery checklist below applies to both tracks.">提交签名的 Track 2 容器镜像和 JSON 清单，列出镜像摘要、模型设置和资源需求。两个赛道采用下方同一份通用交付清单。</dd>
+            <dt data-en="Evaluation">评价方式</dt>
+            <dd data-en="Compare bad debt, liquidation penalties, protocol revenue and withdrawal liquidity loss W against the unchanged-parameters baseline, using the same scenario and seed. W is the amount a user requests but cannot withdraw multiplied by its duration, measured in dollar-days. Stress tests contribute 80% and the forward window 20%; the survival gate also applies.">在同一情景、同一种子下，对照参数不变的基线，比较坏账、清算罚金、协议收入和提款流动性损失 W。W 是用户想提款却无法取出的金额乘以持续时间，单位为美元天。隐藏压力题占 80%，前向段占 20%，同时适用生存门规则。</dd>
+            <dt data-en="Competition flow">参赛流程</dt>
+            <dd data-en="Build and practise → warm-up check → sign and freeze → paired evaluation against the baseline → result verification.">开发与练习 → 热身检查 → 签名冻结 → 与基线配对评测 → 成绩复核。</dd>
+          </dl>
         </article>
-      </div>
-      <div class="card reveal" style="margin-top:16px;display:flex;gap:18px;align-items:flex-start">
-        <div class="icon" style="margin:0;flex:none">!</div>
-        <div><h3 data-en="Everything runs in simulation">一切都在仿真中运行</h3><p data-en="Your agent acts inside the digital twin: fast to iterate, safe to push to the limit.">你的 Agent 在数字孪生里行动，迭代快，也可以放心地把它推到极限。</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- scroll scene: statement -->
-  <section class="scene-statement" data-scene aria-label="No chain. No wallet. No real money." data-en-aria="No chain. No wallet. No real money." data-zh-aria="不上链。不用钱包。不用真钱。">
-    <div class="scene-stick">
-      <div class="statement">
-        <span class="st-line" data-at="0.04" data-en="No chain.">不上链。</span>
-        <span class="st-line" data-at="0.22" data-en="No wallet.">不用钱包。</span>
-        <span class="st-line" data-at="0.40" data-en="No real money.">不用真钱。</span>
-        <span class="st-sub" data-at="0.52" data-en="Just your agent against the rules">只有你的 Agent 和协议规则</span>
       </div>
     </div>
   </section>
@@ -144,16 +151,16 @@
   <section class="block" id="how">
     <div class="wrap">
       <div class="sec-head">
-        <div><div class="sec-num">03 / HOW IT WORKS</div><h2 data-en="From laptop to live finals.">从本地到现场决赛</h2></div>
-        <p data-en="Build locally, practise against the hosted simulator, then freeze a signed agent for evaluation.">先在本地搭好，再连托管仿真器练习，最后签名冻结，交给评测。</p>
+        <div><div class="sec-num">03 / PARTICIPANT GUIDE</div><h2 data-en="Build. Practise. Freeze. Verify.">开发、练习、冻结、复核</h2></div>
+        <p data-en="Use the learning lab to understand the decision loop, then prepare an agent for your chosen track. The competition flow connects local development, practice runs and a signed version for evaluation.">先用教学示例理解决策循环，再为所选赛道准备 Agent。参赛流程连接本地开发、练习试跑，以及用于正式评测的签名版本。</p>
       </div>
       <div class="flow" style="--n:6" data-scene data-pass>
         <div data-at="0.02" class="step reveal"><h4 data-en="Register">报名组队</h4><p data-en="Teams of 1–5. Pick Track 1, Track 2 or both.">1–5 人一队，选择 Track 1、Track 2 或两个都报。</p></div>
-        <div data-at="0.19" class="step reveal d1"><h4 data-en="Build locally">本地开发</h4><p data-en="Starter kits in Python and TypeScript with a local API stub and example agents.">起步包提供 Python 与 TypeScript 两版，含本地接口桩和示例 Agent。</p></div>
-        <div data-at="0.35" class="step reveal d2"><h4 data-en="Practise">远程练习</h4><p data-en="Hosted trial runs and a practice leaderboard.">托管试跑，查看练习排行榜。</p></div>
-        <div data-at="0.52" class="step reveal d3"><h4 data-en="Warm-up">热身轮</h4><p data-en="An unscored run that qualifies you for the main round.">不计分，完成即获得正式赛资格。</p></div>
-        <div data-at="0.69" class="step reveal d4"><h4 data-en="Freeze">签名冻结</h4><p data-en="Sign and freeze your final agent.">签名并冻结最终版本的 Agent。</p></div>
-        <div data-at="0.85" class="step reveal d4"><h4 data-en="Evaluate &amp; finals">评测与决赛</h4><p data-en="Hidden stress tests and the forward window, then live finals.">隐藏压力测试与前向段，之后进入现场决赛。</p></div>
+        <div data-at="0.19" class="step reveal d1"><h4 data-en="Build locally">本地开发</h4><p data-en="Implement observations, decisions and execution checks; package a reproducible container.">实现观测、决策与执行检查，打包可重复运行的容器。</p></div>
+        <div data-at="0.35" class="step reveal d2"><h4 data-en="Practise">练习试跑</h4><p data-en="Check the decision loop, action validity and run records against practice scenarios.">用练习情景检查决策循环、动作有效性和运行记录。</p></div>
+        <div data-at="0.52" class="step reveal d3"><h4 data-en="Warm-up">热身轮</h4><p data-en="Complete the warm-up to qualify for the main round; it is a readiness check.">完成热身取得正式赛资格，确认 Agent 已准备就绪。</p></div>
+        <div data-at="0.69" class="step reveal d4"><h4 data-en="Freeze">签名冻结</h4><p data-en="Submit the image digest, manifest and team signature to fix the evaluated version.">提交镜像摘要、清单和队伍签名，锁定评测版本。</p></div>
+        <div data-at="0.85" class="step reveal d4"><h4 data-en="Evaluate &amp; verify">评测与复核</h4><p data-en="Run hidden stress tests and the forward window, verify results, then progress to the finals.">运行隐藏压力题和前向段，核对成绩，再进入决赛。</p></div>
       </div>
       <div class="grid g2" style="margin-top:56px">
         <div class="card reveal">
@@ -162,40 +169,44 @@
           <ul>
             <li data-en="Strategy or risk logic">策略或风险逻辑</li>
             <li data-en="Monitoring and recovery">监控与恢复机制</li>
-            <li data-en="Integration with the simulator SDK">与仿真器 SDK 的对接</li>
+            <li data-en="Observation, action and execution-result handling">处理观测、动作与执行结果</li>
             <li data-en="Your own stress tests for practice">练习用的自建压力测试</li>
           </ul>
         </div>
         <div class="card reveal d1">
-          <span class="k" data-en="Economic World Model Challenge provides">Economic World Model Challenge 提供</span>
+          <span class="k" data-en="Competition framework">比赛框架</span>
           <h3 data-en="The evaluation layer">评测层</h3>
           <ul>
             <li data-en="Protocol digital twins and a common interface">协议数字孪生与统一接口</li>
-            <li data-en="Starter kits and historical data">起步包与历史数据</li>
+            <li data-en="Practice scenarios and historical data">练习情景与历史数据</li>
             <li data-en="Hidden stress scenarios">隐藏压力情景</li>
             <li data-en="Scoring and result verification">计分与结果核实</li>
           </ul>
         </div>
       </div>
       <div class="grid g2" style="margin-top:16px">
-        <div class="card reveal">
+        <div class="card reveal" id="deliverables">
           <span class="k" data-en="What you submit">提交什么</span>
           <ul>
             <li data-en="An OCI container image (≤ 4 GB, linux/amd64)">一个 OCI 容器镜像（不超过 4 GB，linux/amd64）</li>
-            <li data-en="A JSON manifest: team, track, image digest, model settings, subscribed events, resources">一份 JSON 清单：队伍、赛道、镜像摘要、大模型设置、订阅事件、资源需求</li>
-            <li data-en="Your team's signature (OpenSSH ed25519 key)">队伍签名（OpenSSH ed25519 密钥）</li>
-            <li data-en="Reports and write-ups are optional and not scored">报告等材料可选，不计分</li>
+            <li data-en="A JSON manifest: team ID, track, immutable image digest, model settings, subscribed events and resource requirements">一份 JSON 清单：队伍标识、赛道、固定版本的镜像摘要、模型设置、订阅事件与资源需求</li>
+            <li data-en="Your team's OpenSSH ed25519 signature authenticates the frozen submission">队伍的 OpenSSH ed25519 签名，用于验证冻结提交物</li>
+            <li data-en="Optional reports and write-ups support sharing; evaluation scores come from agent runs">可选报告与说明材料用于交流；评测分数来自 Agent 运行</li>
           </ul>
         </div>
         <div class="card reveal d1">
           <span class="k" data-en="Using LLMs">关于大模型</span>
-          <p data-en="Your agent can call large language models. Speed matters: slow decisions count as timeouts.">Agent 可以调用大模型。速度很重要，决策太慢会被计为超时。</p>
+          <p data-en="Your agent can call large language models. Declare the model configuration in the manifest, follow the competition's model-access settings and complete each decision within the time limit.">Agent 可以调用大模型。请在清单中声明模型配置，按比赛的模型接入设置运行，并在时限内完成每次决策。</p>
         </div>
       </div>
       <a class="card reveal" href="demo/lending.html" style="display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:16px;flex-wrap:wrap">
         <div><span class="k" data-en="Learning lab">教学示例</span><h3 data-en="New to agent competitions? Start with one loan.">第一次接触 Agent 比赛？先从一笔借贷开始</h3><p data-en="Switch between two rule-based agents and step through repayments and liquidations in your browser.">切换两个规则 Agent，在浏览器里逐轮查看还款与清算。</p></div>
         <span class="btn"><span data-en="Open demo">打开 Demo</span> ↗</span>
       </a>
+      <div class="research-note">
+        <p data-en="Competition submissions and authorised run data, together with separately authorised agent programs, container images and model materials, will be used under the privacy terms and the scope of each authorisation to train, evaluate and improve economic world models.">参赛成果与经授权收集的运行数据，以及单独授权的 Agent 程序、容器镜像和模型资料，将依照隐私条款与授权范围，用于经济世界模型的训练、评测与持续改进。</p>
+        <a href="data-use.html" data-en="Data and research use →">数据与研究用途 →</a>
+      </div>
     </div>
   </section>
 
@@ -204,21 +215,21 @@
     <div class="wrap">
       <div class="sec-head">
         <div><div class="sec-num">04 / SCORING</div><h2 data-en="Returns matter. Resilience decides.">收益重要，韧性定胜负</h2></div>
-        <p data-en="Public market data can be over-fitted. That is why most of the score comes from stress tests generated after the freeze.">公开行情可以被反复调参、过拟合。所以大部分分数来自冻结之后才生成的压力测试。</p>
+        <p data-en="Scores combine resilience across generated market stresses with performance during a real forward window. Both tracks use the same 80 / 20 weighting.">评分结合生成市场压力下的韧性与真实前向行情中的表现。两个赛道统一采用 80 / 20 权重。</p>
       </div>
       <div class="score">
         <div class="ring">
           <svg viewBox="0 0 200 200" aria-hidden="true">
             <circle class="track" cx="100" cy="100" r="80"/>
-            <circle class="a" cx="100" cy="100" r="80" stroke-dasharray="0 503"/>
-            <circle class="b" cx="100" cy="100" r="80" stroke-dasharray="0 503" stroke-dashoffset="0"/>
+            <circle class="a" cx="100" cy="100" r="80" stroke-dasharray="400 503"/>
+            <circle class="b" cx="100" cy="100" r="80" stroke-dasharray="97 503" stroke-dashoffset="-403"/>
           </svg>
-          <div class="center"><div><b><span data-count="80">80</span>/<span data-count="20">20</span></b><span data-en="STRESS / FORWARD">压力 / 前向</span></div></div>
+          <div class="center"><div><b class="ring-value"><span class="ring-number">80</span><span class="ring-divider">/</span><span class="ring-number">20</span></b><span class="ring-label" data-en="STRESS / FORWARD">压力 / 前向</span></div></div>
         </div>
         <div class="legend">
-          <div class="row reveal"><div class="pct" data-count="80" data-suffix="%">80%</div><div><h4 data-en="Hidden stress tests">隐藏压力题</h4><p data-en="13 scenario families (11 published, 2 held out), from calm markets and false alarms to extreme shocks. The tests are generated after the freeze from a public randomness beacon. Nobody — including you — sees them before submission.">13 个情景族（11 个公开、2 个留出），从平静行情、假警报到极端冲击。题目在冻结后用公开随机信标生成，提交前任何人都看不到，包括你。</p></div></div>
-          <div class="row reveal d1"><div class="pct" data-count="20" data-suffix="%">20%</div><div><h4 data-en="Forward window">前向段</h4><p data-en="One week of real market data that happens after the freeze.">冻结之后真实发生的一周行情。</p></div></div>
-          <div class="row reveal d2"><div class="pct" data-en="GATE">门槛</div><div><h4 data-en="Survival gate">生存门</h4><p data-en="Track 1: a run fails if your position is liquidated, you go insolvent, you leave bad debt, or you have too many timeouts and invalid decisions. Track 2: a run fails if new bad debt exceeds the &quot;parameters unchanged&quot; world by more than the limit, your parameter changes directly push accounts into liquidation, or you have too many timeouts and invalid decisions. Agents whose failure rate is too high are still ranked, but cannot win a prize or reach the finals.">Track 1：被清算、破产、留下坏账，或超时与决策错误过多，这次运行记为失败。Track 2：新增坏账比“参数不变”的世界多出上限、调参直接把账户推进清算，或超时与决策错误过多，记为失败。失败比例超标的 Agent 照样列名次，但不能获奖，也不进决赛。</p></div></div>
+          <div class="row reveal"><div class="pct">80%</div><div><h4 data-en="Hidden stress tests">隐藏压力题</h4><p data-en="13 scenario families (11 published, 2 held out) cover calm markets, false alarms and extreme shocks. Test instances are generated from a public randomness beacon after the freeze.">13 个情景族（11 个公开、2 个留出），覆盖平静行情、假警报与极端冲击。具体测试在冻结后由公开随机信标生成。</p></div></div>
+          <div class="row reveal d1"><div class="pct">20%</div><div><h4 data-en="Forward window">前向段</h4><p data-en="One week of real market data that happens after the freeze.">冻结之后真实发生的一周行情。</p></div></div>
+          <div class="row reveal d2"><div class="pct gate-label" data-en="GATE">门槛</div><div><h4 data-en="Survival gate">生存门</h4><p data-en="Track 1: liquidation, insolvency, bad debt or excessive timeouts and invalid decisions mark a run as failed. Track 2: excess new bad debt against the unchanged-parameters baseline, parameter changes that directly trigger liquidation, or excessive timeouts and invalid decisions mark a run as failed. Prize and finals eligibility requires a failure rate within the competition threshold; all agents receive a ranking.">Track 1：清算、破产、坏账，或超时与决策错误超过限制，运行记为失败。Track 2：相对参数不变基线的新增坏账超过限制、调参直接触发清算，或超时与决策错误超过限制，运行记为失败。获奖和决赛资格要求失败率处于比赛门槛内；所有 Agent 均列出名次。</p></div></div>
         </div>
       </div>
       <div class="flow" style="--n:5;margin-top:64px" data-scene data-pass>
@@ -228,7 +239,7 @@
         <div data-at="0.62" class="step reveal d3"><h4 data-en="Survival gate">生存门</h4><p data-en="Liquidation, insolvency, bad debt, timeouts">清算、破产、坏账、超时</p></div>
         <div data-at="0.82" class="step reveal d4"><h4 data-en="Verification">结果核实</h4><p data-en="Seeds and logs published for re-checking">公开种子与记录供复核</p></div>
       </div>
-      <p class="note" data-en="Rankings are published with confidence intervals; teams that can't be separated share a place. After the finals every stress test, seed and log is released so you can verify your own score.">名次带置信区间公布，分不开的队伍并列。决赛后公开全部压力测试、种子和记录，你可以自己复核分数。</p>
+      <p class="note" data-en="Rankings are published with confidence intervals; statistically tied teams share a place. After the finals, stress tests, seeds and verification records support independent score checks.">名次带置信区间公布，统计上并列的队伍共享名次。决赛后公开压力测试、种子和核对记录，支持独立复核分数。</p>
     </div>
   </section>
 
@@ -236,16 +247,16 @@
   <section class="block">
     <div class="wrap">
       <div class="sec-head">
-        <div><div class="sec-num">05 / FAIR PLAY</div><h2 data-en="Six promises.">六条保证</h2></div>
-        <p data-en="What every team can rely on.">每支队伍都可以依赖的底线。</p>
+        <div><div class="sec-num">05 / FAIR PLAY</div><h2 data-en="Shared evaluation principles.">共同评测原则</h2></div>
+        <p data-en="A common world, reproducible runs and verifiable results for every team.">每支队伍共享同一世界，运行可重放，成绩可复核。</p>
       </div>
       <div class="grid g3">
         <div class="card reveal"><span class="k">01</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle pathLength="1" cx="12" cy="12" r="9"/><path pathLength="1" d="M8 10h8"/><path pathLength="1" d="M8 14h8"/></svg></div><h3 data-en="Same rules for all">同一套规则</h3><p data-en="Every agent runs in the same world under the same rules.">所有 Agent 在同一个世界、同一套规则下运行。</p></div>
-        <div class="card reveal d1"><span class="k">02</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path pathLength="1" d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></div><h3 data-en="Faithful to chain, within scope">声明范围内与链上一致</h3><p data-en="Within the declared scope, results match the mainnet contracts integer for integer. Requests outside the scope are rejected.">在声明的范围以内，与主网合约逐整数相同；范围以外的请求会被明确拒绝。</p></div>
-        <div class="card reveal d2"><span class="k">03</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle pathLength="1" cx="12" cy="12" r="3"/><path pathLength="1" d="M4 4l16 16"/></svg></div><h3 data-en="No peeking ahead">看不到未来</h3><p data-en="Agents only see information up to the current simulated moment.">Agent 只能看到当前模拟时刻之前的信息。</p></div>
+        <div class="card reveal d1"><span class="k">02</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path pathLength="1" d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></div><h3 data-en="Faithful to chain, within scope">声明范围内与链上一致</h3><p data-en="Within the declared scope, results match the mainnet contracts integer for integer. The declared interface defines the available operations.">在声明的范围以内，与主网合约逐整数相同；可执行的操作由声明接口定义。</p></div>
+        <div class="card reveal d2"><span class="k">03</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle pathLength="1" cx="12" cy="12" r="3"/><path pathLength="1" d="M4 4l16 16"/></svg></div><h3 data-en="Time-local observations">时点观测</h3><p data-en="Each observation contains information available at the current simulated moment.">每次观测包含当前模拟时刻可获得的信息。</p></div>
         <div class="card reveal"><span class="k">04</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect pathLength="1" x="4" y="4" width="16" height="16" rx="3"/><path pathLength="1" d="M9 9h.01"/><path pathLength="1" d="M15 9h.01"/><path pathLength="1" d="M12 12h.01"/><path pathLength="1" d="M9 15h.01"/><path pathLength="1" d="M15 15h.01"/></svg></div><h3 data-en="Scenarios drawn at random">情景随机生成</h3><p data-en="Stress scenarios come from a public random beacon after the freeze.">压力情景在冻结后由公开随机信标生成。</p></div>
         <div class="card reveal d1"><span class="k">05</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect pathLength="1" x="5" y="3" width="14" height="18" rx="2"/><path pathLength="1" d="M8 7h8"/><path pathLength="1" d="M9 12h.01"/><path pathLength="1" d="M12 12h.01"/><path pathLength="1" d="M15 12h.01"/><path pathLength="1" d="M9 16h.01"/><path pathLength="1" d="M12 16h.01"/><path pathLength="1" d="M15 16h.01"/></svg></div><h3 data-en="Scores add up">分数算得对</h3><p data-en="Scoring code and inputs are published for re-computation.">计分方法与输入公开，可重新计算。</p></div>
-        <div class="card reveal d2"><span class="k">06</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M12 4v16"/><path pathLength="1" d="M7 20h10"/><path pathLength="1" d="M5 7h14"/><path pathLength="1" d="M5 7l-3 6a3 3 0 0 0 6 0z"/><path pathLength="1" d="M19 7l-3 6a3 3 0 0 0 6 0z"/></svg></div><h3 data-en="Honest rankings">名次如实</h3><p data-en="Ties are declared, not broken arbitrarily.">分不开就并列，不随意排先后。</p></div>
+        <div class="card reveal d2"><span class="k">06</span><div class="icon draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M12 4v16"/><path pathLength="1" d="M7 20h10"/><path pathLength="1" d="M5 7h14"/><path pathLength="1" d="M5 7l-3 6a3 3 0 0 0 6 0z"/><path pathLength="1" d="M19 7l-3 6a3 3 0 0 0 6 0z"/></svg></div><h3 data-en="Statistical rankings">统计排名</h3><p data-en="Scores are reported with uncertainty, and statistically tied teams share a place.">成绩同时报告不确定性，统计上并列的队伍共享名次。</p></div>
       </div>
     </div>
   </section>
@@ -269,28 +280,28 @@
         <p data-en="Quick answers for participants.">参赛者常问的问题。</p>
       </div>
       <div class="faq">
-        <details class="reveal"><summary data-en="Do I need crypto, a wallet or real money?">需要加密货币、钱包或真钱吗？</summary><p data-en="No. Everything runs inside the simulator. Nothing touches a real chain.">不需要。一切都在仿真器里运行，不接触任何真实的链。</p></details>
+        <details class="reveal"><summary data-en="Where does my agent run?">Agent 在哪里运行？</summary><p data-en="The competition uses simulated accounts and balances inside the HoloBit digital twin. The lending learning lab below runs directly in your browser.">比赛使用 HoloBit 数字孪生中的模拟账户与余额。下方借贷教学示例直接在浏览器运行。</p></details>
         <details class="reveal"><summary data-en="Who can take part?">谁可以参加？</summary><p data-en="Developers, students and researchers worldwide, solo or in teams of up to five. Full eligibility is in the rules.">面向全球的开发者、学生和研究者，个人或最多 5 人组队。具体资格见正式规则。</p></details>
         <details class="reveal"><summary data-en="Can I enter both Track 1 and Track 2?">Track 1 和 Track 2 可以都报吗？</summary><p data-en="Yes. Each track is ranked separately.">可以，两个赛道分别排名。</p></details>
-        <details class="reveal"><summary data-en="Which language should I write my agent in?">用什么语言写 Agent？</summary><p data-en="Starter kits come in Python and TypeScript. Because you submit a container image, any language works inside it.">起步包提供 Python 和 TypeScript 两版。最终提交的是容器镜像，所以镜像里用什么语言都可以。</p></details>
-        <details class="reveal"><summary data-en="Can my agent use an LLM?">Agent 可以调用大模型吗？</summary><p data-en="Yes. Details on connecting a model come with the starter kit and rules. Make sure responses are fast enough to avoid timeouts.">可以。模型接入方式将随起步包和规则公布。请确保响应足够快，避免超时。</p></details>
-        <details class="reveal"><summary data-en="Can I see the stress tests in advance?">能提前看到压力测试吗？</summary><p data-en="No — that's the point. You can (and should) build your own stress tests while practising. All official scenarios are published after the finals.">不能，这正是比赛的核心。练习时你可以、也应该自己构造压力测试。全部正式情景会在决赛后公开。</p></details>
-        <details class="reveal"><summary data-en="Can I update my agent after submitting?">提交后还能改吗？</summary><p data-en="Yes, as often as you like until the freeze. After the freeze your signed version is final.">冻结前可以多次提交、随时更新；冻结后以签名版本为准，不能再改。</p></details>
-        <details class="reveal"><summary data-en="Do I need to write a report?">必须写报告吗？</summary><p data-en="No. Reports are optional and do not affect your score.">不必须。报告可选，不影响分数。</p></details>
+        <details class="reveal"><summary data-en="Which language should I write my agent in?">用什么语言写 Agent？</summary><p data-en="Choose the language that suits your agent. The submitted linux/amd64 container implements the competition interface and contains the dependencies needed to run it.">选择适合 Agent 的语言。提交的 linux/amd64 容器需实现比赛接口，并包含运行所需的依赖。</p></details>
+        <details class="reveal"><summary data-en="Can my agent use an LLM?">Agent 可以调用大模型吗？</summary><p data-en="Yes. The starter kit and rules define model access. Declare your model configuration in the manifest and complete decisions within the time limit.">可以。起步包和规则定义模型接入方式；请在清单中声明模型配置，并在时限内完成决策。</p></details>
+        <details class="reveal"><summary data-en="How should I prepare for stress tests?">怎样准备压力测试？</summary><p data-en="Build your own stress scenarios during practice and test how your agent responds. Official test instances are drawn after the freeze, with scenarios and verification materials published after the finals.">练习时自建压力情景，检查 Agent 的响应。正式测试在冻结后生成，情景与核对材料在决赛后公开。</p></details>
+        <details class="reveal"><summary data-en="When can I update my agent?">何时可以更新 Agent？</summary><p data-en="Update and resubmit until the freeze. Evaluation then uses the version fixed by your signed manifest and image digest.">冻结前可以更新并重新提交。此后评测使用签名清单与镜像摘要锁定的版本。</p></details>
+        <details class="reveal"><summary data-en="How are reports used?">报告有什么用途？</summary><p data-en="Optional reports and write-ups help explain your approach and share what you learned. Scores come from the agent's evaluated runs.">报告与说明材料可选，用于介绍方法与交流经验。比赛分数来自 Agent 的评测运行。</p></details>
         <details class="reveal"><summary data-en="What are the prizes?">奖项和奖金是什么？</summary><p data-en="Prizes are announced at the challenge launch.">奖项将在比赛正式发布时公布。</p></details>
-        <details class="reveal"><summary data-en="How can I check my result?">怎么核对自己的成绩？</summary><p data-en="After the finals, seeds, scenarios and logs are released along with a verification script, so you can recompute your score yourself.">决赛后公开种子、情景、记录和核对脚本，你可以自己重新算一遍分数。</p></details>
+        <details class="reveal"><summary data-en="How can I check my result?">怎么核对自己的成绩？</summary><p data-en="After the finals, use the published seeds, scenarios and verification records to recompute your score. Research use of authorised data and materials follows the choices described on the data and research use page.">决赛后使用公开的种子、情景和核对记录重算分数。经授权数据与资料的研究使用遵循“数据与研究用途”页面所述的授权选项。</p></details>
       </div>
     </div>
   </section>
 
-  <!-- CONTACT -->
+  <!-- PARTICIPANT ENTRY -->
   <section class="block" style="padding-top:0">
     <div class="wrap">
       <div class="contact reveal">
         <span class="eyebrow" data-en="Get ready">准备出发</span>
-        <h2 style="margin-top:16px" data-en="Ship an agent that survives.">交一个能活下来的 Agent。</h2>
-        <p data-en="Registration, rules and the starter kit go live on announcement day. Questions before then? Reach us below.">报名、规则和起步包将在公告日上线。在此之前有问题，欢迎联系我们。</p>
-        <div class="cta-row" data-contact></div>
+        <h2 style="margin-top:16px" data-en="Turn your strategy into an agent.">把你的策略做成 Agent。</h2>
+        <p data-en="Choose a track, work through the learning lab and prepare your delivery checklist.">选择赛道，体验教学示例，再按交付清单准备作品。</p>
+        <div class="cta-row"><a class="btn btn-primary" href="demo/lending.html"><span data-en="Open the learning lab">打开教学示例</span> ↗</a><a class="btn" href="#deliverables"><span data-en="Delivery checklist">交付清单</span> ↓</a></div>
       </div>
     </div>
   </section>
@@ -299,29 +310,13 @@
 <footer>
   <div class="wrap">
     <span>© 2026 Economic World Model Challenge · <span data-en="Hosted by GIFTS &amp; NBS, NTU">主办：GIFTS · 南洋理工商学院</span> · <span data-en="Tracks 1–2 · world provided by HoloBit">Track 1–2 · 世界由 HoloBit 提供</span></span>
-    <span><a href="index.html" data-en="Home">首页</a> · <a href="tracks.html" data-en="All tracks">全部赛道</a> · <a href="agentic-city.html">Agentic City</a></span>
-  </div>
-  <div class="wrap legal">
-    <p data-en="All tracks run in simulation: no real money, no wallets, no tokens. Nothing on this site or in the competition is investment, legal or tax advice, and simulated results do not represent on-chain or real-market performance.">本比赛的全部赛道都在仿真中进行，不使用真钱、不需要钱包、不发行代币。本网站与比赛的任何内容都不构成投资、法律或税务建议；模拟结果不代表链上或真实市场的表现。</p>
-    <p data-en="Uniswap and Aave are trademarks of their respective owners. The Economic World Model Challenge is not affiliated with, sponsored or endorsed by the owners of these marks.">Uniswap 与 Aave 是各自权利人的商标。Economic World Model Challenge 与这些商标的权利人没有关联，也未获其赞助或认可。</p>
+    <span><a href="index.html" data-en="Home">首页</a> · <a href="tracks.html" data-en="All tracks">全部赛道</a> · <a href="agentic-city.html">Agentic City</a> · <a href="data-use.html" data-en="Data &amp; research use">数据与研究用途</a></span>
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261030144139"></script>
-<script src="assets/js/i18n.js?v=20261030144139"></script>
-<script src="assets/js/pages.js?v=20261030144139"></script>
-<script src="assets/js/fx.js?v=20261030144139"></script>
-<script>
-  // score ring: 80 / 20 of circumference 2πr ≈ 503, drawn once the ring comes into view
-  document.addEventListener("DOMContentLoaded", function () {
-    var ring = document.querySelector(".ring");
-    new IntersectionObserver(function (e, o) {
-      if (!e[0].isIntersecting) return;
-      ring.querySelector(".a").setAttribute("stroke-dasharray", "400 503");
-      var b = ring.querySelector(".b"); b.setAttribute("stroke-dasharray", "97 503"); b.setAttribute("stroke-dashoffset", "-403");
-      o.disconnect();
-    }, { threshold: .4 }).observe(ring);
-  });
-</script>
+<script src="assets/js/config.js?v=20261103115328"></script>
+<script src="assets/js/i18n.js?v=20261103115328"></script>
+<script src="assets/js/pages.js?v=20261103115328"></script>
+<script src="assets/js/fx.js?v=20261103115328"></script>
 </body>
 </html>

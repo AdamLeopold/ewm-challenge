@@ -1,0 +1,113 @@
+.track-guides {
+  align-items: start;
+}
+
+.track-guides .card h4 {
+  margin-top: 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.track-guides .track-objective {
+  min-height: 4.8em;
+}
+
+.track-guide {
+  margin-top: 26px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+}
+
+.track-guide dt {
+  margin-top: 22px;
+  margin-bottom: 7px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.track-guide dd {
+  margin: 0;
+  color: rgba(255, 255, 255, .72);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.track-guides .track-formula {
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  letter-spacing: -.035em;
+  color: var(--accent);
+}
+
+#scoring .ring .center .ring-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  line-height: 1;
+}
+
+#scoring .ring .center .ring-number {
+  font-family: var(--font-display);
+  font-size: 54px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.03em;
+  line-height: 1;
+  color: var(--fg);
+}
+
+#scoring .ring .center .ring-divider {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--muted);
+}
+
+#scoring .ring .center .ring-label {
+  display: block;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: .12em;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+#scoring .legend .gate-label {
+  font-size: 24px;
+  padding-top: 5px;
+}
+
+@media (max-width: 900px) {
+  .track-guides {
+    grid-template-columns: 1fr;
+  }
+
+  .track-guides .track-objective {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .track-guides .card.big {
+    padding: 26px;
+  }
+
+  #scoring .ring .center .ring-number {
+    font-size: 42px;
+  }
+
+  #scoring .ring .center .ring-divider {
+    font-size: 30px;
+  }
+
+  #scoring .ring .center .ring-value {
+    gap: 8px;
+  }
+}

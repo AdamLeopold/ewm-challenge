@@ -15,6 +15,7 @@ function setText(element, value) {
 /** Keep weather requests and controls independent of city geometry/loading. */
 export function startEnvironment(options) {
   const panel = document.getElementById('environment');
+  const toggle = document.getElementById('environment-toggle');
   const timeSelect = document.getElementById('environment-time');
   const weatherSelect = document.getElementById('environment-weather');
   const reset = document.getElementById('environment-reset');
@@ -84,7 +85,21 @@ export function startEnvironment(options) {
   }
   function motionChanged(event) { atmosphere.setReducedMotion(event.matches); }
   function pageHidden(event) { if (!event.persisted) dispose(); }
+  function panelToggled() { toggle.setAttribute('aria-expanded', String(panel.open)); }
+  function outsidePointer(event) {
+    if (panel.open && !panel.contains(event.target)) panel.open = false;
+  }
+  function panelKeydown(event) {
+    if (event.key !== 'Escape' || !panel.open) return;
+    event.preventDefault();
+    event.stopPropagation();
+    panel.open = false;
+    toggle.focus();
+  }
 
+  panel.addEventListener('toggle', panelToggled);
+  document.addEventListener('pointerdown', outsidePointer);
+  document.addEventListener('keydown', panelKeydown);
   timeSelect.addEventListener('change', changePreview);
   weatherSelect.addEventListener('change', changePreview);
   reset.addEventListener('click', resetPreview);
@@ -104,6 +119,9 @@ export function startEnvironment(options) {
     clearInterval(timer);
     client.dispose();
     atmosphere.dispose();
+    panel.removeEventListener('toggle', panelToggled);
+    document.removeEventListener('pointerdown', outsidePointer);
+    document.removeEventListener('keydown', panelKeydown);
     timeSelect.removeEventListener('change', changePreview);
     weatherSelect.removeEventListener('change', changePreview);
     reset.removeEventListener('click', resetPreview);

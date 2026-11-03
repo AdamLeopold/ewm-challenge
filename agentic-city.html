@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261030144139">
+<link rel="stylesheet" href="assets/css/main.css?v=20261103115328">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 <style>
   /* builder mock */
@@ -19,12 +19,15 @@
   .builder .zone::after { content: attr(data-label); position: absolute; left: 8px; top: -26px; font-family: var(--font-mono); font-size: 11px; color: #fff; background: var(--city-2); padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
   @keyframes zone { 50% { box-shadow: 0 0 0 10px rgba(255,95,210,.15); } }
   .builder .pin { position: absolute; z-index: 2; left: 46%; top: 47%; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #c2185b; font-weight: 700; box-shadow: 0 0 0 6px rgba(255,255,255,.25); transform: scale(0); transition: transform .5s cubic-bezier(.3,1.6,.5,1); }
+  .builder .pin.p1 { left: 55%; top: 29%; }
+  .builder .pin.p2 { left: 46%; top: 49%; }
+  .builder .pin.p3 { left: 34%; top: 72%; }
   .builder.built .pin { transform: scale(1); }
   .builder .road { position: absolute; z-index: 1; left: 10%; top: 58%; height: 4px; width: 0; background: linear-gradient(90deg, transparent, var(--city-2)); box-shadow: 0 0 12px var(--city-2); transition: width 1.2s ease .3s; border-radius: 2px; }
   .builder.built .road { width: 36%; }
   .builder .chat { display: flex; flex-direction: column; gap: 12px; padding: 20px; border-left: 1px solid var(--line); font-size: 14px; }
   .builder .chat-h { font-family: var(--font-mono); font-size: 11px; letter-spacing: .15em; color: var(--muted); text-transform: uppercase; display: flex; justify-content: space-between; }
-  .builder .msg { max-width: 92%; padding: 10px 14px; border-radius: 14px; line-height: 1.5; opacity: 0; transform: translateY(8px); transition: all .4s; }
+  .builder .msg { max-width: 92%; padding: 10px 14px; border-radius: 14px; line-height: 1.5; opacity: 0; transform: translateY(8px); transition: opacity .4s, transform .4s; }
   .builder .msg.show { opacity: 1; transform: none; }
   .builder .me { align-self: flex-end; background: var(--city); color: #10041f; border-bottom-right-radius: 4px; }
   .builder .ai { align-self: flex-start; background: rgba(255,255,255,.06); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
@@ -32,6 +35,9 @@
   .builder .budget { margin-top: auto; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
   .builder .bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.08); margin-top: 6px; overflow: hidden; }
   .builder .bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--city), var(--city-2)); transition: width 1s; }
+  .builder .zone { animation-play-state: paused; }
+  .scene-builder.in-view .zone { animation-play-state: running; }
+  @media (prefers-reduced-motion: reduce) { .builder .zone { animation: none; } .builder .pin, .builder .msg, .builder .bar i, .builder .road { transition: none; } }
   .builder .typing { display: inline-flex; gap: 4px; } .builder .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: pulse 1s infinite; } .builder .typing i:nth-child(2) { animation-delay: .15s; } .builder .typing i:nth-child(3) { animation-delay: .3s; }
   @media (max-width: 860px) { .builder { grid-template-columns: 1fr; } .builder .map { min-height: 260px; } .builder .chat { border-left: 0; border-top: 1px solid var(--line); min-height: 250px; } }
   .file { display: flex; gap: 18px; align-items: flex-start; }
@@ -152,7 +158,7 @@
         <iframe id="city-demo-frame" title="Agentic City planning studio demo" allow="fullscreen" hidden></iframe>
       </div>
       <p class="city-demo-loading" id="city-demo-loading" role="status" hidden data-en="Loading the studio… You can also open the full demo using the link above.">正在加载工作台……也可使用上方链接打开完整 Demo。</p>
-      <p class="city-demo-note" data-en="Scripted demo: planning dialogue and assessment values are illustrative. Live AI and full simulation services are not connected. The map and 3D model load when you launch the demo; a desktop browser is recommended.">本 Demo 使用预设规划对话与示例评估数值，尚未接入真实 AI 和完整仿真服务。启动后加载地图与 3D 模型，建议使用电脑浏览器体验。</p>
+      <p class="city-demo-note" data-en="Explore the city data through a fire-station planning walkthrough, linked 2D/3D views and an example response record. The map and 3D model load when you launch the demo.">通过消防站规划示例，查看城市数据、联动的 2D／3D 视图与示例响应记录。启动 Demo 后加载地图和 3D 模型。</p>
       <noscript><p class="city-demo-note"><a href="demo/agentic-city/">Open Agentic City demo ↗</a></p></noscript>
     </div>
   </section>
@@ -176,24 +182,23 @@
   <section class="block" id="play">
     <div class="wrap">
       <div class="sec-head">
-        <div><div class="sec-num">02 / HOW TO PLAY</div><h2 data-en="Like a city-builder game. Except you just say it.">像玩城市建造游戏，只是动嘴就行</h2></div>
-        <p data-en="No modelling software, no code. The system walks you through each step, and the agent turns what you say into zones, buildings, transit lines and policy documents.">不用学建模软件，也不用写代码。系统会一步步带着你走，Agent 把你说的话变成区域、建筑、交通线路和政策文件。</p>
+        <div><div class="sec-num">02 / HOW TO PLAY</div><h2 data-en="Describe the goal. Review the plan. Build the city.">说出目标，审查方案，建设城市</h2></div>
+        <p data-en="Work through a clear sequence: select the fire-station sites, review costs, confirm construction and inspect the response record. The same planning workflow connects land, buildings, transport and policy.">按清晰的步骤选择消防站位置、审查成本、确认建设，再查看响应记录。这一规划流程把土地、建筑、交通与政策连在一起。</p>
       </div>
     </div>
     <div class="scene-builder" data-scene id="builder-scene">
       <div class="scene-stick"><div class="wrap">
       <div class="builder" id="builder">
         <div class="map">
-          <div class="zone" data-label="Plot 07"></div>
-          <div class="road"></div>
-          <div class="pin">R</div>
+          <div class="zone" data-label="FS-01 · FS-02 · FS-03"></div>
+          <div class="pin p1" aria-label="Fire station FS-01">1</div><div class="pin p2" aria-label="Fire station FS-02">2</div><div class="pin p3" aria-label="Fire station FS-03">3</div>
         </div>
         <div class="chat" aria-live="polite">
-          <div class="chat-h"><span>City Agent</span><span>● live</span></div>
-          <div class="msg me" data-en="Zone this plot as residential and add six 30-storey towers.">把这块地划成居住区，建 6 栋 30 层的住宅楼。</div>
-          <div class="msg ai" data-en="Zoned Plot 07 as <b>residential</b> and placed 6 towers (96 m). Construction cost updated.">已将 Plot 07 划为<b>居住区</b>，放置 6 栋住宅楼（高 96 米）。建设成本已更新。</div>
-          <div class="msg me" data-en="Add a bus route from here to the Lok Ma Chau crossing.">加一条从这里到落马洲口岸的公交线。</div>
-          <div class="msg ai" data-en="Added <b>bus route B2</b> with 3 stops. Remaining budget updated.">已新增<b>公交线 B2</b>，设 3 个站点。剩余预算已更新。</div>
+          <div class="chat-h"><span>City Agent</span><span data-en="Planning example">规划示例</span></div>
+          <div class="msg me" data-en="Plan three fire stations for The Loop, San Tin and Ngau Tam Mei.">为河套、新田和牛潭尾规划三座消防站。</div>
+          <div class="msg ai" data-en="Sites: <b>NP-025, NP-081 and NP-168</b>. Review HK$240M construction, HK$12M for two removals and HK$18M for service policy: <b>HK$270M total</b>.">候选位置：<b>NP-025、NP-081、NP-168</b>。审查建设 240M、两处拆除 12M 和服务政策 18M：<b>总支出 HK$270M</b>。</div>
+          <div class="msg me" data-en="Confirm the three stations and two removals. Then review fire response.">确认建设三座消防站并拆除两处建筑，再查看消防响应。</div>
+          <div class="msg ai" data-en="Plan saved: <b>3 stations, 2 removals</b>. HK$9.73B remains from HK$10B: <b>97.3%</b>. Inspect eight locations in the example response record.">方案已保存：<b>三座消防站、两处拆除</b>。100 亿预算剩余 97.3 亿港元，即 <b>97.3%</b>。查看八个位置的示例响应记录。</div>
           <div class="budget"><span data-en="Budget remaining">剩余预算</span> <span id="budget-pct">100%</span><div class="bar"><i id="budget-bar"></i></div></div>
         </div>
       </div>
@@ -206,8 +211,8 @@
         <div class="step reveal"><h4 data-en="Zone">划分区域</h4><p data-en="Draw areas in words and give each a use: residential, commercial, office, public facilities.">用自然语言划出区域，说明功能：居住、商业、办公、公共设施等。</p></div>
         <div class="step reveal d1"><h4 data-en="Build">建设建筑</h4><p data-en="Buildings or clusters with a location, footprint, height and use.">建筑或建筑群，有位置、占地面积、高度和功能。</p></div>
         <div class="step reveal d2"><h4 data-en="Move people">调整交通</h4><p data-en="Add or remove walking, road and bus routes on the existing network.">在原有路网上新增或删除步行、机动车和公交线路。</p></div>
-        <div class="step reveal d3"><h4 data-en="Set policy">制定政策</h4><p data-en="Cross-border exchange, industry incentives, talent, start-up support. The system turns them into a standard policy file.">深港交流、产业优惠、人才、创业孵化等，由系统转成规范的政策文件。</p></div>
-        <div class="step reveal d4"><h4 data-en="Check &amp; submit">检查并提交</h4><p data-en="Run the basic checks, adjust, then export your two files.">跑基础检查、调整方案，然后导出两份文件提交。</p></div>
+        <div class="step reveal d3"><h4 data-en="Set policy">制定政策</h4><p data-en="Describe cross-border exchange, industry incentives, talent and start-up support in a structured policy draft.">将深港交流、产业优惠、人才、创业孵化等写入结构化政策草稿。</p></div>
+        <div class="step reveal d4"><h4 data-en="Check &amp; submit">检查并提交</h4><p data-en="Review the plan and budget, prepare the spatial package and policy file, then submit through the competition service.">复查方案和预算，准备空间包与政策文件，通过比赛提交服务交付。</p></div>
       </div>
 
       <div class="grid g2" style="margin-top:40px">
@@ -219,7 +224,7 @@
         <div class="card reveal d1">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
           <h3 data-en="Basic checks before you submit">提交前的基础检查</h3>
-          <p data-en="Built-in baseline metrics show where your plan stands, so you can improve it before you submit.">平台内置的基础指标随时告诉你方案的情况，方便你在提交前不断改进。</p>
+          <p data-en="Review budget and planning checks as you build. The demo provides an example fire-response record to inspect alongside your plan.">搭建时核对预算和规划检查；Demo 提供示例消防响应记录，方便对照方案查看。</p>
         </div>
       </div>
     </div>
@@ -230,7 +235,7 @@
     <div class="wrap">
       <div class="sec-head">
         <div><div class="sec-num">03 / WHAT YOU SUBMIT</div><h2 data-en="Two files. One city.">两份文件，一座城市</h2></div>
-        <p data-en="The platform generates and validates both files from your final plan. Only files that pass format and basic validation go into the official evaluation, where the organisers rebuild your plan from them.">两份文件都由系统根据你的最终方案自动生成并校验。只有通过格式和基础校验的文件才进入正式测评，组委会据此重建你的方案。</p>
+        <p data-en="The final submission pairs a spatial archive with a structured policy file. Format, object IDs, coordinate reference, costs and planning constraints are checked before the organisers reconstruct and evaluate the city.">最终交付物由空间规划压缩包和结构化政策文件组成。完成格式、对象 ID、坐标参考、成本与规划约束检查后，组委会据此重建并评估城市。</p>
       </div>
       <div class="grid g2">
         <div class="card big reveal">
@@ -259,17 +264,22 @@
       </div>
       <div class="code-card reveal">
         <div class="embed-bar"><i></i><i></i><i></i><span class="url">policies.yaml</span><span data-en="Example">示例</span></div>
-<pre><code><span class="c"># one entry per policy</span>
-- <span class="k">id</span>: P-03
-  <span class="k">name</span>: <span class="s">Young researcher housing subsidy</span>
-  <span class="k">description</span>: <span class="s">Monthly rent support for early-career researchers</span>
-  <span class="k">goal</span>: <span class="s">Attract and keep research talent in San Tin</span>
-  <span class="k">target</span>: { <span class="k">type</span>: resident, <span class="k">filter</span>: <span class="s">"researcher, age ≤ 35"</span> }
-  <span class="k">count</span>: { <span class="k">value</span>: 2000, <span class="k">basis</span>: <span class="s">persons per year</span> }
-  <span class="k">funding</span>: { <span class="k">per_target</span>: 3000, <span class="k">unit</span>: HKD/month, <span class="k">method</span>: <span class="s">rent subsidy</span> }
-  <span class="k">area</span>: <span class="s">San Tin residential zones</span>
-  <span class="k">period</span>: 2030–2035</code></pre>
+<pre><code><span class="k">policies</span>:
+  - <span class="k">id</span>: <span class="s">"P-001"</span>
+    <span class="k">name</span>: <span class="s">"Fire service readiness"</span>
+    <span class="k">description</span>: <span class="s">"Staff and equip the three planned stations."</span>
+    <span class="k">objectives</span>: <span class="s">"Improve emergency access"</span>
+    <span class="k">target_type</span>: <span class="s">"fire_station"</span>
+    <span class="k">eligibility</span>: [<span class="s">"FS-01", "FS-02", "FS-03"</span>]
+    <span class="k">target_count</span>: 3
+    <span class="k">counting_basis</span>: <span class="s">"unique_station"</span>
+    <span class="k">support_per_target_hkd</span>: 6000000
+    <span class="k">payment_method</span>: <span class="s">"implementation_milestones"</span>
+    <span class="k">areas</span>: [<span class="s">"NP-025", "NP-081", "NP-168"</span>]
+    <span class="k">period</span>: <span class="s">"2030-2035"</span></code></pre>
       </div>
+      <p class="research-note" data-en="Competition submissions and authorised run data, together with separately authorised agent programs, container images and model materials, will be used under the privacy terms and the scope of each authorisation to train, evaluate and improve economic world models.">参赛成果与经授权收集的运行数据，以及单独授权的 Agent 程序、容器镜像和模型资料，将依照隐私条款与授权范围，用于经济世界模型的训练、评测与持续改进。</p>
+      <p><a href="data-use.html" class="text-link" data-en="Data &amp; research use →">数据与研究用途 →</a></p>
     </div>
   </section>
 
@@ -277,7 +287,7 @@
   <section class="block" id="evaluate">
     <div class="wrap">
       <div class="sec-head">
-        <div><div class="sec-num">04 / EVALUATION</div><h2 data-en="Not just how it looks — how it lives.">不只看它长什么样，更看它过得怎么样</h2></div>
+        <div><div class="sec-num">04 / EVALUATION</div><h2 data-en="Evaluate the city through how it works.">从城市如何运转来评估方案</h2></div>
         <p data-en="Every plan is rebuilt from its two files and tested under the same map, policy and scenario settings. The ranking combines scenario results, AI-agent ratings and expert review.">每份方案都从两份文件重建，在统一的地图、政策和场景参数下测试。名次综合场景模拟的量化指标、社会模拟 Agent 的评价和专家评审确定。</p>
       </div>
       <div class="flow" style="--n:3">
@@ -305,7 +315,7 @@
 
       <div class="sec-head" style="margin-top:96px;margin-bottom:32px">
         <div><h2 style="font-size:clamp(26px,3vw,40px)" data-en="The scenarios we run.">我们会跑哪些场景</h2></div>
-        <p data-en="After submission, the organisers run your city through scenarios like these. Hover a card.">提交之后，组委会会把你的城市放进这些场景里模拟。把鼠标移到卡片上。</p>
+        <p data-en="Seven scenario categories generate the measurable outcomes used across nine dimensions. Social agents contribute overall satisfaction; expert review adds innovation, feasibility and social value alongside the scenario results.">七类场景产生可量化结果，汇入九个评估维度。社会 Agent 提供总体满意度，专家结合场景结果评审创新性、可实施性与社会价值。</p>
       </div>
       <div class="grid g4" id="shocks"></div>
     </div>
@@ -379,15 +389,15 @@
         <p data-en="Quick answers for participants.">参赛者常问的问题。</p>
       </div>
       <div class="faq">
-        <details class="reveal"><summary data-en="Do I need to code?">需要会编程吗？</summary><p data-en="No. You plan by talking to the agent, and the platform generates your files. Experienced entrants can use richer model interfaces if they want.">不需要。你通过和 Agent 对话来规划，平台会生成提交文件。有经验的参赛者如有需要，可以使用更丰富的模型接口。</p></details>
-        <details class="reveal"><summary data-en="Do I need to know urban planning or economics?">需要懂城市规划或经济学吗？</summary><p data-en="No. Good questions matter more than jargon — “If many young people live here, where are the schools?” The simulation shows you the consequences.">不需要。好问题比专业术语更重要，比如“这里住了很多年轻人，学校在哪？”模拟会把后果展示给你。</p></details>
+        <details class="reveal"><summary data-en="Do I need to code?">需要会编程吗？</summary><p data-en="Start with natural-language planning, visual cards and the guided workflow. Experienced entrants can also use richer model interfaces.">从自然语言规划、可视化卡片和引导流程开始。有经验的参赛者也可以使用更丰富的模型接口。</p></details>
+        <details class="reveal"><summary data-en="Do I need to know urban planning or economics?">需要懂城市规划或经济学吗？</summary><p data-en="Begin with a concrete question such as “If many young people live here, where are the schools?” City data and scenario results help you develop the proposal.">从具体问题出发，例如“这里住了很多年轻人，学校在哪？”结合城市数据和场景结果逐步完善方案。</p></details>
         <details class="reveal"><summary data-en="Which area am I planning, and for what year?">规划哪里？面向哪一年？</summary><p data-en="A continuous district of about 17.73 km² in the Northern Metropolis, centred on San Tin, the Loop's Hong Kong Park and Ngau Tam Mei. Your plan targets 2035.">北部都会区内以新田、落马洲河套香港园区和牛潭尾为核心的一片连续区域，约 17.73 平方公里。方案面向 2035 年。</p></details>
-        <details class="reveal"><summary data-en="What exactly do I submit?">到底提交什么？</summary><p data-en="Two files, both generated and validated by the platform: <code>spatial_plan.zip</code> (manifest.json, plan.gpkg and 3d/) and <code>policies.yaml</code>.">两份文件，都由平台自动生成并校验：<code>spatial_plan.zip</code>（含 manifest.json、plan.gpkg 和 3d/）以及 <code>policies.yaml</code>。</p></details>
+        <details class="reveal"><summary data-en="What exactly do I submit?">到底提交什么？</summary><p data-en="Prepare two deliverables: <code>spatial_plan.zip</code> (manifest.json, plan.gpkg and 3d/) and <code>policies.yaml</code>.">准备两份交付物：<code>spatial_plan.zip</code>（含 manifest.json、plan.gpkg 和 3d/）以及 <code>policies.yaml</code>。</p></details>
         <details class="reveal"><summary data-en="Is there a budget limit?">有预算限制吗？</summary><p data-en="Yes. Everyone starts with the same fixed funds; construction and policies both spend them.">有。每个人起始资金相同，建设和政策都要花钱。</p></details>
         <details class="reveal"><summary data-en="Are the basic checks my score?">基础检查的结果就是我的成绩吗？</summary><p data-en="Basic checks are your guide while you build. Your ranking comes from scenario simulation, agent ratings and expert review.">基础检查是你搭建过程中的参考，名次由场景模拟、Agent 评价和专家评审综合确定。</p></details>
-        <details class="reveal"><summary data-en="Is there a separate track for school students?">青少年有单独的赛道吗？</summary><p data-en="No. Everyone follows the same process and rules. The platform's chat, cards and checks make it accessible to newcomers.">没有。所有人走同一套流程和规则，平台的对话、卡片和自动检查让新手也能完成方案。</p></details>
+        <details class="reveal"><summary data-en="Is there a separate track for school students?">青少年有单独的赛道吗？</summary><p data-en="Everyone follows the same process and rules. Dialogue, visual cards and checks help newcomers build their proposals.">所有人走同一套流程和规则。对话、可视化卡片和检查流程帮助新手完成方案。</p></details>
         <details class="reveal"><summary data-en="Can I team up across Shenzhen and Hong Kong, or join from overseas?">可以深港跨境组队、或者从海外参加吗？</summary><p data-en="Yes to both. Cross-border teams are especially encouraged, and overseas youth teams are welcome.">都可以。特别鼓励深港跨境组队，也欢迎海外青年团队。</p></details>
-        <details class="reveal"><summary data-en="When can I start building?">什么时候可以开始搭？</summary><p data-en="The <a href=&quot;demo/agentic-city/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>interactive demo is available now ↗</a>. It offers city exploration and a scripted planning walkthrough. The full platform, registration and submissions are expected to open in late November."><a href="demo/agentic-city/" target="_blank" rel="noopener">交互 Demo 现已开放 ↗</a>，可浏览城市并体验预设规划流程；完整平台、正式报名与提交预计在 11 月下旬开放。</p></details>
+        <details class="reveal"><summary data-en="When can I start building?">什么时候可以开始搭？</summary><p data-en="The <a href=&quot;demo/agentic-city/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>interactive demo is available now ↗</a>. Explore the city and follow the fire-station planning walkthrough. The full platform, registration and submissions are expected to open in late November."><a href="demo/agentic-city/" target="_blank" rel="noopener">交互 Demo 现已开放 ↗</a>，可浏览城市并体验预设规划流程；完整平台、正式报名与提交预计在 11 月下旬开放。</p></details>
         <details class="reveal"><summary data-en="What are the prizes?">奖项是什么？</summary><p data-en="Prizes are announced at the challenge launch.">奖项将在比赛正式发布时公布。</p></details>
       </div>
     </div>
@@ -424,17 +434,14 @@
 <footer>
   <div class="wrap">
     <span>© 2026 Economic World Model Challenge · <span data-en="Hosted by GIFTS &amp; NBS, NTU">主办：GIFTS · 南洋理工商学院</span> · <span data-en="Track 3 · world provided by Agentic City">Track 3 · 世界由 Agentic City 提供</span></span>
-    <span><a href="index.html" data-en="Home">首页</a> · <a href="tracks.html" data-en="All tracks">全部赛道</a> · <a href="holobit.html">HoloBit</a></span>
-  </div>
-  <div class="wrap legal">
-    <p data-en="All tracks run in simulation: no real money, no wallets, no tokens. Nothing on this site or in the competition is investment, legal or tax advice, and simulated results do not represent on-chain or real-market performance.">本比赛的全部赛道都在仿真中进行，不使用真钱、不需要钱包、不发行代币。本网站与比赛的任何内容都不构成投资、法律或税务建议；模拟结果不代表链上或真实市场的表现。</p>
+    <span><a href="index.html" data-en="Home">首页</a> · <a href="tracks.html" data-en="All tracks">全部赛道</a> · <a href="holobit.html">HoloBit</a> · <a href="data-use.html" data-en="Data &amp; research use">数据与研究用途</a></span>
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261030144139"></script>
-<script src="assets/js/i18n.js?v=20261030144139"></script>
-<script src="assets/js/pages.js?v=20261030144139"></script>
-<script src="assets/js/fx.js?v=20261030144139"></script>
+<script src="assets/js/config.js?v=20261103115328"></script>
+<script src="assets/js/i18n.js?v=20261103115328"></script>
+<script src="assets/js/pages.js?v=20261103115328"></script>
+<script src="assets/js/fx.js?v=20261103115328"></script>
 <script>
 (function () {
   var t = function (zh, en) { return window.SW_t(zh, en); };
@@ -494,11 +501,17 @@
 
     var sc = document.getElementById("builder-scene"), b = document.getElementById("builder"), msgs = b.querySelectorAll(".msg"),
         bar = document.getElementById("budget-bar"), pct = document.getElementById("budget-pct");
+    var builderVisible = false;
+    function syncBuilderAnimation() { sc.classList.toggle("in-view", builderVisible && !document.hidden); }
+    if ("IntersectionObserver" in window) new IntersectionObserver(function (entries) {
+      builderVisible = entries[0].isIntersecting; syncBuilderAnimation();
+    }).observe(sc);
+    document.addEventListener("visibilitychange", syncBuilderAnimation);
     var at = [0.3, 0.44, 0.6, 0.74];
     sc.onSceneProgress = function (p) {
       msgs.forEach(function (m, i) { m.classList.toggle("show", p >= at[i]); });
-      b.classList.toggle("built", p >= at[1]);
-      var left = p >= at[3] ? 71 : p >= at[1] ? 82 : 100;
+      b.classList.toggle("built", p >= at[3]);
+      var left = p >= at[3] ? 97.3 : 100;
       bar.style.width = left + "%"; pct.textContent = left + "%";
     };
     if (window.SW_sceneFrame) window.SW_sceneFrame();

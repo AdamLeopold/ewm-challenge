@@ -26,17 +26,26 @@
   }
 
   function renderCountdown(el) {
-    var items = C[el.dataset.countdown].timeline, now = Date.now();
-    var next = items.find(function (it) { return new Date(it.date).getTime() > now; });
+    var world = C[el.dataset.countdown], now = Date.now();
+    var next = world.countdown || world.timeline.find(function (it) { return new Date(it.date).getTime() > now; });
+    clearInterval(el._iv);
     if (!next) { el.hidden = true; return; }
+    el.hidden = false;
     var target = new Date(next.date).getTime();
     function tick() {
-      var s = Math.max(0, Math.floor((target - Date.now()) / 1000));
+      var s = Math.max(0, Math.ceil((target - Date.now()) / 1000));
+      var stamp = next.timeLabel ? '<span class="countdown-target">' + t(next.timeLabel.zh, next.timeLabel.en) + '</span>' : '';
+      if (!s && next.completed) {
+        el.innerHTML = '<span class="lbl">' + t(next.completed.zh, next.completed.en) + '</span>' + stamp;
+        clearInterval(el._iv); el._iv = null;
+        return false;
+      }
       var parts = [[Math.floor(s / 86400), t("天", "DAYS")], [Math.floor(s % 86400 / 3600), t("时", "HRS")], [Math.floor(s % 3600 / 60), t("分", "MIN")], [s % 60, t("秒", "SEC")]];
       el.innerHTML = '<span class="lbl">' + t("距 ", "Until ") + t(next.zh, next.en) + "</span>" +
-        parts.map(function (p) { return '<span class="u"><b>' + String(p[0]).padStart(2, "0") + "</b><i>" + p[1] + "</i></span>"; }).join("");
+        parts.map(function (p) { return '<span class="u"><b>' + String(p[0]).padStart(2, "0") + "</b><i>" + p[1] + "</i></span>"; }).join("") + stamp;
+      return true;
     }
-    tick(); clearInterval(el._iv); el._iv = setInterval(tick, 1000);
+    if (tick()) el._iv = setInterval(tick, 1000);
   }
 
   function renderLinks() {

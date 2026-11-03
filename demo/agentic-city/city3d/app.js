@@ -7,7 +7,7 @@ import {loadReviewedCrossings} from './reviewed-crossings.js?v=web-1';
 import {loadVectorSurfaces} from './vector-surfaces.js?v=web-1';
 import {get, loadPack, runQueue, nextFrame, pruneAssetCache} from './loading.js?v=web-1';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-import {startEnvironment} from './environment-controller.js?v=environment-1';
+import {startEnvironment} from './environment-controller.js?v=gear-2';
 const $=id=>document.getElementById(id),scene=new T.Scene();
 const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;$('canvas').append(renderer.domElement);
 const camera=new T.PerspectiveCamera(42,innerWidth/innerHeight,1,60000);camera.up.set(0,0,1);

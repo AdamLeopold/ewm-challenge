@@ -1,0 +1,27 @@
+/* Keep policy and package controls usable in the narrow embedded studio. */
+#modalBody a, .notice a { color: var(--accent); }
+#policyErrors { color: #efc8aa; line-height: 1.7; }
+#policyForm .actions { flex-wrap: wrap; }
+#policyForm textarea { resize: vertical; }
+#modalBody .file-card > div { min-width: 0; }
+#modalBody .file-card button { flex-shrink: 0; max-width: 220px; }
+#modalBody .file-card p { overflow-wrap: anywhere; }
+.committee-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.record-table { overflow-x: auto; }
+.record-table table { min-width: 480px; }
+@media (max-width: 800px) {
+  .committee-cards { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  #modal { padding: 12px; }
+  .modal-inner { padding: 24px 18px; }
+  #modalBody h2 { font-size: 23px; padding-right: 14px; }
+  #modalBody .file-card { flex-wrap: wrap; padding: 15px; }
+  #modalBody .file-card button { width: 100%; max-width: none; margin: 2px 0 0; }
+  #modalBody .sourcegrid { grid-template-columns: 1fr; }
+  #modalBody .actions { flex-wrap: wrap; }
+  #modalBody .metric-grid { flex-direction: column; }
+  #modalBody .metric { display: flex; align-items: center; gap: 18px; }
+  #modalBody .metric small { margin-top: 0; }
+  #modalBody td, #modalBody th { overflow-wrap: anywhere; }
+}

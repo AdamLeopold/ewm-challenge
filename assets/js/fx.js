@@ -8,29 +8,39 @@
   function stage(canvas, draw, init) {
     var ctx = canvas.getContext("2d");
     var dpr = Math.min(window.devicePixelRatio || 1, 2), big = false;
-    var s = { w: 0, h: 0, t: 0, ctx: ctx, visible: true };
+    var s = { w: 0, h: 0, t: 0, ctx: ctx, visible: false }, frame = 0, last = performance.now();
+    function schedule() {
+      if (document.hidden || !s.visible) return;
+      if (reduce) { s.t = 3; draw(s, 0); return; }
+      if (!frame) { last = performance.now(); frame = requestAnimationFrame(loop); }
+    }
+    function pause() { if (frame) cancelAnimationFrame(frame); frame = 0; }
     function resize() {
       var r = canvas.getBoundingClientRect();
       s.w = Math.max(1, r.width); s.h = Math.max(1, r.height);
-      big = s.w * s.h > 900000; var k = lite ? 1 : big ? Math.min(dpr, 1.5) : dpr;   // full-screen canvases render at most 1.5x
+      big = s.w * s.h > 900000;
+      var k = lite ? 1 : big ? Math.min(dpr, 1.5) : dpr;
       canvas.width = s.w * k; canvas.height = s.h * k;
       ctx.setTransform(k, 0, 0, k, 0, 0);
       init && init(s);
+      schedule();
+    }
+    function loop(now) {
+      frame = 0;
+      if (!s.visible || document.hidden) return;
+      var dt = Math.min(0.05, (now - last) / 1000); last = now;
+      var side = lite && canvas.closest(".side"), calm = side && !side.matches(":hover") && side.parentNode.querySelector(".side:hover");
+      s.f = (s.f || 0) + 1; s.t += dt;
+      if (!calm || s.f % 2 === 0) draw(s, calm ? dt * 2 : dt);
+      frame = requestAnimationFrame(loop);
     }
     resize();
     var ro = new ResizeObserver(resize); ro.observe(canvas);
-    new IntersectionObserver(function (e) { s.visible = e[0].isIntersecting; }).observe(canvas);
-    var last = performance.now();
-    function loop(now) {
-      var dt = Math.min(0.05, (now - last) / 1000); last = now;
-      // on the track chooser, panels that aren't hovered while another is draw every other frame
-      var side = lite && canvas.closest(".side"), calm = side && !side.matches(":hover") && side.parentNode.querySelector(".side:hover");
-      s.f = (s.f || 0) + 1;
-      if (s.visible && !document.hidden) { s.t += dt; if (!calm || s.f % 2 === 0) draw(s, calm ? dt * 2 : dt); }
-      if (!reduce) requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
-    if (reduce) { s.t = 3; draw(s, 0); }
+    new IntersectionObserver(function (entries) {
+      s.visible = entries[0].isIntersecting;
+      if (s.visible) schedule(); else pause();
+    }).observe(canvas);
+    document.addEventListener("visibilitychange", function () { if (document.hidden) pause(); else schedule(); });
     return s;
   }
 
@@ -496,7 +506,7 @@
           anims.push(ch.animate([{ opacity: 0, transform: "translateY(.45em)", filter: "blur(12px)" }, { opacity: 1, transform: "none", filter: "blur(0)" }], { duration: 1300, delay: d, easing: ease, fill: "backwards" }));
         });
       });
-      document.querySelectorAll(".side-content, .hero .wrap").forEach(function (box) {
+      document.querySelectorAll(".hero .wrap").forEach(function (box) {
         var start = box.closest(".side-city") ? 550 : 350;
         Array.prototype.forEach.call(box.children, function (el, i) {
           if (el.hasAttribute("data-chars")) return;
@@ -595,48 +605,6 @@
       bar.addEventListener("focusin", function () { bar.classList.remove("tucked"); });
     }
 
-    // smooth wheel scrolling on mouse/trackpad devices: the page eases towards where the wheel points.
-    // Native scrolling is untouched for touch, keyboard, scrollbar dragging and reduced motion.
-    var smooth = { to: null };
-    if (!reduce && matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      document.documentElement.style.scrollBehavior = "auto";
-      var target = scrollY, current = scrollY, running = false, lastT = 0;
-      var maxY = function () { return document.documentElement.scrollHeight - innerHeight; };
-      var stepped = 0;
-      var step = function (now) {
-        stepped++;
-        var dt = Math.min(0.05, ((now || performance.now()) - (lastT || now)) / 1000) || 0.016; lastT = now;
-        current += (target - current) * (1 - Math.pow(0.0009, dt));   // frame-rate independent easing
-        if (Math.abs(target - current) < 0.4) { current = target; running = false; }
-        window.scrollTo(0, current);
-        if (running) requestAnimationFrame(step); else lastT = 0;
-      };
-      var go = function (y) {
-        target = Math.max(0, Math.min(maxY(), y));
-        if (!running) {
-          running = true; current = scrollY; requestAnimationFrame(step);
-          var seen = stepped;   // if the browser isn't producing frames (power saving, background), just jump
-          setTimeout(function () { if (running && stepped === seen) { running = false; current = target; window.scrollTo(0, target); } }, 120);
-        }
-      };
-      var scrollsItself = function (el, dy) {   // leave inner scroll areas (tables, code) alone when they can scroll
-        for (; el && el.nodeType === 1 && el !== document.body; el = el.parentElement) {
-          var cs = getComputedStyle(el);
-          if (/(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight &&
-              ((dy > 0 && el.scrollTop + el.clientHeight < el.scrollHeight) || (dy < 0 && el.scrollTop > 0))) return true;
-        }
-        return false;
-      };
-      addEventListener("wheel", function (e) {
-        if (e.ctrlKey || e.defaultPrevented || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-        if (scrollsItself(e.target, e.deltaY)) return;
-        e.preventDefault();
-        var d = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1);
-        go((running ? target : scrollY) + d);
-      }, { passive: false });
-      addEventListener("scroll", function () { if (!running) target = current = scrollY; }, { passive: true });
-      smooth.to = go;
-    }
     // in-page links glide to their section, clearing the top bar
     document.addEventListener("click", function (e) {
       var a = e.target.closest && e.target.closest('a[href^="#"]');
@@ -645,7 +613,7 @@
       if (!el) return;
       e.preventDefault();
       var y = el.getBoundingClientRect().top + scrollY - 72;
-      if (smooth.to) smooth.to(y); else window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
+      window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
       history.replaceState(null, "", a.getAttribute("href"));
     });
     // nav progress: a bar under the in-page links grows left to right with the reading position.
@@ -848,16 +816,19 @@
       frame();
     }
 
-    // background videos: pick the small file on phones, never block
+    // Decorative video runs only while it is visible and motion is enabled.
     document.querySelectorAll("video[data-src]").forEach(function (v) {
+      v.autoplay = false;
       v.src = small && v.dataset.srcSmall ? v.dataset.srcSmall : v.dataset.src;
       v.muted = true;
-      // Background loops must never stall: resume whenever the browser pauses or stalls them.
-      var resume = function () { if (!document.hidden && v.paused) v.play().catch(function () {}); };
-      ["pause", "stalled", "suspend", "ended"].forEach(function (ev) { v.addEventListener(ev, function () { setTimeout(resume, 50); }); });
-      document.addEventListener("visibilitychange", resume);
-      setInterval(resume, 1000);
-      resume();
+      var visible = false;
+      function sync() {
+        if (!visible || document.hidden || reduce) { if (!v.paused) v.pause(); return; }
+        if (v.paused) v.play().catch(function () {});
+      }
+      new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; sync(); }).observe(v);
+      ["stalled", "ended"].forEach(function (event) { v.addEventListener(event, sync); });
+      document.addEventListener("visibilitychange", sync);
     });
   });
 })();

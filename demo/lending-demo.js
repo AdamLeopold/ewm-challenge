@@ -20,7 +20,7 @@
 
   function renderTrace() {
     const steps = result.steps.slice(1, round + 1);
-    $("decision-trace").innerHTML = steps.length ? steps.map(s => `<div class="trace-item${s.liquidated ? " danger" : ""}"><h3>第 ${s.round} 轮 · ${s.liquidated ? "发生清算" : s.repayment > 0 ? "主动还款" : "等待"}</h3><p>观察：抵押品 ${money(s.observation.collateral)}，债务 ${money(s.observation.debt)}，现金 ${money(s.observation.cash)}；债务比例 ${pct(s.observation.ratio)}。</p><p>${s.reason}</p>${s.previews ? `<div class="preview-detail">本地试算（自行假设再跌 25%，不是提前读取考题）：<br>不还款 → 比例 ${pct(s.previews.hold.ratio)}，${s.previews.hold.wouldLiquidate ? "可能清算" : "不清算"}；还款 ${s.repayment} → 比例 ${pct(s.previews.repay.ratio)}，${s.previews.repay.wouldLiquidate ? "可能清算" : "不清算"}。</div>` : ""}<p>动作：还款 ${money(s.repayment)}。${s.event}</p><p class="trace-result">结果：抵押品 ${money(s.collateral)}，债务 ${money(s.debt)}，现金 ${money(s.cash)}，净值 ${money(s.net)}。</p></div>`).join("") : '<p class="trace-empty">还没有决策记录。运行第一轮，看看 Agent 怎样读取状态并作出选择。</p>';
+    $("decision-trace").innerHTML = steps.length ? steps.map(s => `<div class="trace-item${s.liquidated ? " danger" : ""}"><h3>第 ${s.round} 轮 · ${s.liquidated ? "发生清算" : s.repayment > 0 ? "主动还款" : "等待"}</h3><p>观察：抵押品 ${money(s.observation.collateral)}，债务 ${money(s.observation.debt)}，现金 ${money(s.observation.cash)}；债务比例 ${pct(s.observation.ratio)}。</p><p>${s.reason}</p>${s.previews ? `<div class="preview-detail">本地试算（假设下一轮再跌 25%）：<br>不还款 → 比例 ${pct(s.previews.hold.ratio)}，${s.previews.hold.wouldLiquidate ? "可能清算" : "不清算"}；还款 ${s.repayment} → 比例 ${pct(s.previews.repay.ratio)}，${s.previews.repay.wouldLiquidate ? "可能清算" : "不清算"}。</div>` : ""}<p>动作：还款 ${money(s.repayment)}。${s.event}</p><p class="trace-result">结果：抵押品 ${money(s.collateral)}，债务 ${money(s.debt)}，现金 ${money(s.cash)}，净值 ${money(s.net)}。</p></div>`).join("") : '<p class="trace-empty">还没有决策记录。运行第一轮，看看 Agent 怎样读取状态并作出选择。</p>';
     const s = result.steps[round];
     $("io-preview").textContent = JSON.stringify({ round, observation: { collateral_value: s.observation.collateral, debt: s.observation.debt, cash: s.observation.cash, liquidation_threshold: model.RULES.threshold }, agent_output: round ? { repay_amount: s.repayment } : null }, null, 2);
   }
@@ -32,7 +32,7 @@
     $("score-safety").textContent = complete ? `${score.safety} / 50` : "— / 50";
     $("score-preservation").textContent = complete ? `${score.preservation.toFixed(1)} / 30` : "— / 30";
     $("score-operation").textContent = complete ? `${score.operation} / 20` : "— / 20";
-    $("score-status").textContent = complete ? `最终净值 ${money(result.finalNet)}；保存净值分 = 30 × ${money(result.finalNet)} ÷ 70。教学评分，不是正式比赛成绩。` : "完成两轮模拟后计算。这里只考风险控制，不代表正式比赛评分。";
+    $("score-status").textContent = complete ? `最终净值 ${money(result.finalNet)}；保存净值分 = 30 × ${money(result.finalNet)} ÷ 70。教学评分按下方三项指标计算。` : "运行两轮后，按下方三项教学指标计算成绩。";
     $("comparison").hidden = !complete;
     if (complete) {
       $("comparison-rows").innerHTML = Object.keys(model.AGENTS).map(key => {
