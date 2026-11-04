@@ -3,66 +3,67 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Economic World Models Initiative · Led by GIFTS</title>
-<meta name="description" content="A GIFTS-led initiative advancing the Economic World Models and Data-Driven Generative Equilibria framework proposed by Prof. Lin William Cong through research, simulation platforms and open challenges.">
+<title>Economic World Model Challenge (EWM Challenge)</title>
+<meta name="description" content="Economic World Model Challenge: an open competition built on an economic world model, where AI agents are tested inside multi-agent simulations, across tracks in several simulated worlds.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261105012321">
+<link rel="stylesheet" href="assets/css/main.css?v=20261105014601">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://adamleopold.github.io/ewm-challenge/">
-<meta property="og:title" content="Economic World Models Initiative · Led by GIFTS">
-<meta property="og:description" content="A GIFTS-led initiative advancing the Economic World Models and Data-Driven Generative Equilibria framework proposed by Prof. Lin William Cong through research, simulation platforms and open challenges.">
-<meta property="og:locale" content="en_GB">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Economic World Models Initiative · Led by GIFTS">
-<meta name="twitter:description" content="A GIFTS-led initiative advancing the Economic World Models and Data-Driven Generative Equilibria framework proposed by Prof. Lin William Cong through research, simulation platforms and open challenges.">
-<link rel="canonical" href="https://adamleopold.github.io/ewm-challenge/">
-<link rel="stylesheet" href="assets/css/initiative.css?v=20261105012321">
-<script>if (/^#(?:how|tracks)$/.test(location.hash)) location.replace('challenge.html' + location.search + location.hash);</script>
 </head>
-<body class="theme-sw initiative-page">
+<body class="theme-sw">
 <div class="page-bg"></div>
 <div class="cursor-glow" aria-hidden="true"></div>
+
 <header class="topbar" data-solid>
-  <a class="brand initiative-brand" href="index.html" aria-label="Economic World Models Initiative"><span class="brand-mark"></span>EWM <span class="brand-sub" data-en="Initiative">计划</span></a>
-  <nav class="nav" aria-label="Main navigation">
+  <a class="brand" href="index.html"><span class="brand-mark"></span>EWM <span class="brand-sub">Challenge</span></a>
+  <nav class="nav">
     <div class="nav-links">
-      <a href="#foundation" data-en="Framework">研究框架</a>
-      <a href="#publications" data-en="Research">研究论文</a>
-      <a href="#organisers" data-en="Institutions">合作机构</a>
-      <a href="#people" data-en="People">参与团队</a>
+      <a href="#foundation" data-en="Foundation">底层</a>
+      <a href="#how" data-en="How it works">怎么比</a>
+      <a href="#tracks" data-en="Tracks">赛道</a>
+      <a href="#organisers" data-en="Who we are">我们是谁</a>
     </div>
-    <a class="switch-track" href="challenge.html" data-en="Challenge →">比赛入口 →</a>
+    <a class="switch-track" href="tracks.html" data-en="Choose a track →">选择赛道 →</a>
     <button class="lang-toggle" type="button" aria-label="Switch language">EN</button>
   </nav>
 </header>
+
 <main class="page">
-  <section class="hero hero-sw initiative-hero" aria-labelledby="initiative-title">
+  <!-- HERO -->
+  <section class="hero hero-sw">
     <canvas class="hero-fx" data-fx="world" aria-hidden="true"></canvas>
     <div class="wrap">
-      <span class="eyebrow" data-en="Research · Simulation · Open challenges">研究 · 仿真 · 开放比赛</span>
-      <h1 id="initiative-title" data-en="Economic World<br><span class=&quot;glow&quot;>Models Initiative</span>">经济世界模型<br><span class="glow">计划</span></h1>
-      <p class="lede" data-en="A GIFTS-led initiative advancing the Economic World Models and Data-Driven Generative Equilibria (DDGE) framework proposed by Prof. Lin William Cong, connecting academic research, simulation platforms and open challenges.">由 GIFTS 发起并牵头，以丛林教授提出的经济世界模型与数据驱动生成均衡（DDGE）研究框架为基础，连接学术研究、仿真平台与开放比赛。</p>
-      <p class="hosted-line" data-en="Led by <a href=&quot;https://www.ntu.edu.sg/gifts&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>GIFTS</a> · <strong>Nanyang Technological University, Singapore</strong>">发起与牵头：<a href="https://www.ntu.edu.sg/gifts" target="_blank" rel="noopener">GIFTS</a> · <strong>新加坡南洋理工大学</strong></p>
+      <span class="eyebrow" data-en="Economic World Model Challenge 2026">Economic World Model Challenge 2026</span>
+      <h1 data-en="Test your agent in a world that <span class=&quot;glow&quot;>pushes back.</span>">让你的 Agent，在<span class="glow">会回应的世界</span>里接受检验</h1>
+      <p class="lede" data-en="Economic World Model Challenge is an open competition built on an economic world model. Multi-agent simulation brings households, firms, investors and protocols to life inside it — and your AI agent has to act among them. Pick a world, enter a track, and see how your agent holds up.">Economic World Model Challenge 是一项建立在经济世界模型之上的公开竞赛。多智能体仿真让家庭、企业、投资者和协议在其中运转起来，你的 AI Agent 要在它们之间行动。选一个世界、报一个赛道，看看你的 Agent 能不能经得住考验。</p>
+      <p class="hosted-line" data-en="Hosted by <a href=&quot;https://www.ntu.edu.sg/gifts&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>GIFTS</a> &amp; Nanyang Business School · NTU Singapore">主办：<a href="https://www.ntu.edu.sg/gifts" target="_blank" rel="noopener">GIFTS</a> · 南洋理工商学院 · 新加坡南洋理工大学</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#foundation"><span data-en="Explore the framework">了解研究框架</span> ↓</a>
-        <a class="btn" href="challenge.html"><span data-en="Enter EWM Challenge">进入 EWM Challenge</span> →</a>
+        <a class="btn btn-primary" href="tracks.html" data-magnet><span data-en="Choose a track">选择赛道</span> →</a>
+        <a class="btn" href="#foundation"><span data-en="How it works">了解原理</span> ↓</a>
       </div>
       <div class="stats sw-stats">
-        <div class="stat reveal"><b data-en="Research">学术研究</b><span data-en="Economic world models &amp; DDGE">经济世界模型与 DDGE</span></div>
-        <div class="stat reveal d1"><b data-en="Simulated worlds">仿真世界</b><span data-en="Agents, markets, institutions &amp; space">Agent、市场、制度与空间</span></div>
-        <div class="stat reveal d2"><b data-en="Open challenges">开放比赛</b><span data-en="Build, interact, evaluate &amp; improve">构建、交互、评测与改进</span></div>
+        <div class="stat reveal"><b data-en="Economic World Model">经济世界模型</b><span data-en="underneath">底层</span></div>
+        <div class="stat reveal d1"><b data-en="Multi-agent">多智能体</b><span data-en="simulation at the core">仿真是主体</span></div>
+        <div class="stat reveal d2"><b data-en="Many worlds">多个世界</b><span data-en="from DeFi to cities, with more joining">从 DeFi 到城市，持续增加</span></div>
       </div>
     </div>
-    <a class="scroll-cue" href="#foundation" aria-label="Scroll down" data-en-aria="Scroll down" data-zh-aria="向下滚动"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+    <a class="scroll-cue" href="#foundation" aria-label="Scroll down" data-en-aria="Scroll down" data-zh-aria="向下滚动">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </a>
   </section>
+
+  <div class="marquee" aria-hidden="true"><div class="track">
+    <span><b>◆</b> Economic World Model</span><span><b>◆</b> Multi-agent simulation</span><span><b>◆</b> Many simulated worlds</span><span><b>◆</b> New tracks joining</span><span><b>◆</b> Hidden scenarios</span><span><b>◆</b> Same rules for everyone</span><span><b>◆</b> Reproducible results</span>
+    <span><b>◆</b> Economic World Model</span><span><b>◆</b> Multi-agent simulation</span><span><b>◆</b> Many simulated worlds</span><span><b>◆</b> New tracks joining</span><span><b>◆</b> Hidden scenarios</span><span><b>◆</b> Same rules for everyone</span><span><b>◆</b> Reproducible results</span>
+  </div></div>
+
+  <!-- 01 FOUNDATION -->
   <section class="block" id="foundation">
     <canvas class="found-gl" aria-hidden="true"></canvas>
     <div class="wrap">
       <div class="sec-head">
-        <div><div class="sec-num">01 / FOUNDATION</div><h2 data-en="How an economic world model works.">经济世界模型如何运转</h2></div>
+        <div><div class="sec-num">01 / FOUNDATION</div><h2 data-en="An economic world model underneath.">底层：经济世界模型</h2></div>
         <p data-en="An economic world model is a generative engine for economies. It models many different agents together with the environment they live in, and lets outcomes emerge from how they interact rather than assuming them in advance.">经济世界模型是一个生成式的经济引擎。它同时刻画形形色色的 Agent 和它们所处的环境，让结果从相互作用中涌现出来，而不是事先假定。</p>
       </div>
       <div class="grid g3">
@@ -82,8 +83,76 @@
           <p data-en="Prices, jobs, risk and growth come out of interaction, including the surprises a static model would miss.">价格、就业、风险和增长都从交互中产生，包括静态模型看不到的意外。</p>
         </div>
       </div>
+      <span class="eyebrow org-label" data-en="Research behind it">背后的研究</span>
+    </div>
+    <div class="rail papers-rail" data-rail data-speed="14">
+      <div class="rail-track">
+        <a class="paper p1" href="https://arxiv.org/abs/2608.06020" target="_blank" rel="noopener">
+          <span class="paper-venue">arXiv · 2026</span>
+          <h4>From Economic Agents to Agentic Economies</h4>
+          <p class="paper-sub">A Systems Blueprint for Economic World Models</p>
+          <p class="paper-auth">J. Han, X. Li, J. Qian, … L. W. Cong et al.</p>
+        </a>
+        <a class="paper p2" href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6559940" target="_blank" rel="noopener">
+          <span class="paper-venue">Working paper · SSRN</span>
+          <h4>Economic World Models and Data-Driven Generative Equilibria</h4>
+          <p class="paper-auth">L. W. Cong</p>
+        </a>
+        <a class="paper p3" href="https://ssrn.com/abstract=3554486" target="_blank" rel="noopener">
+          <span class="paper-venue">Working paper · SSRN</span>
+          <h4>AlphaPortfolio</h4>
+          <p class="paper-sub">Goal-Oriented Investment Management Through Deep Reinforcement Learning</p>
+          <p class="paper-auth">L. W. Cong, K. Tang, J. Wang</p>
+        </a>
+        <a class="paper p4" href="https://ssrn.com/abstract=4590323" target="_blank" rel="noopener">
+          <span class="paper-venue">Working paper · SSRN</span>
+          <h4>AlphaManager</h4>
+          <p class="paper-sub">A Data-Driven-Robust-Control Approach to Corporate Finance</p>
+          <p class="paper-auth">M. Campello, L. W. Cong, L. Zhou</p>
+        </a>
+        <a class="paper p5" href="https://doi.org/10.1093/rfs/hhaa089" target="_blank" rel="noopener">
+          <span class="paper-venue">Review of Financial Studies · 2021</span>
+          <h4>Tokenomics</h4>
+          <p class="paper-sub">Dynamic Adoption and Valuation</p>
+          <p class="paper-auth">L. W. Cong, Y. Li, N. Wang</p>
+        </a>
+      </div>
+    </div>
+    <div class="rail abstracts-rail" data-rail data-dir="-1" data-speed="12">
+      <div class="rail-track">
+        <a class="abstract" href="https://arxiv.org/abs/2608.06020" target="_blank" rel="noopener"><img src="assets/papers/ewm.webp" alt="From Economic Agents to Agentic Economies: A Systems Blueprint for Economic World Models — title page and abstract" loading="lazy" width="1001" height="1017"></a>
+        <a class="abstract" href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6559940" target="_blank" rel="noopener"><img src="assets/papers/ewm-ddge.webp" alt="Economic World Models and Data-Driven Generative Equilibria — title page and abstract" loading="lazy" width="1001" height="1044"></a>
+        <a class="abstract" href="https://ssrn.com/abstract=3554486" target="_blank" rel="noopener"><img src="assets/papers/alphaportfolio.webp" alt="AlphaPortfolio: Goal-Oriented Investment Management Through Deep Reinforcement Learning — title page and abstract" loading="lazy" width="1001" height="702"></a>
+        <a class="abstract" href="https://ssrn.com/abstract=4590323" target="_blank" rel="noopener"><img src="assets/papers/alphamanager.webp" alt="AlphaManager: A Data-Driven-Robust-Control Approach to Corporate Finance — title page and abstract" loading="lazy" width="1001" height="941"></a>
+        <a class="abstract" href="https://doi.org/10.1093/rfs/hhaa089" target="_blank" rel="noopener"><img src="assets/papers/tokenomics.webp" alt="Tokenomics: Dynamic Adoption and Valuation — title page and abstract" loading="lazy" width="1001" height="817"></a>
+      </div>
+    </div>
+    <div class="wrap">
+      <p class="paper-links reveal">
+        <a href="https://arxiv.org/abs/2608.06020" target="_blank" rel="noopener" data-en="Read the economic world model paper ↗">阅读经济世界模型论文 ↗</a>
+        <a href="https://economic-world-model.github.io" target="_blank" rel="noopener" data-en="More on economic world models ↗">详细介绍 Economic World Model ↗</a>
+      </p>
+      <figure class="research-voice" aria-labelledby="research-voice-author">
+        <a class="research-voice-photo" href="https://www.linwilliamcong.com/" target="_blank" rel="noopener" aria-label="Lin William Cong — personal website">
+          <img src="assets/people/cong.jpg" alt="Lin William Cong" loading="lazy" width="400" height="400">
+        </a>
+        <figcaption>
+          <span class="eyebrow" data-en="From the research">研究中的思考</span>
+          <blockquote cite="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6559940">
+            <p class="research-voice-intro" data-en="“Modern AI expands the modeling of economic systems”">“现代人工智能拓展了经济系统的建模。”</p>
+            <p class="research-voice-quote" data-en="“EWMs extend economics from estimating isolated mechanisms to analyzing learned economic systems while preserving equilibrium discipline.”">“经济世界模型将经济学从估计孤立机制，推进到分析通过学习构建的经济系统，同时保持均衡约束。”</p>
+          </blockquote>
+          <p class="research-voice-author" id="research-voice-author">— Lin William Cong</p>
+          <a class="research-voice-source" href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6559940" target="_blank" rel="noopener">
+            <cite>Economic World Models and Data-Driven Generative Equilibria</cite>
+            <span data-en="Abstract excerpts · August 2026 ↗">摘要节选 · 2026 年 8 月 ↗</span>
+          </a>
+        </figcaption>
+      </figure>
     </div>
   </section>
+
+  <!-- scroll scene: the stack assembles layer by layer -->
   <section class="scene-stack" data-scene aria-label="Economic World Model: Intelligence Foundation, Economic Agents, Economic Environment and Institutions, Equilibrium and Reality Discipline; Economic World Model Challenge">
     <div class="scene-stick"><div class="wrap stack-wrap">
       <div class="stack-copy">
@@ -97,9 +166,9 @@
           </ol>
         </div>
         <div class="stack-group stack-outer">
-          <span class="stack-group-label" data-en="Initiative programme · around the model">计划项目 · 连接模型与实验</span>
+          <span class="stack-group-label" data-en="Outer layer · around the model">外层 · 包在模型之外</span>
           <ol class="stack-steps">
-            <li data-at="0.73"><span class="n">ECONOMIC WORLD MODEL</span><h3 data-en="Economic World Model Challenge">Economic World Model Challenge</h3><p data-en="An open challenge of the Initiative: bring your agent into the simulated worlds through different tracks, linking the research framework to practical experiments.">Initiative 的开放比赛项目：通过不同赛道，让你的 Agent 进入仿真世界，把研究框架连接到可操作的实验。</p></li>
+            <li data-at="0.73"><span class="n">ECONOMIC WORLD MODEL</span><h3 data-en="Economic World Model Challenge">Economic World Model Challenge</h3><p data-en="Your agent steps into this world from outside. Each track is a door into a different world, and more are on the way.">你的 Agent 从外部走进这个世界。每个赛道都是通往一个世界的入口，而且还会越来越多。</p></li>
           </ol>
         </div>
       </div>
@@ -116,159 +185,182 @@
     </div></div>
   </section>
 
-
-  <section class="block" id="publications" aria-labelledby="publications-title">
+  <!-- 02 HOW IT WORKS -->
+  <section class="block" id="how">
     <div class="wrap">
       <div class="sec-head">
-        <div><div class="sec-num">02 / RESEARCH</div><h2 id="publications-title" data-en="The research behind the initiative.">支撑这一计划的研究</h2></div>
-        <p data-en="From the conceptual framework to systems and applications: selected research on economic world models and related methods.">从概念框架到系统与应用：经济世界模型及相关方法的代表性研究。</p>
+        <div><div class="sec-num">02 / HOW IT WORKS</div><h2 data-en="One competition, one set of principles.">一个比赛，一套原则</h2></div>
+        <p data-en="Every track is a dance with the economic world model. Choose freely which world to place your agent in.">每个赛道都是与 Economic World Model 共舞，请自由地决定将你的 Agent 放进哪个世界。</p>
       </div>
-      <div class="research-grid">
-        <article class="publication core">
-          <span class="k" data-en="Core research · Framework">核心研究 · 理论框架</span>
-          <h3>Economic World Models and Data-Driven Generative Equilibria</h3>
-          <p class="authors">Lin William Cong</p>
-          <p class="publication-meta" data-en="Working paper · SSRN · Revised 2026">工作论文 · SSRN · 2026 年修订</p>
-          <a class="publication-link" href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6559940" target="_blank" rel="noopener" data-en="Read the paper ↗">阅读论文 ↗</a>
-        </article>
-        <article class="publication core">
-          <span class="k" data-en="Core research · Systems blueprint">核心研究 · 系统蓝图</span>
-          <h3>From Economic Agents to Agentic Economies: A Systems Blueprint for Economic World Models</h3>
-          <p class="authors">Jiale Han, Xiang Li, Jing Qian, Wenyuan Gu, Pin Gao, Ye Luo, Hongyuan Zha, Dacheng Tao, Benyou Wang, Lin William Cong</p>
-          <p class="publication-meta" data-en="Preprint · arXiv · 2026">预印本 · arXiv · 2026</p>
-          <a class="publication-link" href="https://arxiv.org/abs/2608.06020" target="_blank" rel="noopener" data-en="Read the paper ↗">阅读论文 ↗</a>
-        </article>
+      <div class="flow" style="--n:4">
+        <div class="step reveal"><h4 data-en="Build">构建</h4><p data-en="Create an agent, or plan a city with one, using the tools and models you prefer.">用你喜欢的工具和模型，构建一个 Agent，或者借助 Agent 规划一座城市。</p></div>
+        <div class="step reveal d1"><h4 data-en="Enter the world">进入世界</h4><p data-en="It runs inside a simulated world, among simulated agents that react to what it does.">它在仿真世界里运行，周围的模拟 Agent 会对它的行为作出反应。</p></div>
+        <div class="step reveal d2"><h4 data-en="Face the unknown">面对未知</h4><p data-en="Hidden scenarios and shocks are generated and run after submission under shared evaluation conditions.">提交后，在统一评测条件下生成并运行隐藏情景与市场冲击。</p></div>
+        <div class="step reveal d3"><h4 data-en="Compare fairly">公平比较</h4><p data-en="Every entry faces the same conditions, and results can be reproduced.">所有参赛作品面对同样的条件，结果可以复现。</p></div>
       </div>
-      <h3 class="related-heading" data-en="Related research">相关研究</h3>
-      <div class="research-grid related-grid">
-        <article class="publication">
-          <h3>AlphaPortfolio</h3>
-          <p class="subtitle">Goal-Oriented Investment Management Through Deep Reinforcement Learning</p>
-          <p class="authors">Lin William Cong, Ke Tang, Jingyuan Wang</p>
-          <p class="publication-meta" data-en="Working paper · SSRN · Revised 2026">工作论文 · SSRN · 2026 年修订</p>
-          <a class="publication-link" href="https://ssrn.com/abstract=3554486" target="_blank" rel="noopener" data-en="Read the paper ↗">阅读论文 ↗</a>
-        </article>
-        <article class="publication">
-          <h3>AlphaManager</h3>
-          <p class="subtitle">A Data-Driven-Robust-Control Approach to Corporate Finance</p>
-          <p class="authors">Murillo Campello, Lin William Cong, Luofeng Zhou</p>
-          <p class="publication-meta" data-en="Working paper · SSRN · Revised 2026">工作论文 · SSRN · 2026 年修订</p>
-          <a class="publication-link" href="https://ssrn.com/abstract=4590323" target="_blank" rel="noopener" data-en="Read the paper ↗">阅读论文 ↗</a>
-        </article>
-        <article class="publication">
-          <h3>Tokenomics</h3>
-          <p class="subtitle">Dynamic Adoption and Valuation</p>
-          <p class="authors">Lin William Cong, Ye Li, Neng Wang</p>
-          <p class="publication-meta">The Review of Financial Studies · 2021</p>
-          <a class="publication-link" href="https://doi.org/10.1093/rfs/hhaa089" target="_blank" rel="noopener" data-en="Read the paper ↗">阅读论文 ↗</a>
-        </article>
+      <div class="grid g4" style="margin-top:56px">
+        <div class="card reveal"><span class="k" data-en="Same world">同一个世界</span><p data-en="Every entry in a track runs in the same world under the same rules.">同一赛道的所有作品，在同一个世界、同一套规则下运行。</p></div>
+        <div class="card reveal d1"><span class="k" data-en="Hidden scenarios">隐藏情景</span><p data-en="Scenarios are revealed after evaluation, so the agents that win are the ones that stay robust.">情景在评测之后公开，能赢的是真正稳健的 Agent。</p></div>
+        <div class="card reveal d2"><span class="k" data-en="Agents among agents">Agent 之间</span><p data-en="Your agent is judged by how it does among other agents that react to it.">你的 Agent 在会对它作出反应的其他 Agent 之间接受检验。</p></div>
+        <div class="card reveal d3"><span class="k" data-en="Reproducible">可复现</span><p data-en="Conditions are recorded so results can be re-run and checked.">运行条件有记录，结果可以重跑、可以核对。</p></div>
       </div>
     </div>
   </section>
-  <section class="block" id="programmes" aria-labelledby="programmes-title">
+
+  <!-- 03 TRACKS -->
+  <section class="block" id="tracks">
     <div class="wrap">
       <div class="sec-head">
-        <div><div class="sec-num">03 / OPEN CHALLENGE</div><h2 id="programmes-title" data-en="From frameworks to working worlds.">让框架进入可交互的世界</h2></div>
+        <div><div class="sec-num">03 / TRACKS</div><h2 data-en="One challenge. Many worlds.">一个比赛，多个世界</h2></div>
+        <p data-en="Each world comes from a partner platform and runs on its own clock. New worlds and tracks keep joining — enter any track, or more than one.">每个世界由一个合作平台提供，按自己的时钟运行。新的世界和赛道会陆续加入，可以报一个赛道，也可以报多个。</p>
       </div>
-      <div class="programme-panel">
-        <span class="eyebrow" data-en="An initiative programme">计划项目</span>
-        <h3>Economic World Model Challenge</h3>
-        <p data-en="An open challenge of the Initiative. Build an AI agent or develop a city plan, act inside multi-agent simulations, and evaluate decisions through shared rules and reproducible experiments.">Initiative 下的开放比赛项目。构建 AI Agent 或完成城市规划，在多智能体仿真中行动，通过共同规则与可复现实验评估决策。</p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="challenge.html"><span data-en="Explore the challenge">了解比赛</span> →</a>
-          <a class="btn" href="tracks.html"><span data-en="Choose a track">选择赛道</span> →</a>
+    </div>
+    <div class="rail tracks-rail" data-rail data-speed="18">
+      <div class="rail-track">
+        <a class="card track-card" href="holobit.html#track-1" style="--c-col: var(--holo)">
+          <span class="k">Track 1</span>
+          <h3 data-en="Strategy Agent">策略 Agent</h3>
+          <div class="world" data-en="World · HoloBit · DeFi digital twin">世界 · HoloBit · DeFi 数字孪生</div>
+          <p data-en="Manage simulated capital across Uniswap V3 and Aave v3 and earn the best risk-adjusted return.">在 Uniswap V3 与 Aave v3 之间管理模拟资金，追求风险调整后的最好收益。</p>
+          <div class="countdown mini" data-countdown="holobit"></div>
+          <div class="timeline compact" data-timeline="holobit" data-limit="2"></div>
+          <span class="go" data-en="Explore Track 1 →">查看 Track 1 →</span>
+        </a>
+        <a class="card track-card" href="holobit.html#track-2" style="--c-col: #3ff2c8">
+          <span class="k">Track 2</span>
+          <h3 data-en="Protocol Risk Agent">协议风险 Agent</h3>
+          <div class="world" data-en="World · HoloBit · DeFi digital twin">世界 · HoloBit · DeFi 数字孪生</div>
+          <p data-en="Act as Aave's risk steward: tune risk parameters so the protocol stays solvent through stress.">扮演 Aave 的风险管理者，调节风险参数，让协议在压力下保持稳健。</p>
+          <div class="countdown mini" data-countdown="holobit"></div>
+          <div class="timeline compact" data-timeline="holobit" data-limit="2"></div>
+          <span class="go" data-en="Explore Track 2 →">查看 Track 2 →</span>
+        </a>
+        <a class="card track-card" href="agentic-city.html" style="--c-col: var(--city)">
+          <span class="k">Track 3</span>
+          <h3>Agentic City</h3>
+          <div class="world" data-en="World · Agentic City · Northern Metropolis 2035">世界 · Agentic City · 北部都会区 2035</div>
+          <p data-en="Plan a 17.73 km² district of Hong Kong's Northern Metropolis by talking to an AI agent, then see how simulated residents, firms and investors respond.">和 AI Agent 对话，规划香港北部都会区约 17.73 平方公里的核心区，再看模拟的居民、企业和投资者如何回应。</p>
+          <div class="countdown mini" data-countdown="city"></div>
+          <div class="timeline compact" data-timeline="city" data-limit="2"></div>
+          <span class="go" data-en="Explore Track 3 →">查看 Track 3 →</span>
+        </a>
+        <div class="card track-card more-card" style="--c-col: var(--sw)">
+          <span class="k" data-en="Next">下一个</span>
+          <h3 data-en="More worlds are joining">更多世界正在加入</h3>
+          <p data-en="New platforms bring new simulated worlds and new tracks to Economic World Model Challenge.">新的平台会带来新的仿真世界和新的赛道。</p>
+          <span class="plus" aria-hidden="true">+</span>
         </div>
-        <ul class="platform-links">
-          <li style="--platform-color:var(--holo)"><a href="holobit.html"><div><b>HoloBit</b><small data-en="Tracks 1–2 · Strategy &amp; protocol risk">Track 1–2 · 策略与协议风险</small></div><span class="arrow" aria-hidden="true">↗</span></a></li>
-          <li style="--platform-color:var(--city)"><a href="agentic-city.html"><div><b>Agentic City</b><small data-en="Track 3 · City planning">Track 3 · 城市规划</small></div><span class="arrow" aria-hidden="true">↗</span></a></li>
-        </ul>
       </div>
     </div>
-  </section>
-
-  <section class="institution-section" id="organisers" aria-labelledby="institutions-title">
     <div class="wrap">
-      <div class="sec-head"><div><div class="sec-num">04 / INSTITUTIONS</div><h2 id="institutions-title" data-en="Initiating &amp; partnering institutions.">发起与合作机构</h2></div></div>
-      <span class="eyebrow org-label" data-en="Led by GIFTS">GIFTS 发起与牵头</span>
-      <a class="lead-institution" href="https://www.ntu.edu.sg/gifts" target="_blank" rel="noopener">
-        <img src="assets/logos/gifts.png" alt="GIFTS · Nanyang Technological University Singapore" loading="lazy">
-        <span class="institution-name"><b>GIFTS</b><span data-en="Global Institute of Finance, Technology, and Society">全球金融、科技与社会研究院</span></span><span class="arrow" aria-hidden="true">↗</span>
-      </a>
-      <span class="eyebrow org-label" data-en="Partnering Institutions">合作机构</span>
-      <ul class="partner-grid">
-        <li class="partner-nbs"><a href="https://www.ntu.edu.sg/business" target="_blank" rel="noopener"><span class="partner-logo"><img src="assets/logos/nbs.png" alt="Nanyang Business School" loading="lazy"></span><span class="partner-name" data-en="Nanyang Business School">南洋理工商学院</span></a></li>
-        <li class="partner-ccds"><a href="https://www.ntu.edu.sg/computing" target="_blank" rel="noopener"><span class="partner-logo"><img src="assets/logos/ccds.jpg" alt="College of Computing and Data Science, NTU" loading="lazy"></span><span class="partner-name" data-en="College of Computing and Data Science, NTU">南洋理工大学计算与数据科学学院</span></a></li>
-        <li class="partner-pbcsf"><a href="https://www.pbcsf.tsinghua.edu.cn/" target="_blank" rel="noopener"><span class="partner-logo"><img src="assets/logos/pbcsf.png" alt="PBC School of Finance, Tsinghua University" loading="lazy"></span><span class="partner-name" data-en="PBC School of Finance, Tsinghua University">清华大学五道口金融学院</span></a></li>
-        <li class="partner-holobit"><a href="https://holobit.xyz/" target="_blank" rel="noopener"><span class="partner-logo"><img src="assets/logos/holobit.svg" alt="HoloBit" loading="lazy"></span><span class="partner-name" data-en="HoloBit">HoloBit</span></a></li>
-        <li class="partner-cornell"><a href="https://www.linwilliamcong.com/fintech" target="_blank" rel="noopener"><span class="partner-logo"><img src="assets/logos/cornell-fintech.png" alt="Cornell FinTech Initiative" loading="lazy"></span><span class="partner-name" data-en="Cornell FinTech Initiative">Cornell FinTech Initiative</span></a></li>
-        <li class="partner-cuhk"><a href="https://www.cuhk.edu.cn/" target="_blank" rel="noopener"><span class="partner-logo"><img src="assets/logos/cuhk-shenzhen.png" alt="The Chinese University of Hong Kong, Shenzhen" loading="lazy"></span><span class="partner-name" data-en="The Chinese University of Hong Kong, Shenzhen">香港中文大学（深圳）</span></a></li>
-        <li class="partner-tongji"><a href="https://www.tongji.edu.cn/" target="_blank" rel="noopener"><span class="partner-logo"><img src="assets/logos/tongji.png" alt="Tongji University" loading="lazy"></span><span class="partner-name" data-en="Tongji University">同济大学</span></a></li>
-        <li class="partner-slai"><a href="https://www.slai.edu.cn/" target="_blank" rel="noopener"><span class="partner-logo"><img src="assets/logos/slai.png" alt="Shenzhen Loop Area Institute" loading="lazy"></span><span class="partner-name" data-en="Shenzhen Loop Area Institute">深圳河套学院</span></a></li>
-      </ul>
+      <div class="cta-row reveal" style="justify-content:center;margin-top:36px"><a class="btn btn-primary" href="tracks.html" data-magnet><span data-en="Compare the tracks side by side">并排比较各个赛道</span> →</a></div>
     </div>
   </section>
-
-  <section class="block people-section" id="people" aria-labelledby="people-title">
-    <div class="wrap">
-      <div class="sec-head"><div><div class="sec-num">05 / PEOPLE</div><h2 id="people-title" data-en="The people behind the initiative.">共同推进这一计划的人</h2></div></div>
-      <span class="eyebrow org-label" data-en="Academic Initiator / Research Lead">学术发起人／研究牵头</span>
-      <ul class="people people-founder">
-        <li class="person card reveal" data-person="cong">
-          <a class="person-photo" href="https://www.linwilliamcong.com/" target="_blank" rel="noopener" tabindex="-1" aria-label="Lin William Cong"><img src="assets/people/cong.jpg" alt="Lin William Cong" loading="lazy"></a>
-          <div class="person-body"><h3>Lin William Cong<span class="zh-name">丛林</span></h3><p data-en="NTU · GIFTS · NBS / CCDS">南洋理工大学 · GIFTS · NBS／CCDS</p><p class="person-role" data-en="Academic Initiator / Research Lead">学术发起人／研究牵头</p><a class="person-link" href="https://www.linwilliamcong.com/" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a></div>
-        </li>
-      </ul>
-      <span class="eyebrow org-label" data-en="Core Faculty">核心老师</span>
-      <ul class="people">
-        <li class="person card reveal" data-person="tao">
-          <a class="person-photo" href="https://www.ntu.edu.sg/computing/research/institutes-centres/grail/our-people" target="_blank" rel="noopener" tabindex="-1" aria-label="Dacheng Tao"><img src="assets/people/tao.jpg" alt="Dacheng Tao" loading="lazy"></a>
-          <div class="person-body"><h3>Dacheng Tao<span class="zh-name">陶大程</span></h3><p data-en="NTU · CCDS">南洋理工大学 · CCDS</p><p class="person-role" data-en="Core Faculty">核心老师</p><a class="person-link" href="https://www.ntu.edu.sg/computing/research/institutes-centres/grail/our-people" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a></div>
-        </li>
-        <li class="person card reveal" data-person="luo">
-          <a class="person-photo" href="https://www.hkubs.hku.hk/people/ye-luo/" target="_blank" rel="noopener" tabindex="-1" aria-label="Ye Luo"><img src="assets/people/luo.jpg" alt="Ye Luo" loading="lazy"></a>
-          <div class="person-body"><h3>Ye Luo<span class="zh-name">罗晔</span></h3><p data-en="HKU Business School">香港大学经管学院</p><p class="person-role" data-en="Core Faculty">核心老师</p><a class="person-link" href="https://www.hkubs.hku.hk/people/ye-luo/" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a></div>
-        </li>
-        <li class="person card reveal" data-person="wang">
-          <a class="person-photo" href="https://wabyking.github.io/" target="_blank" rel="noopener" tabindex="-1" aria-label="Benyou Wang"><img src="assets/people/wang.jpg" alt="Benyou Wang" loading="lazy"></a>
-          <div class="person-body"><h3>Benyou Wang<span class="zh-name">王本友</span></h3><p data-en="CUHK-Shenzhen">香港中文大学（深圳）</p><p class="person-role" data-en="Core Faculty · Agentic City Lead">核心老师 · Agentic City 负责人</p><a class="person-link" href="https://wabyking.github.io/" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a></div>
-        </li>
-        <li class="person card reveal" data-person="zha">
-          <a class="person-photo" href="https://polysz.cuhk.edu.cn/en/content/10883" target="_blank" rel="noopener" tabindex="-1" aria-label="Hongyuan Zha"><img src="assets/people/zha.jpg" alt="Hongyuan Zha" loading="lazy"></a>
-          <div class="person-body"><h3>Hongyuan Zha<span class="zh-name">查宏远</span></h3><p data-en="CUHK-Shenzhen">香港中文大学（深圳）</p><p class="person-role" data-en="Core Faculty">核心老师</p><a class="person-link" href="https://polysz.cuhk.edu.cn/en/content/10883" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a></div>
-        </li>
-        <li class="person card reveal" data-person="gao">
-          <a class="person-photo" href="https://myweb.cuhk.edu.cn/gaopin" target="_blank" rel="noopener" tabindex="-1" aria-label="Pin Gao"><img src="assets/people/gao.jpg" alt="Pin Gao" loading="lazy"></a>
-          <div class="person-body"><h3>Pin Gao<span class="zh-name">高品</span></h3><p data-en="CUHK-Shenzhen">香港中文大学（深圳）</p><p class="person-role" data-en="Core Faculty">核心老师</p><a class="person-link" href="https://myweb.cuhk.edu.cn/gaopin" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a></div>
-        </li>
-      </ul>
-      <div class="contributor-groups">
-        <div><span class="eyebrow org-label" data-en="Platform Leadership">平台负责人</span><ul class="people">
-        <li class="person card reveal" data-person="lu">
-          <a class="person-photo" href="https://holobit.xyz/" target="_blank" rel="noopener" tabindex="-1" aria-label="Yunbo Lu"><span class="mono" aria-hidden="true">陆</span></a>
-          <div class="person-body"><h3>Yunbo Lu<span class="zh-name">陆云波</span></h3><p data-en="HoloBit">HoloBit</p><p class="person-role" data-en="Platform Lead · HoloBit">平台负责人 · HoloBit</p><a class="person-link" href="https://holobit.xyz/" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a></div>
-        </li>
-        </ul></div>
-        <div><span class="eyebrow org-label" data-en="Student Leadership &amp; Coordination">学生牵头与协调</span><ul class="people">
-        <li class="person card reveal" data-person="adam">
-          <a class="person-photo" href="https://adamleopold.github.io/AdamLu.github.io/" target="_blank" rel="noopener" tabindex="-1" aria-label="Yuhang (Adam) Lu"><img src="assets/people/lu-yuhang.jpg" alt="Yuhang (Adam) Lu" loading="lazy"></a>
-          <div class="person-body"><h3>Yuhang (Adam) Lu<span class="zh-name">卢宇航</span></h3><p data-en="NTU · CCDS · GIFTS">南洋理工大学 · CCDS · GIFTS</p><p class="person-role" data-en="Student Lead / Initiative Coordinator">学生牵头与计划协调</p><a class="person-link" href="https://adamleopold.github.io/AdamLu.github.io/" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a></div>
-        </li>
-        </ul></div>
-      </div>
-      <aside class="research-note" id="research" aria-label="Data and research use">
-        <p data-en="Competition submissions and authorised run data, together with separately authorised agent programs, container images and model materials, will be used under the privacy terms and the scope of each authorisation to train, evaluate and improve economic world models.">参赛成果与经授权收集的运行数据，以及单独授权的 Agent 程序、容器镜像和模型资料，将依照隐私条款与授权范围，用于经济世界模型的训练、评测与持续改进。</p>
-        <a href="data-use.html" data-en="Data and research use →">数据与研究用途 →</a>
-      </aside>
-    </div>
-  </section>
+  <section class="block" id="research"><div class="wrap">
+    <div class="sec-head"><div><div class="sec-num">RESEARCH / ECONOMIC WORLD MODEL</div><h2 data-en="Your work helps the world model learn.">让参赛成果推动世界模型进步</h2></div></div>
+    <div class="research-note"><p data-en="Competition submissions and authorised run data, together with separately authorised agent programs, container images and model materials, will be used under the privacy terms and the scope of each authorisation to train, evaluate and improve economic world models.">参赛成果与经授权收集的运行数据，以及单独授权的 Agent 程序、容器镜像和模型资料，将依照隐私条款与授权范围，用于经济世界模型的训练、评测与持续改进。</p><a href="data-use.html" data-en="Explore data and research use →">了解数据与研究用途 →</a></div>
+  </div></section>
 </main>
-<footer class="initiative-footer"><div class="wrap"><span>© 2026 Economic World Models Initiative · <span data-en="Led by GIFTS, NTU Singapore">GIFTS 发起与牵头 · 新加坡南洋理工大学</span></span><span><a href="challenge.html">EWM Challenge</a> · <a href="#people" data-en="People">参与团队</a> · <a href="data-use.html" data-en="Data &amp; research use">数据与研究用途</a></span></div></footer>
-<script src="assets/js/config.js?v=20261105012321"></script>
-<script src="assets/js/i18n.js?v=20261105012321"></script>
-<script src="assets/js/initiative.js?v=20261105012321"></script>
-<script src="assets/js/pages.js?v=20261105012321"></script>
-<script src="assets/js/fx.js?v=20261105012321"></script>
+
+<section class="organisers" id="organisers" aria-labelledby="org-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="sec-num">04 / WHO WE ARE</div><h2 id="org-title" data-en="Who we are.">我们是谁</h2></div>
+      <p data-en="Economic World Model Challenge is hosted by the Global Institute of Finance, Technology, and Society (GIFTS) and Nanyang Business School at NTU Singapore, together with partners who build the simulated worlds.">Economic World Model Challenge 由新加坡南洋理工大学的全球金融、科技与社会研究院（GIFTS）和南洋理工商学院主办，与搭建各个仿真世界的合作伙伴一起举办。</p>
+    </div>
+
+    <span class="eyebrow org-label" data-en="Hosted by">主办</span>
+    <ul class="host-grid">
+      <li class="host host-full host-gifts reveal">
+        <a href="https://www.ntu.edu.sg/gifts" target="_blank" rel="noopener">
+          <img src="assets/logos/gifts.png" alt="Nanyang Technological University Singapore · Global Institute of Finance, Technology, and Society" loading="lazy">
+          <span class="host-go" aria-hidden="true">↗</span>
+        </a>
+      </li>
+      <li class="host host-full reveal d1">
+        <a href="https://www.ntu.edu.sg/business" target="_blank" rel="noopener">
+          <img src="assets/logos/nbs.png" alt="Nanyang Technological University Singapore · Nanyang Business School" loading="lazy">
+          <span class="host-go" aria-hidden="true">↗</span>
+        </a>
+      </li>
+    </ul>
+    <p class="gifts-about reveal" data-en="GIFTS is NTU's university-wide interdisciplinary institute for finance, technology and society in the digital age, with a focus on artificial intelligence, digitisation, financial technology, digital assets and the governance of emerging economic systems. It is jointly founded by Nanyang Business School and the College of Computing and Data Science. <a href=&quot;https://www.ntu.edu.sg/gifts/about&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>About GIFTS ↗</a>">GIFTS 是南洋理工大学的全校级跨学科研究院，关注数字时代的金融、科技与社会，重点包括人工智能、数字化、金融科技、数字资产以及新兴经济体系的治理，由南洋理工商学院与计算与数据科学学院共同创立。<a href="https://www.ntu.edu.sg/gifts/about" target="_blank" rel="noopener">了解 GIFTS ↗</a></p>
+
+    <span class="eyebrow org-label" data-en="Partners">合作伙伴</span>
+    <ul class="org-grid">
+      <li class="org org-cuhk"><a href="https://www.cuhk.edu.cn/" target="_blank" rel="noopener"><img src="assets/logos/cuhk-shenzhen.png" alt="The Chinese University of Hong Kong, Shenzhen" loading="lazy"></a></li>
+      <li class="org org-tongji"><a href="https://www.tongji.edu.cn/" target="_blank" rel="noopener"><img src="assets/logos/tongji.png" alt="Tongji University" loading="lazy"></a></li>
+      <li class="org org-slai"><img src="assets/logos/slai.png" alt="Shenzhen Loop Area Institute" loading="lazy"></li>
+      <li class="org org-holobit"><a href="https://holobit.xyz/" target="_blank" rel="noopener"><img src="assets/logos/holobit.svg" alt="HoloBit" loading="lazy"></a></li>
+    </ul>
+
+    <span class="eyebrow org-label" data-en="Organising committee">组委会</span>
+    <ul class="people">
+      <li class="person card reveal">
+        <a class="person-photo" href="https://www.linwilliamcong.com/" target="_blank" rel="noopener" tabindex="-1"><img src="assets/people/cong.jpg" alt="Lin William Cong" loading="lazy"></a>
+        <div class="person-body">
+          <h3>Lin William Cong <span class="zh-name">丛林</span></h3>
+          <p data-en="President's Chair Professor, NTU · Founding Director, GIFTS">南洋理工大学校长讲席教授 · GIFTS 创始院长</p>
+          <a class="person-link" href="https://www.linwilliamcong.com/" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a>
+        </div>
+      </li>
+      <li class="person card reveal d1">
+        <a class="person-photo" href="https://www.ntu.edu.sg/computing/research/institutes-centres/grail/our-people" target="_blank" rel="noopener" tabindex="-1"><img src="assets/people/tao.jpg" alt="Dacheng Tao" loading="lazy"></a>
+        <div class="person-body">
+          <h3>Dacheng Tao <span class="zh-name">陶大程</span></h3>
+          <p data-en="Distinguished University Professor, College of Computing and Data Science, NTU">南洋理工大学计算与数据科学学院杰出大学教授</p>
+          <a class="person-link" href="https://www.ntu.edu.sg/computing/research/institutes-centres/grail/our-people" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a>
+        </div>
+      </li>
+      <li class="person card reveal d2">
+        <a class="person-photo" href="https://www.hkubs.hku.hk/people/ye-luo/" target="_blank" rel="noopener" tabindex="-1"><img src="assets/people/luo.jpg" alt="Ye Luo" loading="lazy"></a>
+        <div class="person-body">
+          <h3>Ye Luo <span class="zh-name">罗晔</span></h3>
+          <p data-en="Associate Professor, HKU Business School">香港大学经管学院副教授</p>
+          <a class="person-link" href="https://www.hkubs.hku.hk/people/ye-luo/" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a>
+        </div>
+      </li>
+      <li class="person card reveal">
+        <a class="person-photo" href="https://wabyking.github.io/" target="_blank" rel="noopener" tabindex="-1"><img src="assets/people/wang.jpg" alt="Benyou Wang" loading="lazy"></a>
+        <div class="person-body">
+          <h3>Benyou Wang <span class="zh-name">王本友</span></h3>
+          <p data-en="Assistant Professor, School of Data Science, CUHK-Shenzhen">香港中文大学（深圳）数据科学学院助理教授</p>
+          <a class="person-link" href="https://wabyking.github.io/" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a>
+        </div>
+      </li>
+      <li class="person card reveal d1">
+        <a class="person-photo" href="https://holobit.xyz/" target="_blank" rel="noopener" tabindex="-1"><span class="mono" aria-hidden="true">陆</span></a>
+        <div class="person-body">
+          <h3>Yunbo Lu <span class="zh-name">陆云波</span></h3>
+          <p data-en="HoloBit">HoloBit</p>
+          <a class="person-link" href="https://holobit.xyz/" target="_blank" rel="noopener" data-en="HoloBit ↗">HoloBit ↗</a>
+        </div>
+      </li>
+      <li class="person card reveal d2">
+        <a class="person-photo" href="https://adamleopold.github.io/AdamLu.github.io/" target="_blank" rel="noopener" tabindex="-1"><img src="assets/people/lu-yuhang.jpg" alt="Yuhang (Adam) Lu" loading="lazy"></a>
+        <div class="person-body">
+          <h3>Yuhang (Adam) Lu <span class="zh-name">卢宇航</span></h3>
+          <p data-en="Challenge Coordinator · PhD student, NTU CCDS · GIFTS">比赛协调人 · 南洋理工大学计算与数据科学学院博士生 · GIFTS</p>
+          <a class="person-link" href="https://adamleopold.github.io/AdamLu.github.io/" target="_blank" rel="noopener" data-en="Profile ↗">个人主页 ↗</a>
+        </div>
+      </li>
+    </ul>
+    <p class="paper-links reveal"><a href="https://economic-world-model.github.io" target="_blank" rel="noopener" data-en="Economic World Models Initiative ↗">经济世界模型计划 Economic World Models Initiative ↗</a></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Economic World Model Challenge · <span data-en="Hosted by GIFTS &amp; Nanyang Business School, NTU">主办：GIFTS · 南洋理工商学院</span></span>
+    <span><a href="tracks.html" data-en="All tracks">全部赛道</a> · <a href="data-use.html" data-en="Data &amp; research">数据与研究用途</a> · <a href="holobit.html">Track 1–2</a> · <a href="agentic-city.html">Track 3</a></span>
+  </div>
+</footer>
+
+<script src="assets/js/config.js?v=20261105014601"></script>
+<script src="assets/js/i18n.js?v=20261105014601"></script>
+<script src="assets/js/pages.js?v=20261105014601"></script>
+<script src="assets/js/fx.js?v=20261105014601"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-<script type="module" src="assets/js/stack3d.js?v=20261105012321"></script>
+<script type="module" src="assets/js/stack3d.js?v=20261105014601"></script>
 </body>
 </html>

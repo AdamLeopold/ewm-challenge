@@ -1,8 +1,6 @@
-# Economic World Models Initiative
+# Economic World Model Challenge
 
-The initiative website is led by GIFTS. `index.html` introduces the research framework, publications, partnering institutions and team; `challenge.html` is the Economic World Model Challenge entry point.
-
-The challenge has three tracks across two platforms: **HoloBit** hosts Track 1 (strategy agents) and Track 2 (protocol risk agents); **Agentic City** hosts Track 3 (urban planning).
+Competition website for three tracks across two platforms: **HoloBit** hosts Track 1 (strategy agents) and Track 2 (protocol risk agents); **Agentic City** hosts Track 3 (urban planning).
 
 Static site, no build step. Dates, links and the contact address live in `assets/js/config.js`.
 
