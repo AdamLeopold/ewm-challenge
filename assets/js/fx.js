@@ -576,12 +576,41 @@
     // cursor glow
     var glow = document.querySelector(".cursor-glow");
     if (glow) {
-      var gx = innerWidth / 2, gy = innerHeight / 2;
-      (function follow() {
-        gx += (P.cx - gx) * 0.12; gy += (P.cy - gy) * 0.12;
-        if (P.cx > -9000) glow.style.transform = "translate(" + gx.toFixed(1) + "px," + gy.toFixed(1) + "px)";
-        requestAnimationFrame(follow);
-      })();
+      var glowMedia = matchMedia("(hover: hover) and (prefers-reduced-motion: no-preference)");
+      var gx = 0, gy = 0, glowX = 0, glowY = 0, glowFrame = 0, glowLast = 0, glowInside = false;
+      function paintGlow() { glow.style.transform = "translate3d(" + gx.toFixed(1) + "px," + gy.toFixed(1) + "px,0)"; }
+      function followGlow(now) {
+        glowFrame = 0;
+        if (!glowInside || document.hidden || !glowMedia.matches) return;
+        var dt = Math.max(0, (now - glowLast) / 1000);
+        glowLast = now;
+        var k = 1 - Math.exp(-dt / .035);
+        gx += (glowX - gx) * k; gy += (glowY - gy) * k;
+        if (Math.abs(glowX - gx) + Math.abs(glowY - gy) < .1) {
+          gx = glowX; gy = glowY; glowLast = 0;
+        } else glowFrame = requestAnimationFrame(followGlow);
+        paintGlow();
+      }
+      function syncGlow() {
+        if (!glowInside || document.hidden || !glowMedia.matches) {
+          cancelAnimationFrame(glowFrame); glowFrame = 0; glowLast = 0;
+          glow.style.opacity = "0";
+          return;
+        }
+        glow.style.opacity = "1";
+        if (!glowFrame) { glowLast = performance.now(); glowFrame = requestAnimationFrame(followGlow); }
+      }
+      document.addEventListener("pointermove", function (e) {
+        if (e.pointerType === "touch") return;
+        glowX = e.clientX; glowY = e.clientY;
+        if (!glowInside) { gx = glowX; gy = glowY; paintGlow(); }
+        glowInside = true; syncGlow();
+      }, { passive: true });
+      document.documentElement.addEventListener("pointerleave", function () { glowInside = false; syncGlow(); });
+      document.addEventListener("visibilitychange", function () { if (document.hidden) glowInside = false; syncGlow(); });
+      addEventListener("blur", function () { glowInside = false; syncGlow(); });
+      glowMedia.addEventListener("change", syncGlow);
+      syncGlow();
     }
     // magnetic buttons
     if (!reduce) document.querySelectorAll("[data-magnet]").forEach(function (b) {
