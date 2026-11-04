@@ -1,0 +1,77 @@
+/* Shared navigation between the Initiative and its competition pages. */
+.has-initiative-nav .nav { gap: 16px; }
+.has-initiative-nav .switch-track { flex: 0 0 auto; white-space: nowrap; }
+.nav-label-compact { display: none; }
+.initiative-link {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: .04em;
+  color: var(--accent);
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.initiative-link:hover { border-color: var(--accent); }
+.initiative-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.competition-page .challenge-initiative { margin-top: 24px; color: var(--muted); font-size: 14px; }
+.competition-page .challenge-initiative a { color: var(--accent); }
+.competition-page .hosted-line { margin-top: 12px; }
+.competition-page .challenge-hosts,
+.competition-page .challenge-partners {
+  list-style: none;
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+.competition-page .challenge-hosts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.competition-page .challenge-partners { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.competition-page .challenge-hosts a,
+.competition-page .challenge-partners a,
+.competition-page .challenge-partners li > div {
+  height: 100%;
+  min-height: 156px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #f5f5f2;
+  color: #20252d;
+  text-align: center;
+}
+.competition-page .challenge-hosts img { height: 64px; width: 100%; object-fit: contain; }
+.competition-page .challenge-partners img { height: 56px; width: 100%; object-fit: contain; }
+.competition-page .challenge-hosts span,
+.competition-page .challenge-partners span { font-size: 14px; line-height: 1.6; }
+.competition-page .challenge-hosts a:hover,
+.competition-page .challenge-partners a:hover { border-color: var(--accent); }
+
+@media (max-width: 1250px) {
+  .has-initiative-nav .nav-links { display: none; }
+}
+@media (max-width: 760px) {
+  .competition-page .challenge-partners { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .has-initiative-nav .topbar { gap: 12px; padding-inline: 14px; }
+  .has-initiative-nav .brand { flex: 0 0 auto; gap: 8px; min-height: 44px; font-size: 16px; white-space: nowrap; }
+  .has-initiative-nav .brand-sub { display: none; }
+  .has-initiative-nav .brand-mark { flex: 0 0 24px; width: 24px; height: 24px; }
+  .has-initiative-nav .nav { flex: 0 0 auto; gap: 6px; }
+  .has-initiative-nav .nav-label-wide { display: none; }
+  .has-initiative-nav .nav-label-compact { display: inline; }
+  .has-initiative-nav .switch-track,
+  .has-initiative-nav .initiative-link { min-height: 44px; justify-content: center; font-size: 11px; line-height: 1.2; padding: 7px 10px; }
+  .has-initiative-nav .lang-toggle { min-width: 44px; min-height: 44px; line-height: 1.2; padding: 7px 9px; }
+  .competition-page .challenge-hosts { grid-template-columns: 1fr; }
+  .competition-page .challenge-hosts a,
+  .competition-page .challenge-partners a,
+  .competition-page .challenge-partners li > div { padding: 20px 14px; }
+}
