@@ -63,7 +63,7 @@
     });
   }
 
-  // "Next · 2 Nov · Announcement" for the track cards on the home page
+  // The next published milestone for the track cards on the home page.
   function renderNext(el) {
     var now = Date.now(), it = C[el.dataset.next].timeline.find(function (x) { return new Date(x.end || x.date).getTime() >= now; });
     if (!it) { el.hidden = true; return; }
