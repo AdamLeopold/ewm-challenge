@@ -37,6 +37,18 @@ const CONNECTIONS = [
   ['southeastAsiaMarket', 'australiaFirm'], ['australiaFirm', 'australiaWorker'],
 ];
 
+// Long routes leave room to see a traveler step onto the light and arrive at the other end.
+const TRAVEL_ROUTES = [
+  ['europeBank', 'westAfricaMarket', 0, 0.29, 13.5],
+  ['saharaCourt', 'eastAfricaWorker', 3, 0.65, 13.8],
+  ['westAfricaMarket', 'southAfricaFirm', 4, 0.51, 15.2],
+  ['northAmericaWorker', 'southAmericaWorker', 2, 0.36, 15.7],
+  ['southAmericaBank', 'southAfricaFirm', 1, 0.58, 17.8],
+  ['eurasiaFirm', 'indiaBank', 4, 0.28, 14.6],
+  ['indiaWorker', 'chinaFirm', 5, 0.58, 13.8],
+  ['southeastAsiaMarket', 'australiaFirm', 3, 0.66, 16.5],
+];
+
 const PERSON_MODELS = ['male-a', 'female-a', 'male-c', 'female-d', 'male-e', 'female-b'];
 const RAD = Math.PI / 180;
 const TAU = 2 * Math.PI;
@@ -82,18 +94,18 @@ function addEdgeLight(material, strength, fill) {
   return material;
 }
 
-function prepareMaterials(model, cache, person) {
+function prepareMaterials(model, cache, person, ground = true) {
   model.traverse(mesh => {
     if (!mesh.isMesh) return;
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
+    mesh.castShadow = ground;
+    mesh.receiveShadow = ground;
     const source = mesh.material;
     if (!cache.has(source)) {
       const material = source.clone();
       material.roughness = 0.85;
       material.metalness = 0;
-      const fill = source.map ? (person ? 0.034 : 0.075) : 0;
-      cache.set(source, addEdgeLight(material, 0.17, fill));
+      const fill = source.map ? (person && ground ? 0.034 : 0.075) : 0;
+      cache.set(source, addEdgeLight(material, ground ? 0.17 : 0.26, fill));
     }
     mesh.material = cache.get(source);
   });
@@ -231,6 +243,63 @@ function updateLink(link, tangent, side, up, scratch) {
   position.needsUpdate = true;
 }
 
+function createTravelers(parent, links, people) {
+  const fleet = new THREE.Group();
+  fleet.name = 'Earth network travelers';
+  parent.add(fleet);
+  const lightGeometry = new THREE.SphereGeometry(1, 12, 8);
+  const ringGeometry = new THREE.TorusGeometry(0.018, 0.0021, 6, 24).rotateX(Math.PI / 2);
+  const lightMaterial = new THREE.MeshBasicMaterial({ color: 0xc1faff, toneMapped: false });
+  const ringMaterial = new THREE.MeshBasicMaterial({ color: 0x62e2ff, toneMapped: false });
+  const glowMaterial = new THREE.MeshBasicMaterial({ color: 0x59d5ff, opacity: 0.19, transparent: true,
+    depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false });
+  const materials = new WeakMap();
+  return TRAVEL_ROUTES.map(([from, to, person, phase, period], index) => {
+    const link = links.find(candidate => candidate.from.name === from && candidate.to.name === to);
+    const anchor = new THREE.Group();
+    anchor.name = link.mesh.name;
+    fleet.add(anchor);
+    const model = clone(people[person].scene);
+    prepareMaterials(model, materials, true, false);
+    const { holder } = fittedModel(model, 0.091);
+    holder.name = 'Traveler';
+    const light = new THREE.Mesh(lightGeometry, lightMaterial);
+    light.name = 'Foot light';
+    light.scale.set(0.014, 0.0046, 0.014);
+    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+    ring.name = 'Foot light rim';
+    const glow = new THREE.Mesh(lightGeometry, glowMaterial);
+    glow.name = 'Foot light glow';
+    glow.scale.set(0.025, 0.0085, 0.025);
+    anchor.add(holder, light, ring, glow);
+    const mixer = new THREE.AnimationMixer(model);
+    mixer.clipAction(THREE.AnimationClip.findByName(people[person].animations, 'walk')).play();
+    return { anchor, link, mixer, period, phase, strideOffset: index * 0.217 };
+  });
+}
+
+function updateTraveler(traveler, seconds, forward, right, up, before, matrix) {
+  const { anchor, link, mixer, period, phase, strideOffset } = traveler;
+  const progress = wrap(seconds / period + phase);
+  const approach = Math.min(progress, 1 - progress);
+  const arrival = smooth(Math.min(1, approach / 0.14));
+  anchor.userData.progress = progress;
+  anchor.visible = arrival > 0.015;
+  pointOnLink(link, progress, anchor.position);
+  anchor.scale.setScalar(arrival);
+  if (!anchor.visible) return;
+
+  // The person and its light share the anchor. The tangent faces forward while
+  // the foot-to-head axis always points out from the globe.
+  pointOnLink(link, Math.max(0, progress - 0.005), before);
+  pointOnLink(link, Math.min(1, progress + 0.005), forward);
+  up.copy(anchor.position).normalize();
+  forward.sub(before).addScaledVector(up, -forward.dot(up)).normalize();
+  right.crossVectors(up, forward).normalize();
+  anchor.quaternion.setFromRotationMatrix(matrix.makeBasis(right, up, forward));
+  mixer.setTime(seconds * 0.89 + strideOffset);
+}
+
 export async function createEarthActors({ parent, surfaceRadius, assetRoot }) {
   const loader = new GLTFLoader().setPath(assetRoot);
   const [people, firm, market] = await Promise.all([
@@ -285,20 +354,13 @@ export async function createEarthActors({ parent, surfaceRadius, assetRoot }) {
     network.add(mesh);
     return { from: byName[from], to: byName[to], mesh, lift: 0, points: Array.from({ length: LINK_STEPS + 1 }, () => new THREE.Vector3()) };
   });
-  const pulses = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }), links.length);
-  pulses.name = 'Moving network signals';
-  pulses.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  pulses.frustumCulled = false;
-  const color = new THREE.Color();
-  links.forEach((_, index) => pulses.setColorAt(index, color.setHex(LINK_COLORS[index % LINK_COLORS.length]).lerp(new THREE.Color(0xe8f6ff), 0.44)));
-  network.add(pulses);
+  const travelers = createTravelers(network, links, people);
 
   const coords = new THREE.Vector2();
   const east = new THREE.Vector3(), south = new THREE.Vector3();
   const previous = new THREE.Vector3(), next = new THREE.Vector3(), heading = new THREE.Vector3();
   const scratch = new THREE.Vector3();
   const matrix = new THREE.Matrix4();
-  const pulse = new THREE.Object3D();
 
   function update(seconds) {
     nodes.forEach((node, index) => {
@@ -324,16 +386,9 @@ export async function createEarthActors({ parent, surfaceRadius, assetRoot }) {
         node.mixer.setTime(seconds * 0.84 + index * 0.317);
       }
     });
-    links.forEach((link, index) => {
-      updateLink(link, heading, east, south, scratch);
-      const progress = wrap(seconds * (0.14 + (index % 4) * 0.017) + index * 0.137);
-      pointOnLink(link, progress, pulse.position);
-      pulse.scale.setScalar(0.0036 * Math.sin(Math.PI * progress) + 0.0001);
-      pulse.updateMatrix();
-      pulses.setMatrixAt(index, pulse.matrix);
-    });
-    pulses.instanceMatrix.needsUpdate = true;
+    links.forEach(link => updateLink(link, heading, east, south, scratch));
+    travelers.forEach(traveler => updateTraveler(traveler, seconds, heading, east, south, previous, matrix));
   }
   update(0);
-  return { update, actorCount: nodes.length };
+  return { update, actorCount: nodes.length, travelerCount: travelers.length, groundActors: actors };
 }

@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { createEarthActors } from "./earth-3d-actors.js?v=2";
+import { createEarthActors } from "./earth-3d-actors.js?v=3";
 import { createEarthClouds } from "./earth-3d-clouds.js?v=3";
-import { createEarthTerrain } from "./earth-terrain.js?v=3";
+import { createEarthTerrain } from "./earth-terrain.js?v=4";
 
 const RADIANS = Math.PI / 180;
 const TILT = 14 * RADIANS;
@@ -80,6 +80,8 @@ async function mount() {
     throw new Error("Earth volume rendering requires WebGL2");
   }
   renderer.setClearColor(0x000000, 0);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.BasicShadowMap;
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-FRAMING, FRAMING, FRAMING, -FRAMING, 0.1, 12);
   camera.position.z = 4;
@@ -93,7 +95,14 @@ async function mount() {
 
   const sky = new THREE.HemisphereLight(0xddefff, 0x8796b6, 1.57);
   const key = new THREE.DirectionalLight(0xfff2d8, 2.55);
-  key.position.copy(SUN_DIRECTION);
+  key.position.copy(SUN_DIRECTION).multiplyScalar(3.2);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.bias = -0.00025;
+  Object.assign(key.shadow.camera, {
+    left: -1.2, right: 1.2, top: 1.2, bottom: -1.2, near: 1.9, far: 4.5,
+  });
+  key.shadow.camera.updateProjectionMatrix();
   const rim = new THREE.DirectionalLight(0x7bc4ff, 1.4);
   rim.position.copy(BLUE_BACKLIGHT);
   scene.add(sky, key, rim);
@@ -104,7 +113,7 @@ async function mount() {
     load.loadAsync(assetRoot + "people/earth-blue-marble.jpg"),
     load.loadAsync(assetRoot + "people/earth-elevation.png"),
   ]);
-  const terrain = createEarthTerrain(surfaceImage, elevationImage, SUN_DIRECTION);
+  const terrain = createEarthTerrain(surfaceImage, elevationImage, SUN_DIRECTION, key);
   globe.add(terrain.mesh);
   const clouds = createEarthClouds({ parent: globe, sunlight: SUN_DIRECTION, moonlight: BLUE_BACKLIGHT });
   const actors = await createEarthActors({ parent: globe, surfaceRadius: terrain.surfaceRadius, assetRoot });
@@ -165,14 +174,16 @@ async function mount() {
         rotation: globe.rotation.y,
         tilt: Math.atan2(axis.x, axis.y) / RADIANS,
         actors: actors.actorCount,
+        travelers: actors.travelerCount,
         clouds: clouds.cloudCount,
         terrain: terrain.surfaceRadius(27.99, 86.92) - 1,
+        terrainShadowMap: Boolean(key.shadow.map),
         drawCalls: renderer.info.render.calls,
         triangles: renderer.info.render.triangles,
       };
     };
     window.__EWM_EARTH_READY__ = true;
-    window.__EWM_EARTH_SCENE__ = { scene, globe, renderer };
+    window.__EWM_EARTH_SCENE__ = { scene, globe, renderer, groundActors: actors.groundActors, shadowLight: key };
   }
 
   canvas.addEventListener("webglcontextlost", event => {

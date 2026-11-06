@@ -122,12 +122,14 @@ function buildMesh(sampleHeight, sampleLand) {
 const vertexShader = `
   attribute float elevation;
   attribute float landMask;
+  uniform mat4 actorShadowMatrix;
   varying vec2 vUv;
   varying vec3 vLocal;
   varying vec3 vView;
   varying vec3 vRadial;
   varying vec3 vNormal;
   varying vec2 vTerrain;
+  varying vec4 vActorShadowCoord;
 
   void main() {
     vUv = uv;
@@ -137,22 +139,48 @@ const vertexShader = `
     vTerrain = vec2(elevation, landMask);
     vec4 view = modelViewMatrix * vec4(position, 1.0);
     vView = view.xyz;
+    vActorShadowCoord = actorShadowMatrix * modelMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * view;
   }
 `;
 
 const fragmentShader = `
+  #include <packing>
   uniform sampler2D surfaceMap;
   uniform sampler2D elevationMap;
   uniform vec3 sun;
   uniform vec3 localSun;
   uniform vec4 cloudCenters[8];
+  uniform sampler2D actorShadowMap;
+  uniform vec2 actorShadowTexel;
+  uniform float actorShadowBias;
+  uniform bool actorShadowEnabled;
+  uniform bool actorShadowPacked;
   varying vec2 vUv;
   varying vec3 vLocal;
   varying vec3 vView;
   varying vec3 vRadial;
   varying vec3 vNormal;
   varying vec2 vTerrain;
+  varying vec4 vActorShadowCoord;
+
+  float actorShadow(float facingLight) {
+    if (!actorShadowEnabled || facingLight <= 0.06) return 0.0;
+    vec3 sampleCoord = vActorShadowCoord.xyz / vActorShadowCoord.w;
+    if (any(lessThan(sampleCoord, vec3(0.0))) || any(greaterThan(sampleCoord, vec3(1.0)))) return 0.0;
+
+    // Filter the real model silhouettes to soften their edges at globe scale.
+    float shade = 0.0;
+    for (int y = -1; y <= 1; y++) {
+      for (int x = -1; x <= 1; x++) {
+        vec2 offset = vec2(float(x), float(y)) * actorShadowTexel;
+        vec4 mapSample = texture2D(actorShadowMap, sampleCoord.xy + offset);
+        float nearestDepth = actorShadowPacked ? unpackRGBAToDepth(mapSample) : mapSample.r;
+        shade += step(nearestDepth, sampleCoord.z + actorShadowBias);
+      }
+    }
+    return (shade / 9.0) * smoothstep(0.06, 0.30, facingLight);
+  }
 
   vec3 reliefNormal(vec3 normal, float detail) {
     vec3 dx = dFdx(vView);
@@ -184,6 +212,7 @@ const fragmentShader = `
     float sunlit = smoothstep(-0.24, 0.79, facingLight);
     float slope = 1.0 - max(0.0, dot(normal, radial));
     float diffuse = max(0.0, dot(normal, sun));
+    float groundShadow = actorShadow(facingLight);
     float viewEdge = 1.0 - max(0.0, radial.z);
     vec3 halfLight = normalize(sun + vec3(0.0, 0.0, 1.0));
 
@@ -205,11 +234,11 @@ const fragmentShader = `
     landColor = mix(landColor, vec3(0.87, 0.91, 0.93), snow);
     // Cool fill preserves rock faces in shadow while warm sun picks out the ridges.
     landColor *= mix(vec3(0.25, 0.34, 0.50), vec3(0.37, 0.42, 0.50), sunlit)
-      + diffuse * vec3(0.91, 0.84, 0.72);
+      + diffuse * (1.0 - 0.80 * groundShadow) * vec3(0.91, 0.84, 0.72);
 
     float shallows = (1.0 - land) * smoothstep(0.015, 0.60, landBase);
     vec3 ocean = mix(vec3(0.010, 0.029, 0.108), vec3(0.026, 0.145, 0.337), sunlit);
-    ocean += vec3(0.028, 0.079, 0.112) * pow(max(0.0, dot(radial, halfLight)), 9.0);
+    ocean += vec3(0.028, 0.079, 0.112) * pow(max(0.0, dot(radial, halfLight)), 9.0) * (1.0 - 0.70 * groundShadow);
     ocean += vec3(0.026, 0.100, 0.128) * shallows * (0.35 + 0.65 * sunlit);
     ocean += vec3(0.017, 0.051, 0.092) * pow(viewEdge, 2.7);
 
@@ -230,7 +259,7 @@ const fragmentShader = `
   }
 `;
 
-export function createEarthTerrain(surfaceImage, elevationImage, sunlight) {
+export function createEarthTerrain(surfaceImage, elevationImage, sunlight, shadowLight) {
   const sampleHeight = rasterSampler(elevationImage, (rgba, offset) => rgba[offset] / 255);
   const sampleLand = rasterSampler(surfaceImage, landPixel);
   const { vertices, indices, stride } = buildMesh(sampleHeight, sampleLand);
@@ -258,6 +287,12 @@ export function createEarthTerrain(surfaceImage, elevationImage, sunlight) {
       sun: { value: sunlight },
       localSun: { value: localSun },
       cloudCenters: { value: cloudCenters },
+      actorShadowMatrix: { value: shadowLight?.shadow.matrix ?? new THREE.Matrix4() },
+      actorShadowMap: { value: null },
+      actorShadowTexel: { value: new THREE.Vector2() },
+      actorShadowBias: { value: 0 },
+      actorShadowEnabled: { value: false },
+      actorShadowPacked: { value: true },
     },
     vertexShader,
     fragmentShader,
@@ -266,6 +301,23 @@ export function createEarthTerrain(surfaceImage, elevationImage, sunlight) {
   });
   const mesh = new THREE.Mesh(geometry, material);
   mesh.name = "Earth terrain";
+  if (shadowLight) {
+    const uniforms = material.uniforms;
+    // Three creates the light's render target in the shadow pass before this draw.
+    mesh.onBeforeRender = renderer => {
+      const shadow = shadowLight.shadow;
+      const map = shadow.map;
+      uniforms.actorShadowEnabled.value = Boolean(renderer.shadowMap.enabled && shadowLight.castShadow && map);
+      if (map) {
+        // r160 stores packed RGBA. Newer Three versions expose raw depth for BasicShadowMap.
+        uniforms.actorShadowMap.value = map.depthTexture ?? map.texture;
+        uniforms.actorShadowPacked.value = !map.depthTexture;
+        uniforms.actorShadowTexel.value.set(1 / map.width, 1 / map.height);
+        uniforms.actorShadowBias.value = shadow.bias;
+      }
+      material.uniformsNeedUpdate = true;
+    };
+  }
   const inverseOrientation = new THREE.Quaternion();
   const groundRay = new THREE.Ray();
   const groundHit = new THREE.Vector3();
