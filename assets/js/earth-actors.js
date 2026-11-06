@@ -51,8 +51,8 @@
   const linkColors = ["131,210,255", "181,237,243", "170,234,196", "211,189,253"];
   const tau = 2 * Math.PI;
   const radians = Math.PI / 180;
-  const personSize = 48;
-  const personFeet = 46;
+  const personSize = 128;
+  const personFeet = 118;
   const buildingFeet = 68;
 
   function smoothstep(value) {
@@ -91,7 +91,8 @@
     const y = from.vector[1] * (1 - fraction) + to.vector[1] * fraction;
     const z = from.vector[2] * (1 - fraction) + to.vector[2] * fraction;
     const length = Math.hypot(x, y, z);
-    const altitude = 1 + Math.sin(Math.PI * fraction) * lift;
+    const altitude = from.surfaceLift * (1 - fraction) + to.surfaceLift * fraction
+      + Math.sin(Math.PI * fraction) * lift;
     if (frame.projectVector) return frame.projectVector(x / length, y / length, z / length, altitude);
     const latitude = Math.asin(y / length) / radians;
     const longitude = Math.atan2(x, z) / radians;
@@ -164,8 +165,9 @@
 
   function buildingSprite(kind) {
     const sprite = document.createElement("canvas");
-    sprite.width = sprite.height = 80;
+    sprite.width = sprite.height = 160;
     const ctx = sprite.getContext("2d");
+    ctx.scale(2, 2);
     ctx.translate(40, buildingFeet);
     box(ctx, -27, 0, 47, 5, 9, -6, "#456080", "#7189a5", "#263d5a");
     if (kind === "bank" || kind === "court") {
@@ -233,7 +235,10 @@
     ctx.ellipse(0, 0, scale * 0.22, Math.max(0.55, scale * foot.nz * 0.072), 0, 0, tau);
     ctx.fill();
     ctx.scale(factor, factor * foreshorten);
-    if (institution) ctx.drawImage(buildings[sprite], -40, -buildingFeet);
+    ctx.imageSmoothingQuality = "high";
+    ctx.shadowColor = "rgba(172,221,255,0.58)";
+    ctx.shadowBlur = Math.max(1.5, frame.radius * 0.011);
+    if (institution) ctx.drawImage(buildings[sprite], -40, -buildingFeet, 80, 80);
     else if (people.naturalWidth) {
       ctx.drawImage(people, sprite*personSize, 0, personSize, personSize, -personSize/2, -personFeet, personSize, personSize);
     }
@@ -247,12 +252,14 @@
       atlas.onload = () => { invalidate(); resolve(); };
       atlas.onerror = () => { invalidate(); resolve(); };
     });
-    atlas.src = assetsBase + "globe-people.webp";
+    atlas.src = assetsBase + "globe-people-hd.webp";
 
     function draw(ctx, frame) {
       const nodes = Object.fromEntries(Object.entries(routes).map(([name, [sprite, waypoints]], index) => {
         const [lat, lon] = locationAt(waypoints, frame.time, index);
-        return [name, { sprite, foot: frame.project(lat, lon, 1), vector: toVector(lat, lon) }];
+        const surfaceLift = frame.surfaceLift ? frame.surfaceLift(lat, lon) : 1;
+        const foot = frame.project(lat, lon, surfaceLift);
+        return [name, { sprite, foot, surfaceLift, vector: toVector(lat, lon) }];
       }));
       drawConnections(ctx, frame, nodes);
       Object.values(nodes)

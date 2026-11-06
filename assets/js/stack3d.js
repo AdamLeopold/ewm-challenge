@@ -65,7 +65,7 @@ function start([charGltf, bldGltf]) {
       vertexShader: "varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
       fragmentShader: "uniform sampler2D tDiffuse; varying vec2 vUv; void main() { vec4 c = texture2D(tDiffuse, vUv); bvec4 bad = bvec4(c.r != c.r || c.r > 6e4, c.g != c.g || c.g > 6e4, c.b != c.b || c.b > 6e4, c.a != c.a); if (any(bad)) c = vec4(0.0); gl_FragColor = clamp(c, 0.0, 64.0); }",
     }));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.7, 0.4, 0.38);
+    const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), 0.54, 0.31, 0.47);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
     // light is the only thing drawn: alpha follows brightness, so the canvas adds glow over the page and never darkens it
@@ -87,7 +87,7 @@ function start([charGltf, bldGltf]) {
     new ResizeObserver(resize).observe(cv); resize();
     return v;
   };
-  const views = [makeView(canvas, host, 1.25, false)];
+  const views = [makeView(canvas, host, small ? 1.25 : 1.5, false)];
 
   const ICE = new THREE.Color(0x8fd6ff), WHITE = new THREE.Color(0xe4f3ff), SKY = new THREE.Color(0xa9cfff);
   const GREEN = new THREE.Color(0x00ff88), TEAL = new THREE.Color(0x3ff2c8), VIOLET = new THREE.Color(0xb06bff);
@@ -215,14 +215,18 @@ function start([charGltf, bldGltf]) {
   scene.add(new THREE.HemisphereLight(0xeef6ff, 0x26303f, 1.25));
   const sun = new THREE.DirectionalLight(0xffffff, 1.3); sun.position.set(6, 12, 9); scene.add(sun);
   const HALF2 = 8.5, CHAR_H = 0.78, CHEST = 0.26, bldMats = new Set();
-  // a soft glowing rim on solid models, so they keep the scene's luminous edges
+  // View-space rim lighting outlines the figures and buildings without washing out their materials.
   const rim = (mat, color, k) => {
     mat.onBeforeCompile = (sh) => {
       sh.uniforms.uRim = { value: color.clone().multiplyScalar(k) };
       sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nuniform vec3 uRim;")
-        .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n{ float rimF = pow(clamp(1.0 - abs(dot(normal, normalize(vViewPosition))), 0.0, 1.0), 2.4); totalEmissiveRadiance += uRim * rimF; }");
+        .replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
+          float grazing = 1.0 - abs(dot(normal, normalize(vViewPosition)));
+          float edge = smoothstep(0.24, 1.0, grazing);
+          totalEmissiveRadiance += uRim * edge * edge;
+        `);
     };
-    mat.customProgramCacheKey = () => "rim" + color.getHexString() + k;
+    mat.customProgramCacheKey = () => "ewm-view-rim";
     return mat;
   };
   const fit = (obj, size, byHeight) => {   // scale a model to a height (people) or a footprint (buildings), standing on y = 0
@@ -233,7 +237,7 @@ function start([charGltf, bldGltf]) {
   };
   const makeFigure = (i) => {
     const src = charGltf[i % charGltf.length], model = cloneSkinned(src.scene), g = new THREE.Group(), mats = [];
-    model.traverse((o) => { if (o.isMesh) { o.material = rim(o.material.clone(), ICE, 0.45); o.material.transparent = true; o.frustumCulled = false; mats.push(o.material); } });
+    model.traverse((o) => { if (o.isMesh) { o.material = rim(o.material.clone(), WHITE, 0.34); o.material.transparent = true; o.frustumCulled = false; mats.push(o.material); } });
     g.add(model); fit(model, CHAR_H, true); scene.add(g);
     const mixer = new THREE.AnimationMixer(model), acts = {};
     src.animations.forEach((a) => { acts[a.name] = mixer.clipAction(a); });
@@ -247,8 +251,8 @@ function start([charGltf, bldGltf]) {
   };
   // civic buildings drawn in the same cartoon style: a bank and a court with columns and a pediment
   const civic = (kind) => {
-    const g = new THREE.Group(), white = rim(new THREE.MeshStandardMaterial({ color: 0xd9dee8, roughness: 0.8, transparent: true }), ICE, 0.18);
-    const roofC = kind === "court" ? 0x5b6476 : 0x6b5aa8, roof = rim(new THREE.MeshStandardMaterial({ color: roofC, roughness: 0.7, transparent: true }), ICE, 0.18);
+    const g = new THREE.Group(), white = rim(new THREE.MeshStandardMaterial({ color: 0xd9dee8, roughness: 0.8, transparent: true }), ICE, 0.28);
+    const roofC = kind === "court" ? 0x5b6476 : 0x6b5aa8, roof = rim(new THREE.MeshStandardMaterial({ color: roofC, roughness: 0.7, transparent: true }), ICE, 0.28);
     [white, roof].forEach((m) => bldMats.add(m));
     const W = kind === "court" ? 3.0 : 2.6, D = 1.9, add = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); g.add(o); return o; };
     add(new THREE.BoxGeometry(W + 0.4, 0.14, D + 0.5), white, 0, 0.07, 0.05); add(new THREE.BoxGeometry(W + 0.2, 0.12, D + 0.3), white, 0, 0.2, 0.05);
@@ -258,7 +262,7 @@ function start([charGltf, bldGltf]) {
     add(new THREE.BoxGeometry(W + 0.1, 0.18, D + 0.1), white, 0, 1.6, 0);
     const ped = new THREE.CylinderGeometry(0.5, 0.5, D + 0.1, 3); ped.rotateX(Math.PI / 2); ped.rotateZ(Math.PI / 2); ped.scale(W / 1.4, 0.8, 1); add(ped, roof, 0, 1.87, 0);
     if (kind === "court") { add(new THREE.CylinderGeometry(0.42, 0.5, 0.35, 16), white, 0, 2.3, -0.2); add(new THREE.SphereGeometry(0.44, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 2.47, -0.2); }
-    else { const sign = add(new THREE.BoxGeometry(0.9, 0.22, 0.04), rim(new THREE.MeshStandardMaterial({ color: 0xffc857, emissive: 0x6a4a00, transparent: true }), GOLD, 0.6), 0, 1.6, D / 2 + 0.07); bldMats.add(sign.material); }
+    else { const sign = add(new THREE.BoxGeometry(0.9, 0.22, 0.04), rim(new THREE.MeshStandardMaterial({ color: 0xffc857, emissive: 0x6a4a00, transparent: true }), GOLD, 0.34), 0, 1.6, D / 2 + 0.07); bldMats.add(sign.material); }
     return g;
   };
   const BLD = {
@@ -271,13 +275,13 @@ function start([charGltf, bldGltf]) {
     if (d.gi == null) { const m = civic(kind); g.add(m); top = kind === "court" ? 2.9 : 2.3; }
     else {
       const model = bldGltf[d.gi].scene.clone(true);
-      model.traverse((o) => { if (o.isMesh) { o.material = rim(o.material.clone(), ICE, 0.18); o.material.transparent = true; bldMats.add(o.material); } });
+      model.traverse((o) => { if (o.isMesh) { o.material = rim(o.material.clone(), ICE, 0.27); o.material.transparent = true; bldMats.add(o.material); } });
       g.add(model); top = fit(model, d.size, false);
     }
     if (kind === "market") {   // a live ticker on the roof
       const cg = new THREE.Group(); cg.position.y = top + 0.02; g.add(cg);
       g.userData.candles = [0, 1, 2, 3, 4].map((i) => {
-        const m = new THREE.MeshStandardMaterial({ color: i % 3 === 1 ? 0xff4d8d : 0x18d67a, emissive: i % 3 === 1 ? 0x5a0a28 : 0x064d2a, roughness: 0.5, transparent: true }); bldMats.add(m);
+        const m = rim(new THREE.MeshStandardMaterial({ color: i % 3 === 1 ? 0xff4d8d : 0x18d67a, emissive: i % 3 === 1 ? 0x5a0a28 : 0x064d2a, roughness: 0.5, transparent: true }), ICE, 0.22); bldMats.add(m);
         const b = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1, 0.16).translate(0, 0.5, 0), m), wick = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1, 0.03).translate(0, 0.5, 0), m);
         b.position.x = wick.position.x = -0.5 + i * 0.25; cg.add(b, wick); return { b, wick, ph: i * 1.3 };
       });
@@ -515,7 +519,7 @@ function start([charGltf, bldGltf]) {
   const nameTex = ringNameTexture(); nameTex.wrapS = THREE.RepeatWrapping; nameTex.repeat.set(1, 1);
   const letterLayers = [];
   for (let k = DEPTH - 1; k >= 0; k--) {
-    const shade = k === 0 ? 1 : 0.34 - k * 0.03, geo = new THREE.CylinderGeometry(RR - k * 0.06, RR - k * 0.06, RH, 256, 1, true);
+    const shade = k === 0 ? 0.76 : 0.30 - k * 0.03, geo = new THREE.CylinderGeometry(RR - k * 0.06, RR - k * 0.06, RH, 256, 1, true);
     const front = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: nameTex, color: new THREE.Color(shade, shade, shade), transparent: true, opacity: 0, depthWrite: false, side: THREE.FrontSide }));
     front.renderOrder = 10 + (DEPTH - k); spinG.add(front); letterLayers.push({ m: front.material, k });
     if (k === 0) { const back = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: nameTex, transparent: true, opacity: 0, depthWrite: false, side: THREE.BackSide })); back.renderOrder = 1; spinG.add(back); letterLayers.push({ m: back.material, k: -1 }); }
@@ -895,7 +899,7 @@ function start([charGltf, bldGltf]) {
       const size = (hero.hk || 1) * CHAR_H, d = camera.position.distanceTo(chest), a = v.heroA * clamp((d - 0.6 * size) / (0.12 * size));
       hero.mats.forEach((m) => { m.opacity = a; }); hero.g.visible = a > 0.01;
     }
-    v.bloom.strength = 0.6 + all * 0.1;
+    v.bloom.strength = 0.50 + all * 0.08;
   }
   host.classList.add("gl-on");
   requestAnimationFrame(tick);
@@ -955,7 +959,7 @@ function ringNameTexture() {
   g.textBaseline = "middle"; g.textAlign = "center"; g.font = "600 380px 'Space Grotesk', sans-serif";
   if ("letterSpacing" in g) g.letterSpacing = "60px";
   const grd = g.createLinearGradient(0, 20, 0, 380); grd.addColorStop(0, "#ffffff"); grd.addColorStop(0.5, "#cfeeff"); grd.addColorStop(1, "#73bcff");
-  g.shadowColor = "rgba(143,214,255,.9)"; g.shadowBlur = 18; g.fillStyle = grd;
+  g.shadowColor = "rgba(143,214,255,.65)"; g.shadowBlur = 11; g.fillStyle = grd;
   const k = Math.min(0.62, 7600 / g.measureText(text).width);
   g.save(); g.translate(3996, 214); g.scale(k, 1); g.fillText(text, 0, 0); g.restore();
   g.shadowBlur = 0; g.fillStyle = "rgba(143,214,255,.85)"; g.beginPath(); g.arc(8092, 200, 18, 0, 7); g.fill();
