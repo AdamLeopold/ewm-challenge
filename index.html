@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261106190711">
+<link rel="stylesheet" href="assets/css/main.css?v=20261106191904">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 </head>
 <body class="theme-sw">
@@ -32,7 +32,7 @@
 <main class="page">
   <!-- HERO -->
   <section class="hero hero-sw">
-    <canvas class="hero-fx" data-fx="world" aria-hidden="true"></canvas>
+    <div class="hero-globe" aria-hidden="true"><canvas data-earth-3d></canvas></div>
     <div class="wrap">
       <span class="eyebrow">2026</span>
       <h1><span>Economic World</span> <span class="glow">Model Challenge</span></h1>
@@ -357,15 +357,12 @@
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261106190711"></script>
-<script src="assets/js/i18n.js?v=20261106190711"></script>
-<script src="assets/js/pages.js?v=20261106190711"></script>
-<script src="assets/js/earth-actors.js?v=20261106190711"></script>
-<script src="assets/js/earth-terrain.js?v=20261106190711"></script>
-<script src="assets/js/earth-clouds.js?v=20261106190711"></script>
-<script src="assets/js/earth-globe.js?v=20261106190711"></script>
-<script src="assets/js/fx.js?v=20261106190711"></script>
+<script src="assets/js/config.js?v=20261106191904"></script>
+<script src="assets/js/i18n.js?v=20261106191904"></script>
+<script src="assets/js/pages.js?v=20261106191904"></script>
+<script src="assets/js/fx.js?v=20261106191904"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-<script type="module" src="assets/js/stack3d.js?v=20261106190711"></script>
+<script type="module" src="assets/js/earth-3d.js?v=20261106191904"></script>
+<script type="module" src="assets/js/stack3d.js?v=20261106191904"></script>
 </body>
 </html>
