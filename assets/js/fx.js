@@ -376,6 +376,9 @@
   }
   /* ---------- EWM Challenge: a dotted globe (the world model) with agents arcing between places ---------- */
   function worldFX(canvas, opts) {
+    if (window.EWMEarthGlobe && window.EWMEarthActors) {
+      return window.EWMEarthGlobe.mount(canvas, { stage: stage });
+    }
     opts = opts || {};
     var cxr = parseFloat(canvas.dataset.cx || "0.68"), cyr = parseFloat(canvas.dataset.cy || "0.52");
     var ICE = "143,214,255", WHITE = "228,243,255", GREEN = "0,255,136", VIOLET = "176,107,255";
