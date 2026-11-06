@@ -352,7 +352,7 @@
   }
 
   /* ---------- agent glyphs: person, household, candlesticks, rising chart, factory, bank, home, coin ----------
-     Drawn in white into a 128 x 128 box; the hero globe and the WebGL stack both use them. */
+     Drawn in white into a 128 x 128 box for the SW_drawIcon canvas helper. */
   function drawIcon(g, kind) {
     g.fillStyle = g.strokeStyle = "#fff"; g.lineCap = g.lineJoin = "round";
     var person = function (x, y, k) {
@@ -374,24 +374,15 @@
     else { g.beginPath(); g.arc(64, 64, 44, 0, 7); g.fill();
       out(function () { g.font = "700 62px 'Inter', sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("$", 64, 68); g.lineWidth = 5; g.beginPath(); g.arc(64, 64, 34, 0, 7); g.stroke(); }); }
   }
-  var spriteCache = {};
-  function iconSprite(kind, rgb) {   // a tinted, glowing 64px sprite, built once per glyph and colour
-    var key = kind + "|" + rgb;
-    if (spriteCache[key]) return spriteCache[key];
-    var c = document.createElement("canvas"); c.width = c.height = 64;
-    var g = c.getContext("2d"); g.scale(0.5, 0.5); g.shadowColor = "rgba(" + rgb + ",.9)"; g.shadowBlur = 14; drawIcon(g, kind);
-    g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = "source-in"; g.fillStyle = "rgb(" + rgb + ")"; g.fillRect(0, 0, 64, 64);
-    return (spriteCache[key] = c);
-  }
-
   /* ---------- EWM Challenge: a dotted globe (the world model) with agents arcing between places ---------- */
   function worldFX(canvas, opts) {
     opts = opts || {};
     var cxr = parseFloat(canvas.dataset.cx || "0.68"), cyr = parseFloat(canvas.dataset.cy || "0.52");
     var ICE = "143,214,255", WHITE = "228,243,255", GREEN = "0,255,136", VIOLET = "176,107,255";
-    var ICON_KINDS = [[0, WHITE], [0, WHITE], [1, ICE], [2, GREEN], [3, GREEN], [4, "63,242,200"], [5, VIOLET], [6, ICE], [7, "255,200,87"]];
+    // Idle poses projected from the six Kenney character GLBs used in the model below.
+    var peopleAtlas = new Image(), spriteSize = 48, personCount = 6;
     function sph(lat, lon) { var cl = Math.cos(lat); return [cl * Math.sin(lon), Math.sin(lat), cl * Math.cos(lon)]; }
-    return stage(canvas, function (s, dt) {
+    function draw(s, dt) {
       easePointer(dt);
       var c = s.ctx, w = s.w, h = s.h, t = s.t;
       c.clearRect(0, 0, w, h);
@@ -447,20 +438,27 @@
         }
       });
       c.globalCompositeOperation = "source-over";
-      // a few agents on the surface (people, markets, firms, banks...) that breathe in and out
-      s.icons.forEach(function (ic) {
-        ic.k += dt / ic.dur;
-        if (ic.k >= 1) { ic.k = 0; ic.at = s.dots[Math.floor(Math.random() * s.dots.length)]; ic.kind = ICON_KINDS[Math.floor(Math.random() * ICON_KINDS.length)]; ic.dur = rnd(7, 11); }
-        var q = pr(ic.at);
+      // Small figures fade in and out at points on the globe's surface.
+      if (!peopleAtlas.naturalWidth) return;
+      s.people.forEach(function (person) {
+        person.k += dt / person.dur;
+        if (person.k >= 1) {
+          person.k = 0;
+          person.at = s.dots[Math.floor(Math.random() * s.dots.length)];
+          person.sprite = Math.floor(Math.random() * personCount);
+          person.dur = rnd(7, 11);
+        }
+        var q = pr(person.at);
         if (q[2] < 0.15) return;
-        var br = Math.sin(Math.PI * ic.k), a = Math.pow(br, 1.6) * Math.min(1, (q[2] - 0.15) * 3);
+        var br = Math.sin(Math.PI * person.k), a = Math.pow(br, 1.6) * Math.min(1, (q[2] - 0.15) * 3);
         if (a < 0.01) return;
         var sz = (small ? 22 : 30) * (0.85 + 0.15 * br) * (0.8 + 0.2 * q[2]);
-        c.globalAlpha = a; c.globalCompositeOperation = "lighter";
-        c.drawImage(iconSprite(ic.kind[0], ic.kind[1]), q[0] - sz / 2, q[1] - sz, sz, sz);
-        c.globalAlpha = 1; c.globalCompositeOperation = "source-over";
+        c.globalAlpha = a;
+        c.drawImage(peopleAtlas, person.sprite * spriteSize, 0, spriteSize, spriteSize, q[0] - sz / 2, q[1] - sz, sz, sz);
+        c.globalAlpha = 1;
       });
-    }, function (s) {
+    }
+    var globe = stage(canvas, draw, function (s) {
       var n = small ? 520 : 1100, golden = Math.PI * (3 - Math.sqrt(5));
       s.dots = [];
       for (var i = 0; i < n; i++) { var y = 1 - (i / (n - 1)) * 2, r = Math.sqrt(1 - y * y), th = golden * i; s.dots.push([Math.cos(th) * r, y, Math.sin(th) * r]); }
@@ -469,11 +467,17 @@
         var roll = Math.random(), col = roll < 0.15 ? GREEN : roll < 0.3 ? VIOLET : roll < 0.6 ? WHITE : ICE;
         s.arcs.push({ from: s.dots[Math.floor(Math.random() * n)], to: s.dots[Math.floor(Math.random() * n)], k: Math.random(), v: rnd(0.12, 0.3), col: col });
       }
-      s.icons = [];
+      s.people = [];
       for (var m = 0; m < (small ? 6 : 12); m++) {
-        s.icons.push({ at: s.dots[Math.floor(Math.random() * n)], kind: ICON_KINDS[Math.floor(Math.random() * ICON_KINDS.length)], k: Math.random(), dur: rnd(7, 11) });
+        s.people.push({ at: s.dots[Math.floor(Math.random() * n)], sprite: Math.floor(Math.random() * personCount), k: Math.random(), dur: rnd(7, 11) });
       }
     });
+    // The static reduced-motion frame may have been drawn before the atlas loaded.
+    peopleAtlas.addEventListener("load", function () {
+      if (reduce && globe.visible && !document.hidden) draw(globe, 0);
+    });
+    peopleAtlas.src = "assets/models/people/globe-people.webp";
+    return globe;
   }
 
   window.SW_FX = { holo: holoFX, city: cityFX, terminal: terminalFX, world: worldFX };
