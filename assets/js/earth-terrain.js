@@ -2,11 +2,12 @@
  * https://doi.org/10.7289/V5C8276M */
 import * as THREE from "three";
 
-const ELEVATION_SCALE = 0.066;
-const SEGMENTS = 320;
-const ROWS = 160;
+const ELEVATION_SCALE = 0.060;
+const CONTINENT_SHELF = 0.023;
+const SEGMENTS = 400;
+const ROWS = 200;
 
-function elevationSampler(image) {
+function rasterSampler(image, readPixel) {
   const canvas = document.createElement('canvas');
   canvas.width = image.naturalWidth || image.width;
   canvas.height = image.naturalHeight || image.height;
@@ -24,29 +25,46 @@ function elevationSampler(image) {
     const i1 = (x0 + 1) % width;
     const dx = x - x0;
     const dy = y - y0;
-    const upper = rgba[(y0 * width + i0) * 4] * (1 - dx) + rgba[(y0 * width + i1) * 4] * dx;
-    const lower = rgba[(y1 * width + i0) * 4] * (1 - dx) + rgba[(y1 * width + i1) * 4] * dx;
-    return (upper * (1 - dy) + lower * dy) / 255;
+    const upper = readPixel(rgba, (y0 * width + i0) * 4) * (1 - dx)
+      + readPixel(rgba, (y0 * width + i1) * 4) * dx;
+    const lower = readPixel(rgba, (y1 * width + i0) * 4) * (1 - dx)
+      + readPixel(rgba, (y1 * width + i1) * 4) * dx;
+    return upper * (1 - dy) + lower * dy;
   };
 }
 
-function heightToRadius(height) {
-  return 1 + ELEVATION_SCALE * Math.pow(height, 0.93);
+function smoothstep(low, high, value) {
+  const t = THREE.MathUtils.clamp((value - low) / (high - low), 0, 1);
+  return t * t * (3 - 2 * t);
 }
 
-function buildMesh(sampleHeight) {
+function landPixel(rgba, offset) {
+  const red = rgba[offset], green = rgba[offset + 1], blue = rgba[offset + 2];
+  const brightness = Math.max(red, green);
+  const blueWater = smoothstep(3, 18, blue - red);
+  return smoothstep(12, 32, brightness) * (1 - blueWater);
+}
+
+function buildMesh(sampleHeight, sampleLand) {
   const columns = SEGMENTS + 1;
-  const stride = 9;
+  const stride = 11;
   const vertices = new Float32Array((ROWS + 1) * columns * stride);
-  const indices = new Uint16Array(ROWS * SEGMENTS * 6);
+  const indices = new Uint32Array(ROWS * SEGMENTS * 6);
+  const coastSampleU = 0.27 / SEGMENTS;
+  const coastSampleV = 0.27 / ROWS;
   for (let row = 0; row <= ROWS; row += 1) {
     const v = row / ROWS;
     const lat = (0.5 - v) * Math.PI;
     for (let col = 0; col <= SEGMENTS; col += 1) {
       const u = col / SEGMENTS;
       const lon = (u - 0.5) * 2 * Math.PI;
-      const height = sampleHeight(row === 0 || row === ROWS ? 0.5 : u, v);
-      const lift = heightToRadius(height);
+      const sourceU = row === 0 || row === ROWS ? 0.5 : u;
+      const height = sampleHeight(sourceU, v);
+      const coverage = 0.44 * sampleLand(sourceU, v)
+        + 0.14 * (sampleLand(sourceU - coastSampleU, v) + sampleLand(sourceU + coastSampleU, v)
+          + sampleLand(sourceU, v - coastSampleV) + sampleLand(sourceU, v + coastSampleV));
+      const land = Math.max(smoothstep(0.14, 0.88, coverage), smoothstep(0.012, 0.075, height));
+      const lift = 1 + CONTINENT_SHELF * land + ELEVATION_SCALE * Math.pow(height, 0.94);
       const offset = (row * columns + col) * stride;
       vertices[offset] = Math.cos(lat) * Math.sin(lon) * lift;
       vertices[offset + 1] = Math.sin(lat) * lift;
@@ -54,6 +72,8 @@ function buildMesh(sampleHeight) {
       vertices[offset + 6] = u;
       vertices[offset + 7] = v;
       vertices[offset + 8] = height;
+      vertices[offset + 9] = land;
+      vertices[offset + 10] = lift;
     }
   }
   for (let row = 0; row <= ROWS; row += 1) {
@@ -101,109 +121,169 @@ function buildMesh(sampleHeight) {
 
 const vertexShader = `
   attribute float elevation;
+  attribute float landMask;
   varying vec2 vUv;
   varying vec3 vLocal;
+  varying vec3 vView;
   varying vec3 vRadial;
   varying vec3 vNormal;
-  varying float vElevation;
+  varying vec2 vTerrain;
 
   void main() {
     vUv = uv;
     vLocal = position;
-    vRadial = mat3(modelMatrix) * normalize(position);
+    vRadial = normalMatrix * normalize(position);
     vNormal = normalMatrix * normal;
-    vElevation = elevation;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    vTerrain = vec2(elevation, landMask);
+    vec4 view = modelViewMatrix * vec4(position, 1.0);
+    vView = view.xyz;
+    gl_Position = projectionMatrix * view;
   }
 `;
 
 const fragmentShader = `
   uniform sampler2D surfaceMap;
+  uniform sampler2D elevationMap;
   uniform vec3 sun;
   uniform vec3 localSun;
   uniform vec4 cloudCenters[8];
   varying vec2 vUv;
   varying vec3 vLocal;
+  varying vec3 vView;
   varying vec3 vRadial;
   varying vec3 vNormal;
-  varying float vElevation;
+  varying vec2 vTerrain;
+
+  vec3 reliefNormal(vec3 normal, float detail) {
+    vec3 dx = dFdx(vView);
+    vec3 dy = dFdy(vView);
+    vec3 tangentX = cross(dy, normal);
+    vec3 tangentY = cross(normal, dx);
+    float determinant = dot(dx, tangentX);
+    vec3 slope = sign(determinant) * (dFdx(detail) * tangentX + dFdy(detail) * tangentY);
+    return normalize(max(abs(determinant), 0.0000001) * normal - slope);
+  }
 
   void main() {
     vec3 raw = texture2D(surfaceMap, vUv).rgb;
-    vec3 radial = normalize(vRadial);
-    vec3 surfaceNormal = normalize(vNormal);
-    vec3 halfLight = normalize(sun + vec3(0.0, 0.0, 1.0));
-    float facingLight = dot(radial, sun);
-    float diffuse = max(0.0, dot(surfaceNormal, sun));
-    float side = 1.0 - max(0.0, radial.z);
-    float water = (1.0 - smoothstep(0.008, 0.085, vElevation))
-      * smoothstep(0.015, 0.052, raw.b - raw.r);
-    float tone = dot(raw, vec3(0.2126, 0.7152, 0.0722));
-    float vegetation = smoothstep(-0.058, 0.09, raw.g - raw.r);
-    float snow = smoothstep(0.55, 0.86, tone);
-    float rock = smoothstep(0.22, 0.71, vElevation) * (1.0 - 0.38 * vegetation);
-    vec3 land = mix(vec3(0.76, 0.65, 0.43), vec3(0.27, 0.56, 0.36), vegetation);
-    land = mix(land, vec3(0.54, 0.49, 0.40), rock);
-    land = mix(land, vec3(0.86, 0.88, 0.84), max(snow, 0.62 * smoothstep(0.68, 0.93, vElevation)));
-    land = mix(land, raw, 0.28);
-    land *= 0.51 + 0.64 * diffuse;
-    land += vec3(0.09, 0.08, 0.06) * pow(max(0.0, dot(surfaceNormal, halfLight)), 18.0);
-    vec3 waterColor = mix(vec3(0.087, 0.36, 0.61), vec3(0.14, 0.55, 0.65), 0.65 * smoothstep(0.14, 0.46, tone));
-    waterColor *= 0.56 + 0.47 * smoothstep(-0.28, 1.0, facingLight);
-    waterColor += vec3(0.10, 0.14, 0.17) * pow(max(0.0, dot(radial, halfLight)), 17.0);
+    float height = vTerrain.x;
+    float landBase = vTerrain.y;
+    float landPixel = smoothstep(0.047, 0.125, max(raw.r, raw.g))
+      * (1.0 - smoothstep(0.012, 0.071, raw.b - raw.r));
+    float land = max(landPixel, smoothstep(0.015, 0.066, height));
+    // Exposed rock follows the bevel of each raised continental shelf.
+    float exposedShelf = smoothstep(0.20, 0.75, landBase) * (1.0 - land);
+    land = max(land, 0.96 * exposedShelf);
 
-    // Cast the cloud silhouettes onto the same geographical surface.
+    vec3 radial = normalize(vRadial);
+    vec3 meshNormal = normalize(vNormal);
+    float highResHeight = texture2D(elevationMap, vUv).r;
+    float fineRelief = (highResHeight - height) * 0.027 * smoothstep(0.45, 0.96, landBase);
+    vec3 normal = reliefNormal(meshNormal, fineRelief);
+    float facingLight = dot(radial, sun);
+    float sunlit = smoothstep(-0.24, 0.79, facingLight);
+    float slope = 1.0 - max(0.0, dot(normal, radial));
+    float diffuse = max(0.0, dot(normal, sun));
+    float viewEdge = 1.0 - max(0.0, radial.z);
+    vec3 halfLight = normalize(sun + vec3(0.0, 0.0, 1.0));
+
+    float tone = dot(raw, vec3(0.2126, 0.7152, 0.0722));
+    float vegetation = smoothstep(-0.085, 0.064, raw.g - raw.r) * (1.0 - smoothstep(0.62, 0.82, tone));
+    float arid = smoothstep(0.20, 0.77, tone);
+    float alpine = smoothstep(0.27, 0.71, highResHeight);
+    float coolWhite = 1.0 - smoothstep(0.07, 0.24, max(raw.r, raw.g) - raw.b);
+    float snow = max(smoothstep(0.65, 0.87, tone) * coolWhite,
+      smoothstep(0.70, 0.93, highResHeight) * (1.0 - 0.68 * smoothstep(0.09, 0.38, slope)));
+    vec3 earth = mix(vec3(0.42, 0.31, 0.19), vec3(0.86, 0.73, 0.50), arid);
+    vec3 grass = mix(vec3(0.12, 0.26, 0.09), vec3(0.39, 0.51, 0.20), smoothstep(0.09, 0.49, tone));
+    vec3 stone = mix(vec3(0.48, 0.40, 0.30), vec3(0.61, 0.57, 0.53), alpine);
+    float rock = max(alpine * 0.77, smoothstep(0.07, 0.35, slope) * 0.72);
+    vec3 landColor = mix(earth, grass, vegetation);
+    landColor = mix(landColor, raw, 0.19);
+    landColor = mix(landColor, stone, rock);
+    landColor = mix(landColor, vec3(0.44, 0.36, 0.26), exposedShelf * 0.72);
+    landColor = mix(landColor, vec3(0.87, 0.91, 0.93), snow);
+    // Cool fill preserves rock faces in shadow while warm sun picks out the ridges.
+    landColor *= mix(vec3(0.25, 0.34, 0.50), vec3(0.37, 0.42, 0.50), sunlit)
+      + diffuse * vec3(0.91, 0.84, 0.72);
+
+    float shallows = (1.0 - land) * smoothstep(0.015, 0.60, landBase);
+    vec3 ocean = mix(vec3(0.010, 0.029, 0.108), vec3(0.026, 0.145, 0.337), sunlit);
+    ocean += vec3(0.028, 0.079, 0.112) * pow(max(0.0, dot(radial, halfLight)), 9.0);
+    ocean += vec3(0.026, 0.100, 0.128) * shallows * (0.35 + 0.65 * sunlit);
+    ocean += vec3(0.017, 0.051, 0.092) * pow(viewEdge, 2.7);
+
+    // Cast the soft cloud silhouettes onto the same geographical surface.
     float shadow = 0.0;
     for (int i = 0; i < 8; i++) {
       vec3 towardCloud = cloudCenters[i].xyz - vLocal;
       float distanceToCloud = dot(towardCloud, localSun);
       float clearance = length(towardCloud - localSun * distanceToCloud);
       float radius = max(0.0001, cloudCenters[i].w);
-      float softness = radius * 0.76 + distanceToCloud * 0.08;
-      float occlusion = 1.0 - smoothstep(radius * 0.18, max(radius * 0.24, softness), clearance);
+      float softness = radius * 0.76 + distanceToCloud * 0.10;
+      float occlusion = 1.0 - smoothstep(radius * 0.23, max(radius * 0.27, softness), clearance);
       shadow = max(shadow, occlusion * smoothstep(0.0, 0.02, distanceToCloud)
-        * (1.0 - smoothstep(0.22, 0.50, distanceToCloud)) * step(0.001, cloudCenters[i].w));
+        * (1.0 - smoothstep(0.22, 0.52, distanceToCloud)) * step(0.001, cloudCenters[i].w));
     }
-    vec3 color = mix(land, waterColor, water) * (1.0 - 0.23 * shadow * smoothstep(-0.1, 0.4, facingLight));
-    float rim = pow(side, 4.0) * (0.32 + 0.68 * smoothstep(-0.1, 0.88, facingLight));
-    color += vec3(0.13, 0.28, 0.39) * rim;
-    // Lift the shaded mids and keep bright snow and sunlit water below white.
-    color = clamp(color, 0.0, 1.0);
-    color += 0.29 * color * (1.0 - color);
-    gl_FragColor = vec4(color, 1.0);
+    vec3 color = mix(ocean, landColor, land) * (1.0 - 0.33 * shadow * sunlit);
+    gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
   }
 `;
 
 export function createEarthTerrain(surfaceImage, elevationImage, sunlight) {
-  const sampleHeight = elevationSampler(elevationImage);
-  const { vertices, indices, stride } = buildMesh(sampleHeight);
+  const sampleHeight = rasterSampler(elevationImage, (rgba, offset) => rgba[offset] / 255);
+  const sampleLand = rasterSampler(surfaceImage, landPixel);
+  const { vertices, indices, stride } = buildMesh(sampleHeight, sampleLand);
   const geometry = new THREE.BufferGeometry();
   const data = new THREE.InterleavedBuffer(vertices, stride);
   geometry.setAttribute("position", new THREE.InterleavedBufferAttribute(data, 3, 0));
   geometry.setAttribute("normal", new THREE.InterleavedBufferAttribute(data, 3, 3));
   geometry.setAttribute("uv", new THREE.InterleavedBufferAttribute(data, 2, 6));
   geometry.setAttribute("elevation", new THREE.InterleavedBufferAttribute(data, 1, 8));
+  geometry.setAttribute("landMask", new THREE.InterleavedBufferAttribute(data, 1, 9));
   geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
   const surfaceMap = new THREE.Texture(surfaceImage);
   surfaceMap.flipY = false;
   surfaceMap.needsUpdate = true;
+  const elevationMap = new THREE.Texture(elevationImage);
+  elevationMap.flipY = false;
+  elevationMap.needsUpdate = true;
   const localSun = sunlight.clone();
   const cloudCenters = Array.from({ length: 8 }, () => new THREE.Vector4(0, 0, 0, 0));
   const material = new THREE.ShaderMaterial({
     uniforms: {
       surfaceMap: { value: surfaceMap },
+      elevationMap: { value: elevationMap },
       sun: { value: sunlight },
       localSun: { value: localSun },
       cloudCenters: { value: cloudCenters },
     },
     vertexShader,
     fragmentShader,
+    extensions: { derivatives: true },
     toneMapped: false,
   });
   const mesh = new THREE.Mesh(geometry, material);
   mesh.name = "Earth terrain";
   const inverseOrientation = new THREE.Quaternion();
+  const groundRay = new THREE.Ray();
+  const groundHit = new THREE.Vector3();
+  const topLeft = new THREE.Vector3(), topRight = new THREE.Vector3();
+  const bottomLeft = new THREE.Vector3(), bottomRight = new THREE.Vector3();
+  const vertexOffset = (row, col) => (row * (SEGMENTS + 1) + col) * stride;
+
+  function groundTriangle(row, col) {
+    const top = vertexOffset(row, col);
+    const bottom = vertexOffset(row + 1, col);
+    topLeft.fromArray(vertices, top);
+    topRight.fromArray(vertices, top + stride);
+    bottomLeft.fromArray(vertices, bottom);
+    bottomRight.fromArray(vertices, bottom + stride);
+    return groundRay.intersectTriangle(topLeft, bottomLeft, topRight, false, groundHit)
+      || groundRay.intersectTriangle(topRight, bottomLeft, bottomRight, false, groundHit);
+  }
+
   return {
     mesh,
     surfaceRadius(latitude, longitude) {
@@ -211,17 +291,26 @@ export function createEarthTerrain(surfaceImage, elevationImage, sunlight) {
       const degrees = longitude + 180;
       const lon = (degrees - Math.floor(degrees / 360) * 360) / 360 * SEGMENTS;
       const row = Math.min(ROWS - 1, Math.floor(lat)), col = Math.floor(lon);
+      const phi = latitude * Math.PI / 180, theta = longitude * Math.PI / 180;
+      const cosLatitude = Math.cos(phi);
+      groundRay.direction.set(cosLatitude * Math.sin(theta), Math.sin(phi), cosLatitude * Math.cos(theta));
+      // A curved latitude edge can put a boundary sample in an adjacent cell.
+      const contact = groundTriangle(row, col)
+        || (row > 0 && groundTriangle(row - 1, col))
+        || (row < ROWS - 1 && groundTriangle(row + 1, col));
+      if (contact) return contact.dot(groundRay.direction);
+
+      // The exact poles share an apex and may have a degenerate triangle.
       const y = lat - row, x = lon - col;
-      const heightAt = (r, c) => vertices[(r * (SEGMENTS + 1) + c) * stride + 8];
-      // The anchor follows the triangle used by the rendered mesh.
+      const radiusAt = (r, c) => vertices[vertexOffset(r, c) + 10];
       if (x + y <= 1) {
-        return (1 - x - y) * heightToRadius(heightAt(row, col))
-          + x * heightToRadius(heightAt(row, col + 1))
-          + y * heightToRadius(heightAt(row + 1, col));
+        return (1 - x - y) * radiusAt(row, col)
+          + x * radiusAt(row, col + 1)
+          + y * radiusAt(row + 1, col);
       }
-      return (x + y - 1) * heightToRadius(heightAt(row + 1, col + 1))
-        + (1 - x) * heightToRadius(heightAt(row + 1, col))
-        + (1 - y) * heightToRadius(heightAt(row, col + 1));
+      return (x + y - 1) * radiusAt(row + 1, col + 1)
+        + (1 - x) * radiusAt(row + 1, col)
+        + (1 - y) * radiusAt(row, col + 1);
     },
     updateLighting(centers) {
       mesh.getWorldQuaternion(inverseOrientation).invert();
