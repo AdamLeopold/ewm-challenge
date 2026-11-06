@@ -673,17 +673,16 @@ footer .legal p { margin: 0 0 6px; max-width: 880px; }
 .organisers { padding-block: clamp(56px, 8vw, 96px); background: linear-gradient(180deg, #000, var(--bg)); border-top: 1px solid var(--line); }
 .organisers .eyebrow { color: var(--muted); }
 .organisers .eyebrow::before { background: var(--muted); }
-.org-grid { list-style: none; margin-top: 28px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-/* a logo wall: every tile is as wide as its logo needs; heights are tuned per logo so they read at a similar size */
-.org { flex: 0 1 auto; height: 108px; border-radius: 14px; background: #f4f4f1; display: grid; place-items: center; padding: 0 22px;
+.org-grid { list-style: none; margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 14px; }
+.org { min-width: 0; }
+.org a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  height: 100%; min-height: 144px; padding: 18px; border-radius: 14px; background: #f4f4f1; color: #14161a;
   transition: transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s; }
-.org:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -18px rgba(255,255,255,.35); }
-.org img { display: block; width: auto; max-width: 100%; height: var(--lh, 48px); object-fit: contain; }
-.org-ntu { --lh: 54px; } .org-cuhk { --lh: 36px; } .org-tongji { --lh: 52px; } .org-holobit { --lh: 26px; } .org-slai { --lh: 82px; }
-.org-text { text-align: center; color: #14161a; line-height: 1.25; }
-.org-text .org-zh { display: block; font-family: "Noto Sans SC", var(--font-body); font-weight: 700; font-size: 20px; letter-spacing: .08em; }
-.org-text .org-en { display: block; margin-top: 4px; font-size: 11px; letter-spacing: .04em; color: #4a4d55; }
-@media (max-width: 560px) { .org { height: 88px; padding: 0 18px; flex: 1 1 calc(50% - 7px); } .org img { height: calc(var(--lh, 48px) * .78); } .org-cuhk, .org-holobit { flex-basis: 100%; } }
+.org a:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -18px rgba(255,255,255,.35); }
+.org img { display: block; width: auto; max-width: 100%; height: 64px; object-fit: contain; }
+.org-ccds img { height: 88px; }
+.org-slai img { height: 80px; }
+.org-name { text-align: center; font-size: 14px; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
 
 
 /* hosts, partners, committee */
@@ -691,18 +690,15 @@ footer .legal p { margin: 0 0 6px; max-width: 880px; }
 .org-label { display: block; margin: 40px 0 0; }
 .hosted-line { margin-top: 22px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .hosted-line a { color: var(--accent); }
-.host-grid { list-style: none; margin-top: 18px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.host a { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 22px; min-height: 120px; padding: 18px 28px; border-radius: 16px; background: #f4f4f1; color: #14161a;
+.host-grid { list-style: none; margin-top: 18px; }
+.host a { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: center; gap: 22px; min-height: 120px; padding: 18px 28px; border-radius: 16px; background: #f4f4f1; color: #14161a;
   transition: transform .6s cubic-bezier(.22,1,.36,1), box-shadow .6s cubic-bezier(.22,1,.36,1); }
 .host a:hover { transform: translateY(-3px); box-shadow: 0 24px 50px -22px rgba(143,214,255,.55); }
-.host img { height: 56px; width: auto; }
+.host img { width: 100%; max-width: 460px; height: auto; max-height: 84px; object-fit: contain; object-position: left center; }
 .host-name { display: grid; gap: 2px; padding-left: 22px; border-left: 1px solid #d8d8d2; }
 .host-name b { font-family: var(--font-display); font-size: 24px; letter-spacing: -.01em; }
 .host-name span { font-size: 13px; color: #4a4d55; }
 .host-go { font-family: var(--font-mono); color: #4a4d55; }
-.gifts-about { margin-top: 16px; max-width: 76ch; color: var(--muted); font-size: 15px; }
-.gifts-about a { color: var(--accent); white-space: nowrap; }
-.org a { display: grid; place-items: center; height: 100%; }
 .people { list-style: none; margin-top: 18px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .person { display: flex; flex-direction: column; gap: 16px; }
 .avatar { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-family: "Noto Sans SC", var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: .02em; color: #04121c;
@@ -712,7 +708,13 @@ footer .legal p { margin: 0 0 6px; max-width: 880px; }
 .person-body p { font-size: 14px; color: var(--muted); }
 .person-link { display: inline-block; margin-top: 12px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
 @media (max-width: 960px) { .people { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) { .host-grid, .people { grid-template-columns: 1fr; } .host a { grid-template-columns: auto 1fr; padding: 16px 18px; gap: 14px; } .host-go { display: none; } .host img { height: 44px; } .host-name { padding-left: 14px; } .host-name b { font-size: 19px; } }
+@media (max-width: 640px) {
+  .people { grid-template-columns: 1fr; }
+  .host a { grid-template-columns: minmax(0, 1fr); padding: 18px; gap: 12px; }
+  .host-go { display: none; }
+  .host-name { padding-left: 0; border-left: 0; }
+  .host-name b { font-size: 20px; }
+}
 
 
 /* ---------- auto-scrolling rails (tracks, papers) ---------- */
@@ -794,9 +796,6 @@ footer .legal p { margin: 0 0 6px; max-width: 880px; }
 .person-photo .mono { display: grid; place-items: center; height: 100%; font-family: "Noto Sans SC", var(--font-display); font-weight: 700; font-size: 28px; color: #04121c; }
 @media (max-width: 960px) { .people { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
 @media (max-width: 520px) { .people { grid-template-columns: 1fr !important; } .person-photo { width: 60px; height: 60px; } }
-.host-full a { grid-template-columns: 1fr auto; }
-.host-full img { height: auto; width: 100%; max-width: 460px; max-height: 84px; object-fit: contain; object-position: left center; }
-@media (max-width: 640px) { .host-full a { grid-template-columns: 1fr; } }
 
 /* WebGL stack: the CSS layers stay as the fallback */
 .stack3d { position: relative; }
