@@ -80,7 +80,7 @@ function start([charGltf, bldGltf]) {
       const r = cv.getBoundingClientRect(); const w = Math.max(1, r.width), h = Math.max(1, r.height);
       renderer.setSize(w, h, false); composer.setSize(w, h); camera.aspect = w / h;
       // on wide screens the copy sits on the left, so the model's centre moves to the right
-      if (!ghost && innerWidth > 860) camera.setViewOffset(w, h, -w * 0.2, 0, w, h); else camera.clearViewOffset();
+      if (!ghost && innerWidth > 860) camera.setViewOffset(w, h, -w * 0.16, 0, w, h); else camera.clearViewOffset();
       camera.updateProjectionMatrix();
       v.pix = renderer.getPixelRatio() * Math.min(1.4, h / 600); v.hpx = h * renderer.getPixelRatio();
     };
@@ -891,6 +891,10 @@ function start([charGltf, bldGltf]) {
       if (pS < 0.3) { const k = 1 - clamp((pS - 0.22) / 0.08); tx += (hero.x - HC[0]) * k; tz += (hero.z - HC[2]) * k; }
     }
     rad *= Math.max(1, (small ? 1.0 : 1.3) / camera.aspect);
+    // Keep the larger buildings in frame during the two inhabited layers.
+    if (!v.ghost && innerWidth > 860) {
+      rad *= 1 + 0.51 * sstep((pS - 0.18) / 0.10) * (1 - sstep((pS - 0.69) / 0.12));
+    }
     camera.position.set(tx + Math.cos(ph) * Math.sin(th) * rad, ty + Math.sin(ph) * rad, tz + Math.cos(ph) * Math.cos(th) * rad);
     camera.lookAt(tx, ty, tz);
     billboards.forEach((b) => { b.getWorldPosition(bbW); b.rotation.y = Math.atan2(camera.position.x - bbW.x, camera.position.z - bbW.z); });
