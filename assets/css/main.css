@@ -571,14 +571,14 @@ footer .legal p { margin: 0 0 6px; max-width: 880px; }
 .hero-sw { isolation: isolate; }
 .hero-sw::before {
   content: ""; position: absolute; inset: 0; z-index: -2;
-  background: radial-gradient(ellipse 48% 49% at 77% 47%, rgba(53, 111, 179, .22), transparent 100%),
+  background: radial-gradient(ellipse 48% 49% at 77% 47%, rgba(53, 111, 179, .27), transparent 100%),
     radial-gradient(ellipse 30% 40% at 86% 23%, rgba(104, 83, 158, .09), transparent 96%);
 }
-.hero-sw::after { background: linear-gradient(180deg, rgba(5,6,8,.09), rgba(5,6,8,.22) 65%, var(--bg)); }
+.hero-sw::after { background: linear-gradient(180deg, rgba(5,6,8,.06), rgba(5,6,8,.13) 65%, var(--bg)); }
 .hero-globe {
   position: absolute; z-index: -1; left: 75%; top: 53svh;
   width: min(57.4vw, 93.8svh); aspect-ratio: 1; transform: translate(-50%, -50%);
-  background: url("../models/people/earth-3d-preview.webp") center / contain no-repeat;
+  background: url("../models/people/earth-3d-preview.webp?v=2") center / contain no-repeat;
 }
 .hero-globe[data-ready] { background-image: none; }
 .hero-globe canvas { display: block; width: 100%; height: 100%; }
@@ -595,7 +595,7 @@ footer .legal p { margin: 0 0 6px; max-width: 880px; }
 @media (max-width: 760px) {
   .hero-sw { padding-top: 356px; }
   .hero-globe { left: 50%; top: 204px; width: min(114vw, 332px); }
-  .hero-sw::before { background: radial-gradient(ellipse 90% 240px at 50% 205px, rgba(47, 105, 170, .19), transparent 98%); }
+  .hero-sw::before { background: radial-gradient(ellipse 90% 240px at 50% 205px, rgba(47, 105, 170, .23), transparent 98%); }
   .hero-sw .scroll-cue { position: absolute; bottom: 20px; }
   .sw-stats { grid-template-columns: 1fr; }
 }

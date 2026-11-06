@@ -2,7 +2,7 @@
  * https://doi.org/10.7289/V5C8276M */
 import * as THREE from "three";
 
-const ELEVATION_SCALE = 0.042;
+const ELEVATION_SCALE = 0.066;
 const SEGMENTS = 320;
 const ROWS = 160;
 
@@ -146,10 +146,10 @@ const fragmentShader = `
     land = mix(land, vec3(0.54, 0.49, 0.40), rock);
     land = mix(land, vec3(0.86, 0.88, 0.84), max(snow, 0.62 * smoothstep(0.68, 0.93, vElevation)));
     land = mix(land, raw, 0.28);
-    land *= 0.47 + 0.68 * diffuse;
+    land *= 0.51 + 0.64 * diffuse;
     land += vec3(0.09, 0.08, 0.06) * pow(max(0.0, dot(surfaceNormal, halfLight)), 18.0);
-    vec3 waterColor = mix(vec3(0.075, 0.31, 0.55), vec3(0.12, 0.51, 0.61), 0.65 * smoothstep(0.14, 0.46, tone));
-    waterColor *= 0.48 + 0.53 * smoothstep(-0.28, 1.0, facingLight);
+    vec3 waterColor = mix(vec3(0.087, 0.36, 0.61), vec3(0.14, 0.55, 0.65), 0.65 * smoothstep(0.14, 0.46, tone));
+    waterColor *= 0.56 + 0.47 * smoothstep(-0.28, 1.0, facingLight);
     waterColor += vec3(0.10, 0.14, 0.17) * pow(max(0.0, dot(radial, halfLight)), 17.0);
 
     // Cast the cloud silhouettes onto the same geographical surface.
@@ -167,6 +167,9 @@ const fragmentShader = `
     vec3 color = mix(land, waterColor, water) * (1.0 - 0.23 * shadow * smoothstep(-0.1, 0.4, facingLight));
     float rim = pow(side, 4.0) * (0.32 + 0.68 * smoothstep(-0.1, 0.88, facingLight));
     color += vec3(0.13, 0.28, 0.39) * rim;
+    // Lift the shaded mids and keep bright snow and sunlit water below white.
+    color = clamp(color, 0.0, 1.0);
+    color += 0.29 * color * (1.0 - color);
     gl_FragColor = vec4(color, 1.0);
   }
 `;

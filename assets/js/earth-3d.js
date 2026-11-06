@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { createEarthActors } from "./earth-3d-actors.js";
+import { createEarthActors } from "./earth-3d-actors.js?v=2";
 import { createEarthClouds } from "./earth-3d-clouds.js";
-import { createEarthTerrain } from "./earth-terrain.js";
+import { createEarthTerrain } from "./earth-terrain.js?v=2";
 
 const RADIANS = Math.PI / 180;
 const TILT = 14 * RADIANS;
@@ -14,7 +14,7 @@ const canvas = document.querySelector("canvas[data-earth-3d]");
 const capture = new URLSearchParams(location.search).has("capture");
 
 function createAtmosphere() {
-  const geometry = new THREE.SphereGeometry(1.052, 72, 36);
+  const geometry = new THREE.SphereGeometry(1.075, 72, 36);
   const material = new THREE.ShaderMaterial({
     uniforms: { sun: { value: SUN_DIRECTION } },
     vertexShader: `
@@ -29,7 +29,7 @@ function createAtmosphere() {
       void main() {
         float radius = length(air.xy);
         float lit = max(0.0, dot(air.xy / max(0.0001, radius), sun.xy));
-        float edge = 1.0 - smoothstep(1.0, 1.052, radius);
+        float edge = 1.0 - smoothstep(1.0, 1.075, radius);
         gl_FragColor = vec4(0.37, 0.66, 0.94, (0.075 + 0.23 * lit) * edge * edge);
       }`,
     side: THREE.BackSide,
@@ -59,10 +59,10 @@ async function mount() {
   pole.add(globe);
   scene.add(pole, createAtmosphere());
 
-  const sky = new THREE.HemisphereLight(0xe6f0ff, 0x78858a, 1.48);
+  const sky = new THREE.HemisphereLight(0xe6f0ff, 0x929da3, 1.94);
   const key = new THREE.DirectionalLight(0xfff4e2, 2.14);
   key.position.copy(SUN_DIRECTION);
-  const rim = new THREE.DirectionalLight(0x86baff, 0.82);
+  const rim = new THREE.DirectionalLight(0x86baff, 0.98);
   rim.position.set(0.52, 0.14, -1);
   scene.add(sky, key, rim);
 
