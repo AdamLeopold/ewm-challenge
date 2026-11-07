@@ -483,6 +483,63 @@ footer .legal p { margin: 0 0 6px; max-width: 880px; }
 .switch-track { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 12px; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); }
 .switch-track:hover { border-color: var(--accent); }
 
+/* Shared registration entry and the dedicated signup page. */
+.registration-nav { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); color: var(--fg); white-space: nowrap; }
+.registration-banner { display: grid; grid-template-columns: minmax(0, 1fr) 224px; align-items: center; gap: clamp(28px, 6vw, 80px); padding: clamp(26px, 5vw, 60px); border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line)); border-radius: 24px; background: radial-gradient(ellipse at 5% 0, rgba(0, 255, 136, .09), transparent 65%), var(--card); }
+.registration-banner h2 { margin: 16px 0; font-family: var(--font-display); font-size: clamp(30px, 4vw, 48px); line-height: 1.15; letter-spacing: -.03em; }
+.registration-banner p { color: var(--muted); max-width: 60ch; }
+.registration-banner .cta-row { margin-top: 26px; }
+.registration-qr { display: grid; gap: 15px; justify-items: center; text-align: center; font-size: 13px; color: var(--muted); }
+.registration-qr img { width: 224px; height: 224px; background: #fff; border: 10px solid #fff; border-radius: 12px; }
+.registration-caption { font-size: 13px; line-height: 1.65; color: var(--muted); margin-top: 18px; }
+.registration-hero { padding: clamp(130px, 14vw, 180px) 0 70px; }
+.registration-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(32px, 7vw, 96px); align-items: start; }
+.registration-back { display: inline-block; font-size: 13px; color: var(--muted); margin-bottom: 38px; }
+.registration-intro .eyebrow { display: block; font-size: 11px; line-height: 1.6; letter-spacing: .13em; }
+.registration-intro h1 { margin: 20px 0; font: 600 clamp(44px, 5.5vw, 76px)/1.04 var(--font-display); letter-spacing: -.045em; }
+.registration-lede { font-size: 18px; line-height: 1.75; color: var(--muted); max-width: 38ch; }
+.registration-track-links { margin-top: 34px; display: grid; }
+.registration-track-links a { display: flex; align-items: center; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.registration-track-links a > span { font: 12px var(--font-mono); color: var(--accent); }
+.registration-track-links a > span:last-child { margin-left: auto; }
+.registration-track-links b { font-weight: 500; font-size: 16px; }
+.registration-track-links small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+.registration-panel { min-width: 0; border: 1px solid var(--line); border-radius: 24px; padding: clamp(26px, 3vw, 40px); background: linear-gradient(145deg, rgba(0, 255, 136, .045), transparent 60%), var(--card); }
+.registration-free { display: inline-block; color: var(--accent); font: 11px var(--font-mono); letter-spacing: .1em; border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); border-radius: 999px; padding: 8px 12px; }
+.registration-panel h2 { font: 500 clamp(27px, 3vw, 38px)/1.2 var(--font-display); letter-spacing: -.025em; margin: 22px 0 14px; }
+.registration-panel > p, .registration-checklist li > span { color: var(--muted); font-size: 14px; line-height: 1.75; }
+.registration-checklist { list-style: decimal-leading-zero; padding-left: 28px; margin: 28px 0; }
+.registration-checklist li { padding-left: 8px; margin-bottom: 20px; }
+.registration-checklist li::marker { color: var(--accent); font: 12px var(--font-mono); }
+.registration-checklist li > b, .registration-checklist li > span { display: block; }
+.registration-checklist b { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+.registration-action .btn { width: 100%; justify-content: center; }
+.registration-action .btn[aria-disabled="true"] { box-shadow: none; background: rgba(255,255,255,.06); color: var(--muted); border: 1px solid var(--line); }
+.registration-action .registration-caption { margin-top: 12px; }
+[data-registration-ready][hidden], [data-registration-pending][hidden] { display: none; }
+.registration-panel .registration-panel-contact { padding-top: 24px; margin-top: 26px; border-top: 1px solid var(--line); }
+.registration-panel-contact span, .registration-panel-contact a { display: block; }
+.registration-panel-contact a { margin-top: 3px; color: var(--fg); overflow-wrap: anywhere; }
+.registration-opening { border-block: 1px solid var(--line); padding: 32px 0; }
+.registration-opening .eyebrow { font-size: 11px; }
+.registration-opening h2 { margin: 12px 0 8px; font: 500 clamp(22px, 3vw, 32px)/1.25 var(--font-display); letter-spacing: -.02em; }
+.registration-opening p { color: var(--muted); font-size: 14px; }
+.registration-information .card p { font-size: 15px; line-height: 1.85; }
+.registration-text-link { display: inline-block; margin-top: 20px; font-size: 13px; color: var(--accent); }
+@media (max-width: 760px) {
+  .registration-layout { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .registration-banner { grid-template-columns: minmax(0, 1fr); }
+  .registration-qr { justify-self: start; }
+  .registration-qr img { width: 200px; height: 200px; }
+  .registration-lede { max-width: none; }
+  .registration-back { margin-bottom: 26px; }
+}
+@media (max-width: 480px) {
+  .topbar .nav { gap: 10px; }
+  .registration-nav { font-size: 11px; padding-inline: 10px; }
+  .registration-banner .cta-row .btn { width: 100%; justify-content: center; }
+}
+
 /* reveal */
 /* reveal: content is visible by default; .pre (added by script only while the page is actually playing) hides it until scrolled in */
 .reveal { transition: opacity 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1), filter 1.1s cubic-bezier(.22,1,.36,1); }

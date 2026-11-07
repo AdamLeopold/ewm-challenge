@@ -63,6 +63,25 @@
     });
   }
 
+  function renderRegistration() {
+    // Only enable collection after the response link has been configured.
+    var url = C.registrationFormUrl || "";
+    var ready = /^https:\/\/(?:forms\.office\.com|forms\.microsoft\.com|forms\.cloud\.microsoft)\//i.test(url);
+    document.querySelectorAll("[data-registration-link]").forEach(function (a) {
+      if (ready) {
+        a.href = url;
+        a.removeAttribute("aria-disabled");
+        a.removeAttribute("tabindex");
+      } else {
+        a.removeAttribute("href");
+        a.setAttribute("aria-disabled", "true");
+        a.setAttribute("tabindex", "-1");
+      }
+    });
+    document.querySelectorAll("[data-registration-ready]").forEach(function (el) { el.hidden = !ready; });
+    document.querySelectorAll("[data-registration-pending]").forEach(function (el) { el.hidden = ready; });
+  }
+
   // The next published milestone for the track cards on the home page.
   function renderNext(el) {
     var now = Date.now(), it = C[el.dataset.next].timeline.find(function (x) { return new Date(x.end || x.date).getTime() >= now; });
@@ -76,6 +95,7 @@
     document.querySelectorAll("[data-timeline]").forEach(renderTimeline);
     document.querySelectorAll("[data-countdown]").forEach(renderCountdown);
     renderLinks();
+    renderRegistration();
   }
   document.addEventListener("sw:lang", all);
   window.SW_refresh = all;   // re-render dynamic bits (e.g. after rails clone their cards)

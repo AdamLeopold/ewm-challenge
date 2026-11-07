@@ -2,8 +2,9 @@
    Dates are ISO strings in UTC. `label` overrides the printed date (e.g. "10 月底").
    Edit here; pages render timelines and countdowns from this file. */
 window.SW_CONFIG = {
-  contactEmail: "",      // official address; empty = "coming soon"
-  registerUrl: "",      // empty = button shows "即将开放 / Soon"
+  contactEmail: "YLU063@e.ntu.edu.sg",
+  registerUrl: "register.html", // stable public entry shared by all QR codes
+  registrationFormUrl: "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=SJPOFSq-K0aPwOF2WpsgSh36z_V7kpxKobXwnxZyIJ9UNTZCWUhGU0VMTU0yMFZMTE5HRjZCR0NRQi4u",
   rulesUrl: "",
   starterKitUrl: "",
 
