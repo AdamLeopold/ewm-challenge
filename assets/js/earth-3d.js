@@ -1,5 +1,7 @@
 import * as THREE from "three";
-import { createEarthActors } from "./earth-3d-actors.js?v=3";
+import { createEarthActors } from "./earth-3d-actors.js?v=4";
+import { createEarthFlights } from "./earth-3d-flights.js?v=1";
+import { createEarthCruises } from "./earth-3d-cruises.js?v=1";
 import { createEarthClouds } from "./earth-3d-clouds.js?v=3";
 import { createEarthTerrain } from "./earth-terrain.js?v=4";
 
@@ -117,6 +119,8 @@ async function mount() {
   globe.add(terrain.mesh);
   const clouds = createEarthClouds({ parent: globe, sunlight: SUN_DIRECTION, moonlight: BLUE_BACKLIGHT });
   const actors = await createEarthActors({ parent: globe, surfaceRadius: terrain.surfaceRadius, assetRoot });
+  const flights = createEarthFlights({ parent: globe, surfaceRadius: terrain.surfaceRadius });
+  const cruises = createEarthCruises({ parent: globe });
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   let elapsed = 0;
   let lastTime;
@@ -129,6 +133,8 @@ async function mount() {
     globe.rotation.y = START_YAW + (seconds % ROTATION_PERIOD) * 2 * Math.PI / ROTATION_PERIOD;
     clouds.update(seconds);
     actors.update(seconds);
+    flights.update(seconds);
+    cruises.update(seconds);
     terrain.updateLighting(clouds.shadowCenters);
     renderer.render(scene, camera);
   }
@@ -175,6 +181,8 @@ async function mount() {
         tilt: Math.atan2(axis.x, axis.y) / RADIANS,
         actors: actors.actorCount,
         travelers: actors.travelerCount,
+        flights: flights.flightCount,
+        cruises: cruises.cruiseCount,
         clouds: clouds.cloudCount,
         terrain: terrain.surfaceRadius(27.99, 86.92) - 1,
         terrainShadowMap: Boolean(key.shadow.map),

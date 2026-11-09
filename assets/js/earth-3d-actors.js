@@ -334,18 +334,31 @@ export async function createEarthActors({ parent, surfaceRadius, assetRoot }) {
     anchor.add(orientation);
     actors.add(anchor);
     const shadow = makeContactShadow(shadows, footprint * 1.32, shadowMaterial);
-    let mixer;
+    let mixer, waveArm, waveRest;
     if (person) {
       mixer = new THREE.AnimationMixer(model);
-      mixer.clipAction(THREE.AnimationClip.findByName(people[kind].animations, 'walk')).play();
+      // Endpoint residents stay planted; only the traveling figures use a walk cycle.
+      const idle = THREE.AnimationClip.findByName(people[kind].animations, 'idle').clone();
+      // The wave owns this arm completely, including repeated rendering of a paused frame.
+      idle.tracks = idle.tracks.filter(track => !track.name.startsWith('arm-right.'));
+      mixer.clipAction(idle).play();
+      waveArm = model.getObjectByName('arm-right');
+      waveRest = waveArm?.quaternion.clone();
+      orientation.rotation.y = -0.45 + (index % 3) * 0.3;
     } else {
       orientation.rotation.y = -0.55 + (index % 3) * 0.23;
     }
     return {
-      name, anchor, orientation, shadow, mixer, waypoints, height,
+      name, anchor, orientation, shadow, mixer, waveArm, waveRest, waypoints, height,
       period: person ? 21 + (index % 5) * 1.8 : 36 + (index % 4) * 4,
       phase: wrap(index * 0.271), radial: new THREE.Vector3(), radius: 1,
     };
+  });
+  nodes.forEach(node => {
+    if (!node.mixer) return;
+    // Preserve the original starting location so the network keeps its composition.
+    node.fixedCoordinates = new THREE.Vector2();
+    positionOnRoute(node, 0, node.fixedCoordinates);
   });
   const byName = Object.fromEntries(nodes.map(node => [node.name, node]));
   const linkMaterials = LINK_COLORS.map(color => new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.49, depthWrite: false, side: THREE.DoubleSide }));
@@ -358,13 +371,16 @@ export async function createEarthActors({ parent, surfaceRadius, assetRoot }) {
 
   const coords = new THREE.Vector2();
   const east = new THREE.Vector3(), south = new THREE.Vector3();
-  const previous = new THREE.Vector3(), next = new THREE.Vector3(), heading = new THREE.Vector3();
+  const previous = new THREE.Vector3(), heading = new THREE.Vector3();
   const scratch = new THREE.Vector3();
   const matrix = new THREE.Matrix4();
+  const waveAngles = new THREE.Euler(0, 0, 0, 'ZXY');
+  const waveRotation = new THREE.Quaternion();
 
   function update(seconds) {
     nodes.forEach((node, index) => {
-      positionOnRoute(node, seconds, coords);
+      if (node.fixedCoordinates) coords.copy(node.fixedCoordinates);
+      else positionOnRoute(node, seconds, coords);
       const latitude = coords.x;
       const longitude = coords.y;
       node.anchor.userData.latitude = latitude;
@@ -377,13 +393,11 @@ export async function createEarthActors({ parent, surfaceRadius, assetRoot }) {
       node.anchor.quaternion.setFromRotationMatrix(matrix.makeBasis(east, node.radial, south));
       conformContactShadow(node.shadow, node.radial, east, south, surfaceRadius, scratch);
       if (node.mixer) {
-        positionOnRoute(node, seconds - 0.35, coords);
-        direction(coords.x, coords.y, previous);
-        positionOnRoute(node, seconds + 0.35, coords);
-        direction(coords.x, coords.y, next);
-        heading.subVectors(next, previous);
-        if (heading.lengthSq() > 1e-10) node.orientation.rotation.y = Math.atan2(heading.dot(east), heading.dot(south));
         node.mixer.setTime(seconds * 0.84 + index * 0.317);
+        if (node.waveArm) {
+          waveAngles.set(-0.3, 0, -(1.35 + Math.sin(seconds * 4.2 + index * 0.83) * 0.24));
+          node.waveArm.quaternion.copy(node.waveRest).premultiply(waveRotation.setFromEuler(waveAngles));
+        }
       }
     });
     links.forEach(link => updateLink(link, heading, east, south, scratch));
