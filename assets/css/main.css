@@ -238,6 +238,11 @@ img, video, canvas, iframe { display: block; max-width: 100%; }
 section.block[id] { scroll-margin-top: 72px; }
 .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); display: inline-block; line-height: 1.8; }
 .eyebrow::before { content: ""; display: inline-block; vertical-align: middle; width: 26px; height: 1px; margin-right: 10px; background: var(--accent); }
+@media (max-width: 360px) {
+  .hero-initiative { display: inline-flex; align-items: center; max-width: 100%; }
+  .hero-initiative::before { flex: 0 0 26px; }
+  .hero-initiative .ph { white-space: normal; text-wrap-mode: wrap; }
+}
 .hero h1 {
   margin-top: 22px; font-family: var(--font-display); font-weight: 700; letter-spacing: -.04em; line-height: .98;
   font-size: clamp(44px, 8vw, 116px); max-width: 14ch;
