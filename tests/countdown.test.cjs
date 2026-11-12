@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const root = path.join(__dirname, '..');
-const opening = Date.parse('2026-11-18T00:00:00Z');
+const opening = Date.parse('2026-12-01T00:00:00Z');   // any moment: the opening is published as a month, not a time
 const worlds = ['holobit', 'city'];
 
 function setup(now, lang = 'en', world = 'holobit') {
@@ -27,56 +27,45 @@ function setup(now, lang = 'en', world = 'holobit') {
     setLanguage: value => { language = value; context.window.SW_refresh(); } };
 }
 
-test('both platforms count to 18 November, including the final second', () => {
+test('both platforms show the opening month and run no clock', () => {
   for (const world of worlds) {
-    const run = setup(opening - 1000, 'en', world);
-    assert.equal(run.config[world].countdown.date, '2026-11-18T00:00:00Z');
-    assert.match(run.countdown.innerHTML, /Until Track opening/);
-    assert.match(run.countdown.innerHTML, /<b>01<\/b><i>SEC/);
-    assert.match(run.countdown.innerHTML, /18 Nov, 08:00 HKT\/SGT · 00:00 UTC/);
-    assert.equal(run.intervals.size, 1);
-    run.advance(opening);
-    assert.match(run.countdown.innerHTML, /Track open/);
-    assert.doesNotMatch(run.countdown.innerHTML, /Until|DAYS|HRS|MIN|SEC/);
-    assert.equal(run.intervals.size, 0);
-  }
-});
-
-test('after opening neither platform moves its countdown to a later milestone', () => {
-  for (const world of worlds) {
-    for (const now of [opening, opening + 86400000, Date.parse('2026-11-20T00:00:00Z')]) {
+    for (const now of [opening - 86400000, opening, opening + 20 * 86400000]) {
       const run = setup(now, 'en', world);
-      run.config[world].timeline.push({ date: '2026-11-25T00:00:00Z', zh: '后续节点', en: 'Later milestone' });
-      run.refresh();
+      assert.equal(run.config[world].countdown.date, undefined);
       assert.equal(run.countdown.hidden, false);
-      assert.match(run.countdown.innerHTML, /Track open/);
-      assert.doesNotMatch(run.countdown.innerHTML, /Later milestone/);
+      assert.match(run.countdown.innerHTML, /Track opening/);
+      assert.match(run.countdown.innerHTML, /December 2026/);
+      assert.doesNotMatch(run.countdown.innerHTML, /Until|DAYS|HRS|MIN|SEC|18 Nov/);
       assert.equal(run.intervals.size, 0);
     }
   }
 });
 
-test('language changes preserve the target and one timer for each platform', () => {
+test('the timeline prints the month, not a day', () => {
   for (const world of worlds) {
-    const run = setup(opening - 86400000, 'zh', world);
-    run.refresh(); run.refresh();
-    assert.equal(run.intervals.size, 1);
-    assert.match(run.countdown.innerHTML, /赛道开启/);
-    assert.match(run.countdown.innerHTML, /11\/18 08:00 HKT\/SGT/);
-    assert.match(run.countdown.innerHTML, /<b>01<\/b><i>天/);
-    run.setLanguage('en');
-    assert.equal(run.intervals.size, 1);
-    assert.match(run.countdown.innerHTML, /Until Track opening/);
-    assert.match(run.countdown.innerHTML, /<b>01<\/b><i>DAYS/);
-    run.advance(opening);
-    run.setLanguage('zh');
-    assert.match(run.countdown.innerHTML, /赛道已开启/);
-    assert.equal(run.intervals.size, 0);
-    assert.equal(run.config[world].countdown.date, '2026-11-18T00:00:00Z');
+    const run = setup(opening - 86400000, 'en', world);
+    const first = run.config[world].timeline[0];
+    assert.deepEqual({ ...first.label }, { zh: '2026 年 12 月', en: 'Dec 2026' });
+    assert.match(first.den, /December 2026/);
+    assert.doesNotMatch(first.den + first.dzh, /18 November|11 月 18 日/);
   }
 });
 
-test('countdown output is identical across visitor time zones', () => {
+test('language changes switch the label and still start no clock', () => {
+  for (const world of worlds) {
+    const run = setup(opening - 86400000, 'zh', world);
+    run.refresh(); run.refresh();
+    assert.equal(run.intervals.size, 0);
+    assert.match(run.countdown.innerHTML, /赛道开启/);
+    assert.match(run.countdown.innerHTML, /2026 年 12 月/);
+    run.setLanguage('en');
+    assert.equal(run.intervals.size, 0);
+    assert.match(run.countdown.innerHTML, /Track opening/);
+    assert.match(run.countdown.innerHTML, /December 2026/);
+  }
+});
+
+test('output is identical across visitor time zones', () => {
   const original = process.env.TZ;
   try {
     for (const world of worlds) {

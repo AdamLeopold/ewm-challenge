@@ -31,6 +31,11 @@
     clearInterval(el._iv);
     if (!next) { el.hidden = true; return; }
     el.hidden = false;
+    if (!next.date) {          // opening published as a month only: show it, with no clock to run
+      var month = next.label || {};
+      el.innerHTML = '<span class="lbl">' + t(next.zh, next.en) + '</span><span class="u" style="white-space:nowrap"><b>' + t(month.zh, month.en) + "</b></span>";
+      return;
+    }
     var target = new Date(next.date).getTime();
     function tick() {
       var s = Math.max(0, Math.ceil((target - Date.now()) / 1000));
