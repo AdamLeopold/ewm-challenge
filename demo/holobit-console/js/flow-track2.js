@@ -16,13 +16,13 @@ function cellsFor(k, profile, half) {
 }
 const gridHTML = (cells, held) => `<div class="g13">${EFAM.map((f, i) => `<div class="gr"><small>${held && f.id[0] === 'H' ? '??' : f.id}</small>${cells[i].map((c, j) => `<i data-c="${i}-${j}"></i>`).join('')}</div>`).join('')}</div>`;
 async function fillGrid(root, cells, onTick) {
-  const tok = RUN, order = cells.flatMap((row, i) => row.map((c, j) => [i, j])), r = rng(9); order.sort(() => r() - .5);
+  const order = cells.flatMap((row, i) => row.map((c, j) => [i, j])), r = rng(9); order.sort(() => r() - .5);
   let n = 0;
   for (const [i, j] of order) {
     const c = cells[i][j], el = $(`[data-c="${i}-${j}"]`, root);
     el.className = c.st === 'ok' ? (c.s >= 0 ? 'up' : 'dn') : c.st; el.style.setProperty('--a', clamp(.25 + Math.abs(c.s) * .5, .25, 1));
     n++; onTick && onTick(n, order.length);
-    if (!UI.fast) { await wait(UI.auto ? 28 : 55); guard(tok); }
+    await pace(55);
   }
 }
 const hScore = cells => cells.reduce((s, row) => s + row.reduce((a, c) => a + c.s, 0) / row.length, 0) / cells.length;
@@ -30,46 +30,65 @@ const hScore = cells => cells.reduce((s, row) => s + row.reduce((a, c) => a + c.
 Object.assign(TRK, {
   /* 09 ─────────────────────────────────────────── */
   async submit(k) {
-    const t = S[k], a = S.acct, one = k === 't1';
+    const t = S[k], a = S.acct, one = k === 't1', lim = one ? [2, 4, 10] : [4, 8, 20];
     UI.idle(['Practise', '练习'], T('Submission', '提交'));
-    await say(T('Package the agent as an OCI image for <code>linux/amd64</code>, 4 GB at most. Send its digest in a manifest, signed with the team key.', '把 Agent 打包成 <code>linux/amd64</code> 的 OCI 镜像，不超过 4 GB。把镜像摘要写进清单，用队伍钥匙签名。'));
-    const ver = t.versions.length + 1, digest = 'sha256:' + hx(a.team + k + ver + Math.random(), 64);
-    const f = t.form || {
-      ref: `ghcr.io/${slug(a.team)}/${one ? 'strategy' : 'steward'}:0.${ver}.0`, size: 1.8, signer: 'team',
-      manifest: JSON.stringify({ team_id: slug(a.team), track: one ? 1 : 2, image_digest: digest, model: a.llm && !a.llm.none ? { snapshot: a.llm.snap, temperature: 0 } : null, events: one ? ['price_move', 'health_low', 'out_of_range', 'message'] : ['utilisation_high', 'oracle_move', 'liquidations', 'bad_debt', 'message'], resources: one ? { cpu: 2, memory_gib: 4, disk_gib: 10 } : { cpu: 4, memory_gib: 8, disk_gib: 20 } }, null, 2),
-    };
+    await say(T('A version is an OCI image for <code>linux/amd64</code>, 4 GB at most, pinned by digest in a manifest and signed with your key. Where does this one come from?', '一个版本就是一个 <code>linux/amd64</code> 的 OCI 镜像，不超过 4 GB；镜像摘要写进清单，并用你的钥匙签名。这一版从哪里来？'));
+    const ver = t.versions.length + 1, name = one ? 'strategy' : 'steward';
+    const manifest = digest => ({ team_id: slug(a.team), track: one ? 1 : 2, image_digest: digest, model: a.llm && !a.llm.none ? { snapshot: a.llm.snap, temperature: 0 } : null, events: one ? ['price_move', 'health_low', 'out_of_range', 'message'] : ['utilisation_high', 'oracle_move', 'liquidations', 'bad_debt', 'message'], resources: one ? { cpu: 2, memory_gib: 4, disk_gib: 10 } : { cpu: 4, memory_gib: 8, disk_gib: 20 } });
+    const signed = [T(`Manifest written · signed with <code>SHA256:${a.key.fp.slice(0, 12)}…</code>`, `清单已生成 · 已用 <code>SHA256:${a.key.fp.slice(0, 12)}…</code> 签名`), '', 380];
     for (;;) {
-      const id = uid();
-      const v = await card(`<header><h4>${T('Submission', '提交')}<small>v${ver}</small></h4></header>
-        <div class="grid2">${fld(T('Image', '镜像'), `<input id="${id}i" class="mono" value="${esc(f.ref)}">`)}
-        ${fld(T('Size', '大小'), `<div class="unit"><input id="${id}s" type="number" min="0.1" max="12" step="0.1" value="${f.size}"><em>GB</em></div>`)}</div>
-        ${fld('manifest.json', `<textarea id="${id}m" class="mono code" rows="11" spellcheck="false">${esc(f.manifest)}</textarea>`)}
-        ${fld(T('Sign with', '签名钥匙'), `<select id="${id}k"><option value="team">${L('Team key', '队伍钥匙')} · SHA256:${a.key.fp.slice(0, 12)}…</option><option value="other">${L('A different key', '另一把钥匙')} · SHA256:${btoa(hx('other', 12))}…</option></select>`)}
-        <footer><button class="btn solid" data-x="go">${T('Sign and submit', '签名并提交')}</button></footer>`, (c, done) => {
-        const go = () => done({ ref: $(`#${id}i`, c).value.trim(), size: +$(`#${id}s`, c).value, manifest: $(`#${id}m`, c).value, signer: $(`#${id}k`, c).value });
-        $('[data-x=go]', c).onclick = go;
-        return () => { $(`#${id}s`, c).value = Math.min(+$(`#${id}s`, c).value || 1.8, 3.9); $(`#${id}k`, c).value = 'team'; try { JSON.parse($(`#${id}m`, c).value); } catch (e) { $(`#${id}m`, c).value = f.manifest; } go(); };
-      });
-      Object.assign(f, v); t.form = f;
-      let m = null, bad = null, lim = one ? [2, 4, 10] : [4, 8, 20];
-      try { m = JSON.parse(v.manifest); } catch (e) { bad = ['M-01 · the manifest is not valid JSON', 'M-01 · 清单不是合法的 JSON']; }
-      if (m) bad = !m.team_id || !m.image_digest || !m.resources || !Array.isArray(m.events) ? ['M-02 · team_id, track, image_digest, events and resources are required', 'M-02 · 必须有 team_id、track、image_digest、events 与 resources']
-        : m.track !== (one ? 1 : 2) ? [`M-03 · this is Track ${one ? 1 : 2}; the manifest says track ${esc(m.track)}`, `M-03 · 这里是赛道 ${one ? 1 : 2}，清单写的是 ${esc(m.track)}`]
-          : !/^sha256:[0-9a-f]{64}$/.test(m.image_digest) ? ['M-04 · image_digest must be an immutable sha256 digest, not a tag', 'M-04 · image_digest 必须是不可变的 sha256 摘要，不能是标签']
-            : m.resources.cpu > lim[0] || m.resources.memory_gib > lim[1] || m.resources.disk_gib > lim[2] ? [`M-05 · resources exceed ${lim[0]} vCPU · ${lim[1]} GiB · ${lim[2]} GiB`, `M-05 · 资源请求超过 ${lim[0]} vCPU · ${lim[1]} GiB · ${lim[2]} GiB`] : null;
+      const src = await choose([O('here', 'My workspace', '我的工作区'), O('github', 'GitHub', 'GitHub'), O('upload', 'Upload an image', '上传镜像'), O('digest', 'An image digest', '镜像摘要')], { def: 'here' });
+      let v = null, bad = null;                                  // v: { ref, size (GB), digest, signer, m (manifest object) }
+      if (src === 'here') {
+        const digest = 'sha256:' + hx(a.team + k + ver + JSON.stringify(knobs(k)), 64), ext = t.kit === 'typescript' ? 'ts' : 'py';
+        await term([[T(`Building <code>agent.${ext}</code> for linux/amd64`, `为 linux/amd64 构建 <code>agent.${ext}</code>`), '', 520], [T('Image 1.2 GB · pushed to the registry', '镜像 1.2 GB · 已推送到镜像仓库'), '', 420], signed]);
+        v = { ref: `registry.holobit.xyz/${slug(a.team)}/${name}:0.${ver}.0`, size: 1.2, digest, signer: 'team', m: manifest(digest) };
+      } else if (src === 'github') {
+        const g = await Agent.github(k); if (!g) continue;
+        const digest = 'sha256:' + hx(g.repo + g.sha + k, 64);
+        await term([[T(`Cloned <code>${esc(g.repo)}</code> @ <code>${g.sha.slice(0, 7)}</code> · ${esc(g.branch)}`, `已克隆 <code>${esc(g.repo)}</code> @ <code>${g.sha.slice(0, 7)}</code> · ${esc(g.branch)}`), '', 480], [T('Built from the Dockerfile for linux/amd64 · 1.6 GB', '按 Dockerfile 为 linux/amd64 构建 · 1.6 GB'), '', 520], signed]);
+        v = { ref: `ghcr.io/${g.repo}:${g.sha.slice(0, 7)}`, size: 1.6, digest, signer: 'team', m: manifest(digest) };
+      } else if (src === 'upload') {
+        const f = await Agent.upload(k); if (!f) continue;
+        v = { ref: f.name, size: +(f.size / 1e9).toFixed(2), digest: 'sha256:' + f.sha, signer: 'team', m: manifest('sha256:' + f.sha) };
+        if (v.size <= 4) await term([[T(`Received <code>${esc(f.name)}</code> · ${bytes(f.size)}`, `已收到 <code>${esc(f.name)}</code> · ${bytes(f.size)}`), '', 380], signed]);
+      } else {
+        const digest = 'sha256:' + hx(a.team + k + ver + 'd', 64), id = uid();
+        const f = t.form || { ref: `ghcr.io/${slug(a.team)}/${name}:0.${ver}.0`, size: 1.8, signer: 'team', manifest: JSON.stringify(manifest(digest), null, 2) };
+        const r = await card(`<header><h4>${T('Submit by digest', '按摘要提交')}<small>v${ver}</small></h4></header>
+          <div class="grid2">${fld(T('Image', '镜像'), `<input id="${id}i" class="mono" value="${esc(f.ref)}">`)}
+          ${fld(T('Size', '大小'), `<div class="unit"><input id="${id}s" type="number" min="0.1" max="12" step="0.1" value="${f.size}"><em>GB</em></div>`)}</div>
+          ${fld('manifest.json', `<textarea id="${id}m" class="mono code" rows="11" spellcheck="false">${esc(f.manifest)}</textarea>`)}
+          ${fld(T('Sign with', '签名钥匙'), `<select id="${id}k"><option value="team">${L('Signing key', '签名钥匙')} · SHA256:${a.key.fp.slice(0, 12)}…</option><option value="other">${L('A different key', '另一把钥匙')} · SHA256:${btoa(hx('other', 12))}…</option></select>`)}
+          <footer><button class="btn link" data-x="no">${T('Choose another way', '换一种方式')}</button><button class="btn solid" data-x="go">${T('Sign and submit', '签名并提交')}</button></footer>`, (c, done) => {
+          const go = () => done({ ref: $(`#${id}i`, c).value.trim(), size: +$(`#${id}s`, c).value, manifest: $(`#${id}m`, c).value, signer: $(`#${id}k`, c).value });
+          $('[data-x=go]', c).onclick = go; $('[data-x=no]', c).onclick = () => done(null);
+          return () => { $(`#${id}s`, c).value = Math.min(+$(`#${id}s`, c).value || 1.8, 3.9); $(`#${id}k`, c).value = 'team'; try { JSON.parse($(`#${id}m`, c).value); } catch (e) { $(`#${id}m`, c).value = f.manifest; } go(); };
+        });
+        if (!r) continue;
+        Object.assign(f, r); t.form = f; v = { ref: r.ref, size: r.size, signer: r.signer, m: null };
+        try { v.m = JSON.parse(r.manifest); } catch (e) { bad = ['M-01 · the manifest is not valid JSON', 'M-01 · 清单不是合法的 JSON']; }
+        const m = v.m;
+        if (m) bad = !m.team_id || !m.image_digest || !m.resources || !Array.isArray(m.events) ? ['M-02 · team_id, track, image_digest, events and resources are required', 'M-02 · 必须有 team_id、track、image_digest、events 与 resources']
+          : m.track !== (one ? 1 : 2) ? [`M-03 · this is Track ${one ? 1 : 2}; the manifest says track ${esc(m.track)}`, `M-03 · 这里是赛道 ${one ? 1 : 2}，清单写的是 ${esc(m.track)}`]
+            : !/^sha256:[0-9a-f]{64}$/.test(m.image_digest) ? ['M-04 · image_digest must be an immutable sha256 digest, not a tag', 'M-04 · image_digest 必须是不可变的 sha256 摘要，不能是标签']
+              : m.resources.cpu > lim[0] || m.resources.memory_gib > lim[1] || m.resources.disk_gib > lim[2] ? [`M-05 · resources exceed ${lim[0]} vCPU · ${lim[1]} GiB · ${lim[2]} GiB`, `M-05 · 资源请求超过 ${lim[0]} vCPU · ${lim[1]} GiB · ${lim[2]} GiB`] : null;
+        if (m && !bad) v.digest = m.image_digest;
+      }
+      if (t.agent) t.agent.src = src === 'digest' ? 'cli' : src;
       let why = bad ? 'manifest' : v.size > 4 ? 'large' : v.signer !== 'team' ? 'signature' : null;
-      if (!why) { await term([['verifying signature …  ok', 'dim'], ['pulling image by digest …  ok', 'dim', 300], ['scanning layers for credentials …', 'dim', 420]]); why = await fork('check', ['What does the scan find?', '扫描发现了什么？'], { only: ['accepted', 'secret'], def: 'accepted' }); }
+      if (!why) { await term([[T('Signature verified', '签名核对无误'), '', 300], [T('Image pulled by digest', '已按摘要拉取镜像'), '', 300], [T('Layers scanned for credentials', '逐层扫描凭据'), '', 420]]); why = await fork('check', ['What does the scan find?', '扫描发现了什么？'], { only: ['accepted', 'secret'], def: 'accepted' }); }
       else mark(k, 'check', why);
-      if (why === 'accepted') { t.versions.push({ digest: m.image_digest, ref: v.ref, v: ver }); t.form = null; break; }
-      const msg = { manifest: bad, large: [`I-01 · image is ${v.size} GB; the limit is 4 GB`, `I-01 · 镜像 ${v.size} GB，上限 4 GB`], signature: ['S-01 · the signature doesn’t verify against the registered team key', 'S-01 · 签名与登记的队伍钥匙对不上'], secret: ['I-03 · a layer contains what looks like an API key (/app/.env)', 'I-03 · 某一层里有疑似 API 密钥（/app/.env）'] }[why];
+      if (why === 'accepted') { t.versions.push({ digest: v.digest, ref: v.ref, v: ver, src }); t.form = null; break; }
+      const msg = { manifest: bad, large: [`I-01 · image is ${v.size} GB; the limit is 4 GB`, `I-01 · 镜像 ${v.size} GB，上限 4 GB`], signature: ['S-01 · the signature doesn’t verify against the registered signing key', 'S-01 · 签名与登记的签名钥匙对不上'], secret: ['I-03 · a layer contains what looks like an API key (/app/.env)', 'I-03 · 某一层里有疑似 API 密钥（/app/.env）'] }[why];
       await say(`${pill(T('rejected', '被拒'), 'warn')} ${TA(msg)}`, { cls: 'warn' });
       if (why === 'secret') await say(T('Keys never go in the image. The gateway injects yours at run time. Rebuild without the file, and rotate that key.', '密钥不能进镜像，网关在运行时注入。去掉那个文件重新构建，并更换那把密钥。'));
       mail('E10', ['Submission rejected', '提交未通过'], msg);
-      await choose([O('fix', 'Fix and resubmit', '改好重交')]);
+      await say(T('Fix it and send it again.', '改好之后重新提交。'));
     }
     const v = t.versions[t.versions.length - 1];
-    await say(receipt(T('Submission accepted', '提交通过'), [[T('Image', '镜像'), `<code>${esc(v.ref)}</code>`], [T('Signed by', '签名'), `<code>SHA256:${a.key.fp.slice(0, 16)}…</code>`]], v.digest.slice(7)), { cls: 'wide' });
-    UI.team();
+    await say(receipt(T('Submission accepted', '提交通过'), [[T('Version', '版本'), `v${v.v}`], [T('Image', '镜像'), `<code>${esc(v.ref)}</code>`], [T('Signed by', '签名'), `<code>SHA256:${a.key.fp.slice(0, 16)}…</code>`]], v.digest.slice(7)), { cls: 'wide' });
+    UI.team(); Agent.paint(k);
   },
 
   /* 10 ─────────────────────────────────────────── */
@@ -79,7 +98,7 @@ Object.assign(TRK, {
     await say(T('A hosted run is the real thing in miniature: your container, a fixed clock, no internet. It can reach two addresses only, the context API and the model gateway.', '托管试跑就是正式评测的缩小版：你的容器、固定的时钟、没有外网，只通两个地址：上下文 API 与大模型网关。'));
     for (;;) {
       await choose([O('go', 'Start a hosted run', '开始托管试跑')]);
-      await term([['sandbox up · read-only root · egress: context-api, llm-gateway', 'dim'], [`unit ${one ? 'F3' : 'F4'}/practice-07 · 7 simulated days · ${N} decisions`, 'dim', 300], ['running ▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮', 'acc', 700]]);
+      await term([[T('Container up · read-only root · reaches the context API and the model gateway only', '容器已启动 · 只读根文件系统 · 只通上下文 API 与大模型网关'), '', 420], [T(`Unit ${one ? 'F3' : 'F4'}/practice-07 · 7 simulated days · ${N} decisions`, `单元 ${one ? 'F3' : 'F4'}/practice-07 · 7 个模拟日 · ${N} 次决定`), '', 420], [T('Running', '运行中'), '', 900]]);
       const r = await fork('run', ['How does the run go?', '这次运行怎么样？'], { only: a.llm && !a.llm.none ? ['completed', 'timeout', 'crash', 'refused'] : ['completed', 'timeout', 'crash'], def: 'completed' });
       if (r === 'completed') break;
       const miss = Math.ceil(N * .07);
@@ -91,9 +110,9 @@ Object.assign(TRK, {
       if (r === 'refused') mail('E9', ['Provider refused your calls', '服务方拒绝了调用'], ['429 · paused 10 min · raise your quota before the warm-up.', '429 · 暂停 10 分钟 · 请在热身轮前提高额度。']);
       await say(T('Fix it and run again.', '改好再跑一次。'));
     }
-    const mine = t.loop ? t.loop.best : 40, rows = [['A', 'Team ▒▒▒▒▒▒'], ['A', 'Team ▒▒▒▒'], ['B', a.team, mine], ['B', 'Team ▒▒▒▒▒▒▒'], ['B', one ? 'Baseline · wide-range LP' : 'Baseline · rule-based steward', 0, 1], ['C', 'Team ▒▒▒'], ['C', one ? 'Baseline · Aave only' : 'Baseline · unchanged', 0, 1], ['D', 'Team ▒▒▒▒▒']];
-    t.trial = { ok: true };
-    await say(T(`Completed. ${N} of ${N} decisions valid and on time${a.llm && !a.llm.none ? `, $${nf(N * .0019, 2)} of model spend` : ''}.`, `跑完了。${N} 次决定全部有效且按时${a.llm && !a.llm.none ? `，模型花费 $${nf(N * .0019, 2)}` : ''}。`));
+    const hosted = runUnit(k, one ? 'F3' : 'F4', seedOf(a.team + k + 'practice-07')).sc, mine = Math.round(hosted.S), rows = [['A', 'Team ▒▒▒▒▒▒'], ['A', 'Team ▒▒▒▒'], ['B', a.team, mine], ['B', 'Team ▒▒▒▒▒▒▒'], ['B', one ? 'Baseline · wide-range LP' : 'Baseline · rule-based steward', 0, 1], ['C', 'Team ▒▒▒'], ['C', one ? 'Baseline · Aave only' : 'Baseline · unchanged', 0, 1], ['D', 'Team ▒▒▒▒▒']];
+    t.trial = { ok: true, S: mine };
+    await say(T(`Completed. ${N} of ${N} decisions valid and on time${a.llm && !a.llm.none ? `, $${nf(N * .0019, 2)} of model spend` : ''}. Score <b>${bps(mine)}</b>${hosted.gate ? ', with a gate failure' : ''}.`, `跑完了。${N} 次决定全部有效且按时${a.llm && !a.llm.none ? `，模型花费 $${nf(N * .0019, 2)}` : ''}。得分 <b>${bps(mine)}</b>${hosted.gate ? '，但有一次门失败' : ''}。`));
     await card(`<header><h4>${T('Practice leaderboard', '练习排行榜')}</h4></header>
       <ol class="lb">${rows.map(r => `<li class="${r[1] === a.team ? 'me' : ''} ${r[3] ? 'base' : ''}"><i>${r[0]}</i><span>${r[3] ? T(r[1], r[1].replace('Baseline', '基准').replace('wide-range LP', '宽区间 LP').replace('rule-based steward', '规则蓝队').replace('Aave only', '只存 Aave').replace('unchanged', '参数不变')) : esc(r[1])}</span><b>${r[1] === a.team ? bps(r[2]) : ''}</b></li>`).join('')}</ol>`, null, { cls: 'lbc' });
     await say(T('You see your exact score. Other teams appear only as a band, a day late, so nobody can tune against the board.', '你看得到自己的精确分。别的队只显示所在的档，并延迟一天，这样谁也没法对着榜单调参。'));
@@ -133,7 +152,7 @@ Object.assign(TRK, {
         ok = await fork('elig', ['And the rerun?', '补跑的结果？']) === 'eligible';
         if (ok) { rows.forEach(x => x.st = 'ok'); await card(table(), null, { cls: 'wtc' }); } else why = ['the rerun didn’t complete either', '补跑仍然没有完成'];
       }
-      mail('E16', ['Warm-up results', '热身轮结果'], ['Per-family scores, gate readings and failure reasons are in your console.', '每族分、生存门读数与失败原因已在后台。']);
+      mail('E16', ['Warm-up results', '热身轮结果'], ['Per-family scores, gate readings and failure reasons are in your track.', '每族分、生存门读数与失败原因已在赛道对话里。']);
     }
     if (day !== 'agent') mark(k, 'elig', ok ? 'eligible' : 'ineligible');
     if (!ok) {
@@ -180,7 +199,7 @@ Object.assign(TRK, {
   async evaluate(k) {
     const t = S[k], a = S.acct, one = k === 't1', N = one ? 42 : 27;
     world({ phase: ['Evaluate', '评测'], sub: T('First half · hidden stress tests', '上半场 · 隐藏压力题'), viz: '', vitals: [], stress: .7 });
-    await term([[`beacon round #${nf(t.freeze.beacon)} → 0x${hx('b' + t.freeze.beacon, 24)}…`, 'dim'], ['seed = H(beacon ‖ commitment)', 'dim', 260], [`13 families × 3 units sealed · set ${short(hx('set' + t.freeze.beacon))}`, 'dim', 260], [`${N} agents · same units · same random numbers`, 'acc', 320]]);
+    await term([[T(`Beacon round #${nf(t.freeze.beacon)} drawn · <code>0x${hx('b' + t.freeze.beacon, 16)}…</code>`, `信标第 #${nf(t.freeze.beacon)} 轮已取 · <code>0x${hx('b' + t.freeze.beacon, 16)}…</code>`), '', 320], [T('Seed derived from the beacon and the published commitment', '由信标与已公布的承诺导出种子'), '', 300], [T(`13 families × 3 units sealed · set <code>${short(hx('set' + t.freeze.beacon))}</code>`, `13 族 × 3 单元已封存 · 题集 <code>${short(hx('set' + t.freeze.beacon))}</code>`), '', 300], [T(`${N} agents · same units · same random numbers`, `${N} 个 Agent · 同样的单元 · 同样的随机数`), 'acc', 360]]);
     const profile = await fork('profile', ['How does your agent hold up?', '你的 Agent 表现如何？'], { def: 'contender' });
     if (profile === 'cancelled') {
       await say(T('<b>Cancelled.</b> At decision 212 the container tried to open a connection outside its two allowed addresses (rule C-03). Its runs stay on the record without a rank.', '<b>取消。</b>在第 212 次决定时，容器试图连接两个允许地址以外的地址（规则 C-03）。它的运行照记，不列名次。'), { cls: 'bad' });
@@ -250,16 +269,13 @@ Object.assign(TRK, {
       ${kv([[T('Hidden stress · 80%', '隐藏压力题 · 80%'), `${sgn(Hh, 2)} <small>${T('worst', '最差')} F5</small>`], [T('Forward window · 20%', '前向段 · 20%'), sgn(e.F, 2)], one ? [T('Skill dᴇ · vs hold dʜ', '本事 dᴇ · 相对持有 dʜ'), `${bps(Hh * 40)} · ${bps(Hh * 40 + 22)}`] : [T('Worst family', '最差一族'), 'F5 · ' + sgn(Hh - .6, 2)], [T('Cells', '格'), `${f.finalist ? 78 : status === 'insufficient' ? 38 : 39} / ${f.finalist ? 78 : 39}`], [T('Gate failures · forced exits', '门失败 · 强制退出'), `${status === 'gate' ? 2 : 0} · ${one ? 1 : '—'}`], [T('Model', '模型'), a.llm && !a.llm.none ? `${esc(a.llm.snap)} · ${T('decisions agree', '决定一致率')} 94%` : '—']])}
       ${f.finalist ? `<div class="split">${parts.map(p => `<div><span>${T(p[0], p[1])}</span><i class="${p[2] < 0 ? 'neg' : ''}" style="--v:${Math.abs(p[2]) / mx * 100}%"></i><b>${sgn(p[2])}</b></div>`).join('')}</div>` : ''}`}
       <p class="fine">${T('This ranking holds only under this edition’s registered scenario families, forward window and budgets. It is not a prediction of real-money performance.', '这个名次只在本届登记的情景族、前向段与预算下成立；它不是对真钱表现的预测。')}${one && status !== 'cancelled' ? ' ' + T('S includes directional return; for skill, read dᴇ.', 'S 含方向收益；本事看 dᴇ。') : ''}</p>
-      <footer><code>${short(t.freeze.hash)}</code><span class="sp"></span><button class="btn" data-x="dl" data-keep>${T('Download result.json', '下载 result.json')}</button></footer>`, (c, done) => {
-      $('[data-x=dl]', c).onclick = () => { const u = URL.createObjectURL(new Blob([JSON.stringify(row, null, 2)], { type: 'application/json' })), l = document.createElement('a'); l.href = u; l.download = `result-${k}.json`; l.click(); setTimeout(() => URL.revokeObjectURL(u), 2000); };
-      done(); return null;
-    }, { cls: 'resultc' });
-    t.res = { status, rk, N };
+      <footer><code>${short(t.freeze.hash)}</code><span class="sp"></span><button class="btn" data-do="dl:${k}" data-keep>${T('Download result.json', '下载 result.json')}</button></footer>`, null, { cls: 'resultc' });
+    t.res = { status, rk, N, row };
     await say(T('The secret seeds, salts and scenario parameters are public now. Anyone can regenerate the units and recompute every score.', '秘密种子、盐与情景参数现在都公开了。任何人都能重新生成题目、重算每一个分数。'));
     const vr = await choose([O('v', 'Recompute my score', '重算我的分数'), O('s', 'Skip', '跳过')], { def: 'v' });
     let mismatch = false;
     if (vr === 'v') {
-      await term([['$ holobit-verify --team ' + slug(a.team) + ' --track ' + (one ? 1 : 2), 'cmd'], [`beacon  #${nf(t.freeze.beacon)}  ✓`, 'dim'], [`seed    ${short(hx('seed' + t.freeze.beacon), 10, 6)}  ✓ matches the commitment`, 'dim'], [`units   ${f.finalist ? 78 : 39} regenerated  ✓ set ${hx('set' + t.freeze.beacon, 12)}`, 'dim', 420], ['replay  decision records → state hashes  ✓', 'dim', 520], ['score   recomputing …', 'dim', 520]]);
+      await term([[T(`Beacon #${nf(t.freeze.beacon)} fetched`, `已取回信标 #${nf(t.freeze.beacon)}`), '', 300], [T(`Seed <code>${short(hx('seed' + t.freeze.beacon), 10, 6)}</code> matches the commitment`, `种子 <code>${short(hx('seed' + t.freeze.beacon), 10, 6)}</code> 与承诺相符`), '', 300], [T(`${f.finalist ? 78 : 39} units regenerated · set <code>${hx('set' + t.freeze.beacon, 12)}</code>`, `重新生成 ${f.finalist ? 78 : 39} 个单元 · 题集 <code>${hx('set' + t.freeze.beacon, 12)}</code>`), '', 480], [T('Decision records replayed to the same state hashes', '重放决策记录，状态哈希一致'), '', 560], [T('Score recomputed', '分数已重算'), '', 520]]);
       mismatch = await fork('recompute', ['Does it match the published score?', '与公布的分数一致吗？'], { def: 'match' }) === 'mismatch';
       await say(mismatch ? T(`Your recomputation gives <b>${sgn(Tt + .04, 2)}</b>. Published: <b>${sgn(Tt, 2)}</b>. That is grounds for an appeal.`, `你重算得到 <b>${sgn(Tt + .04, 2)}</b>，公布的是 <b>${sgn(Tt, 2)}</b>。这可以作为申诉的依据。`) : T('Identical, integer for integer.', '完全一致，逐个整数相同。'), { cls: mismatch ? 'warn' : '' });
     }
@@ -280,7 +296,7 @@ Object.assign(TRK, {
     UI.idle(['Close', '收尾'], '');
     if (win) {
       mail('E25', ['Award · pending confirmation', '获奖 · 待确认'], ['Confirmed after the appeal window. Identity documents are due through the restricted channel.', '申诉期结束后确认。身份材料请经受限通道提交。']);
-      await say(T('You’re in the <b>leading group</b>. The award is confirmed once the appeal window closes and your identity is verified. Documents go through a separate restricted channel, never through this console.', '你在<b>领先组</b>里。申诉期结束、身份核验通过后，奖项才最终确认。材料经另一条受限通道提交，不经过这个后台。'));
+      await say(T('You’re in the <b>leading group</b>. The award is confirmed once the appeal window closes and your identity is verified. Documents go through a separate restricted channel, never through this workspace.', '你在<b>领先组</b>里。申诉期结束、身份核验通过后，奖项才最终确认。材料经另一条受限通道提交，不经过这个工作台。'));
       for (;;) {
         await card(`<header><h4>${T('Verification', '身份核验')}</h4></header><div class="checks">${[['Government ID for each member', '每位成员的身份证件'], ['Sanctions screening consent', '制裁筛查同意书'], ['Payout details', '收款信息']].map(x => `<label class="ck"><input type="checkbox"><i></i><span>${T(x[0], x[1])}</span></label>`).join('')}</div><footer><button class="btn solid" data-x="go">${T('Sent through the restricted channel', '已经受限通道提交')}</button></footer>`, (c, done) => { const go = () => { $$('input', c).forEach(x => x.checked = true); done(); }; $('[data-x=go]', c).onclick = go; return go; });
         if (await fork('prize', ['The check comes back.', '核验的结论。'], { only: ['verified', 'mismatch'] }) === 'verified') break;
@@ -303,15 +319,14 @@ Object.assign(TRK, {
 
 /* ───────── endings + side flows ───────── */
 async function ending(k) {
-  const t = S[k], o = k === 't1' ? 't2' : 't1', c = coverage();
-  UI.scope = k; UI.auto = false; UI.idle(t.status === 'complete' ? ['Complete', '完赛'] : t.status === 'withdrawn' ? ['Withdrawn', '已退赛'] : ['Stopped', '止步'], '');
-  await say(`<div class="end"><h3>${t.status === 'complete' ? T('That’s the whole track.', '这条赛道走完了。') : t.status === 'withdrawn' ? T('Withdrawn.', '已退赛。') : T('This path ends here.', '这条路到此为止。')}</h3><p>${t.status === 'withdrawn' ? T('Runs already made stay on the record.', '已经跑过的运行照记。') + ' ' : ''}${T(`You’ve seen <b>${c.n}</b> of <b>${c.of}</b> ways it can go.`, `全部 <b>${c.of}</b> 种走向里，你走过了 <b>${c.n}</b> 种。`)}</p></div>`, { cls: 'wide' });
-  for (;;) {
-    const r = await choose([O('map', 'Open the branch map', '打开分支地图'), O('other', S[o].on ? `Switch to ${TRACK[o].s[0]}` : `Enter ${TRACK[o].s[0]}`, S[o].on ? `切换到${TRACK[o].s[1]}` : `参加${TRACK[o].s[1]}`), O('again', t.status === 'complete' ? 'Replay this track' : 'Rewind one stage', t.status === 'complete' ? '重走这条赛道' : '回到这一步重来')], { quiet: true });
-    if (r === 'map') { Flow.cmd('map'); continue; }
-    if (r === 'other') Flow.track(o); else Flow.jump(k, t.status === 'complete' ? 0 : t.i);
-    throw CANCEL;
+  const t = S[k], o = k === 't1' ? 't2' : 't1';
+  if (!t.ended) {
+    t.ended = true;
+    UI.idle(t.status === 'complete' ? ['Complete', '完赛'] : t.status === 'withdrawn' ? ['Withdrawn', '已退赛'] : ['Closed', '已结束'], '');
+    await say(`<div class="end"><h3>${t.status === 'complete' ? T('Track complete.', '这条赛道已完成。') : t.status === 'withdrawn' ? T('Withdrawn.', '已退赛。') : T('This track is closed.', '这条赛道已结束。')}</h3><p>${t.status === 'withdrawn' ? T('Runs already made stay on the record.', '已经跑过的运行照记。') : T('Your results and your decision record stay here.', '结果与决策记录都留在这里。')}</p></div>`, { cls: 'wide' });
   }
+  UI.suggest(k, [S[o].on ? { do: 'open:' + o, t: [`Open ${TRACK[o].s[0]}`, `打开${TRACK[o].s[1]}`] } : { do: 'reapply', t: [`Enter ${TRACK[o].s[0]}`, `参加${TRACK[o].s[1]}`] }, { do: 'open:acct', t: ['Challenge overview', '比赛总览'] }]);
+  App.keep(k);
 }
 async function keyLost(k, inline) {
   const a = S.acct; a.keyLost = true; UI.team();

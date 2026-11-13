@@ -1,5 +1,5 @@
 'use strict';
-/* The cover: HoloBit's front page rebuilt in place, with one button added. Pictures, icons and the headline face are local copies in assets/hb; only the film streams from holobit.xyz. */
+/* The cover: HoloBit's front page. Pictures, icons and the headline face are local copies in assets/hb; only the film streams from holobit.xyz. */
 const Home = (() => {
   const HB = 'https://holobit.xyz', AS = 'assets/hb', home = $('#home');
   const ext = (href, t, cls = '') => `<a ${cls ? `class="${cls}" ` : ''}href="${href}" target="_blank" rel="noopener">${t}</a>`;
@@ -37,7 +37,7 @@ const Home = (() => {
     `<section class="h-sec h-who"><div class="h-in"><h2 class="h-h2">Leverage the superpowers of transparency</h2><div class="who-g">${WHO.map(w => `<div><header>${img('icons/' + w[1] + '.svg', '', 20, 20)}<h3>${w[0]}</h3></header><p>${w[2]}</p></div>`).join('')}</div>
       <p class="h-fine">*HoloBit is built for onchain economy, but applied far beyond. From public transit to supply chains and healthcare, complex systems everywhere depend on Simulation.</p><div class="h-mid">${ext(HB + '/solutions', 'Explore Solutions by Users →', 'hb o')}</div></div></section>` +
     `<section class="h-sec h-core"><div class="h-in"><h2 class="h-h2">At the core</h2><div class="core-g">${CORE.map(c => `<div>${img('icons/' + c[1] + '.svg', '', 20, 20)}<h3>${c[0]}</h3></div>`).join('')}</div></div></section>` +
-    `<section class="h-sec h-end" id="h-end"><div class="h-in"><div class="h-end-h"><h2>Stop making</h2><h2>Gut decisions</h2></div><p>Looking for a new paradigm in the evolution of protocols, AI Agents and strategies?</p><div class="h-cta">${ext('https://app.holobit.xyz', 'Start for Free', 'hb g')}${ext(HB + '/contact-us', 'Get in Touch', 'hb o')}</div></div></section>`;
+    `<section class="h-sec h-end" id="h-end"><div class="h-in"><div class="h-end-h"><h2>Stop making</h2><h2>Gut decisions</h2></div><p>Looking for a new paradigm in the evolution of protocols, AI Agents and strategies?</p><div class="h-cta"><button class="hb g" data-act="start">Start for Free</button>${ext(HB + '/contact-us', 'Get in Touch', 'hb o')}</div></div></section>`;
   $('#h-foot-cols').innerHTML = FOOT.map(([t, v]) => `<div><h4>${t}</h4><ul>${v.map(([a, h]) => `<li>${ext(h, a)}</li>`).join('')}</ul></div>`).join('');
 
   // an asset that fails to arrive leaves a quiet gap, never a broken-image icon

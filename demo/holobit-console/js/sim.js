@@ -1,6 +1,6 @@
 'use strict';
-/* Toy digital twin. Enough mechanism to make every branch of the decision loop reachable;
-   nothing here is the competition simulator. */
+/* A small digital twin for practice: enough mechanism to make every branch of the decision loop reachable.
+   It is not the competition simulator. */
 
 const FAM = [
   { id: 'F0', n: ['Calm & false alarms', '平静与假警报'], sig: ['rumour', '传闻'], vol: .004 },
@@ -293,7 +293,7 @@ class Sim2 {
 
 /* ───────── drawing ───────── */
 /* series: [{d:[…], c, w, dash, fill, lab}] share one y-scale; x spans 0…xmax so a run draws left to right */
-function chart({ W = 360, H = 132, series, xmax, band, fmt = x => nf(x), pad = [12, 56, 16, 2], zero }) {
+function chart({ W = 360, H = 132, series, xmax, band, fmt = x => nf(x), pad = [12, 56, 16, 2], zero, xstep = 12, xfmt = h => h + 'h' }) {
   const all = series.flatMap(s => s.d).concat(band ? [band.a, band.b] : [], zero != null ? [zero] : []);
   let lo = Math.min(...all), hi = Math.max(...all); const pos = lo >= 0, m = (hi - lo || Math.abs(hi) * .02 || 1) * .14; lo -= m; hi += m; if (pos && lo < 0) lo = 0;
   const iw = W - pad[1] - pad[3], ih = H - pad[0] - pad[2], X = i => pad[3] + i / xmax * iw, Y = v => pad[0] + (1 - (v - lo) / (hi - lo)) * ih;
@@ -307,7 +307,7 @@ function chart({ W = 360, H = 132, series, xmax, band, fmt = x => nf(x), pad = [
     o += `<polyline points="${pts.join(' ')}" fill="none" stroke="${s.c}" stroke-width="${s.w || 1.5}" ${s.dash ? 'stroke-dasharray="3 3"' : ''} vector-effect="non-scaling-stroke" stroke-linejoin="round"/>`;
     if (!s.dash) o += `<circle cx="${X(s.d.length - 1)}" cy="${Y(s.d[s.d.length - 1])}" r="2.6" fill="${s.c}"/>`;
   });
-  for (let h = 0; h <= xmax; h += 12) o += `<text x="${X(h)}" y="${H - 3}" class="ax" text-anchor="${h === 0 ? 'start' : h === xmax ? 'end' : 'middle'}">${h}h</text>`;
+  for (let h = 0; h <= xmax; h += xstep) o += `<text x="${X(h)}" y="${H - 3}" class="ax" text-anchor="${h === 0 ? 'start' : h >= xmax ? 'end' : 'middle'}">${xfmt(h)}</text>`;
   return o + '</svg>';
 }
 function bars(vals, { W = 360, H = 64, labels, c = 'var(--acc)', hot = 0 } = {}) {

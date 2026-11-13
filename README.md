@@ -2,7 +2,7 @@
 
 Competition website for three tracks across two platforms: **HoloBit** hosts Track 1 (strategy agents) and Track 2 (protocol risk agents); **Agentic City** hosts Track 3 (urban planning).
 
-`demo/holobit-console/` is a front-end walkthrough of the Track 1–2 participant console (HoloBit cover, application channel, conversation console). It has no backend and submits nothing.
+`demo/holobit-console/` is the front end of the conversational HoloBit workspace: sign-in, the challenge application, both tracks, and everyday modelling (models, experiments, insights, marketplace). It is a sandbox build: it runs on preset data, has no backend and submits nothing. The Sandbox panel in its top bar stands in for the backend (challenge clock, outcomes, mail).
 
 Static site, no build step. Dates, links and the contact address live in `assets/js/config.js`.
 

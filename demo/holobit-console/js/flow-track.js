@@ -1,5 +1,5 @@
 'use strict';
-/* Track stages, part 1: brief → decision loop. `k` is 't1' | 't2'. */
+/* Track stages, part 1: brief → practice. `k` is 't1' | 't2'. */
 const p2 = n => String(n).padStart(2, '0');
 const AS = { u: 'USDC', e: 'WETH' };
 const hfTxt = x => x === Infinity ? '∞' : nf(x, 2);
@@ -29,9 +29,9 @@ function view2(sim) {
 /* ───────── decision cards ───────── */
 function clockHTML(secs) { return `<button class="clock" data-x="clock" data-keep title="${L('Run the clock out', '让时钟走完')}"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><circle class="arc" cx="10" cy="10" r="8" style="animation-duration:${secs}s"/></svg><span>${secs}</span></button>`; }
 function runClock(c, secs, done) {
-  const b = $('[data-x=clock]', c), sp = $('span', b); let left = secs;
+  const b = $('[data-x=clock]', c), sp = $('span', b), C = UI.cur; let left = secs;
   const fin = () => { clearInterval(iv); done({ type: 'timeout' }); };
-  const iv = setInterval(() => { if (!c.isConnected || c.classList.contains('done')) return clearInterval(iv); if (UI.auto || UI.fast) return; sp.textContent = --left; if (left <= 0) fin(); }, 1000);
+  const iv = setInterval(() => { if (!c.isConnected || c.classList.contains('done')) return clearInterval(iv); if (!c.offsetParent || UI.auto || C.fast) return; sp.textContent = --left; if (left <= 0) fin(); }, 1000);
   b.onclick = () => { if (!c.classList.contains('done')) { sp.textContent = 0; fin(); } };
 }
 const sigHTML = s => s ? `<div class="sig"><i>⚑</i><b>${TA(s.type)}</b><span>${T('severity', '严重度')} ${s.sev}/5</span><span>${T('credibility', '可信度')} ${nf(s.cred, 2)}</span></div>` : '';
@@ -49,11 +49,13 @@ function actText(a) {
 }
 const planText = plan => [plan.map(a => actText(a)[0]).join(' · '), plan.map(a => actText(a)[1]).join(' · ')];
 
-function policy1(sim) {                                    // the example agent: a fixed-range LP that steps aside on credible alarms
-  const o = sim.obs();
-  if (o.sig && o.sig.sev >= 4 && o.sig.cred > .5 && o.lp) return { type: 'plan', plan: [{ k: 'unlp' }] };
-  if (!o.lp && !(o.sig && o.sig.sev >= 4 && o.sig.cred > .5 && o.h < sim.w.sig.h + 18)) return { type: 'plan', plan: [{ k: 'lp', w: .1, x: .6 }] };
-  if (o.lp && !o.lp.inr) return { type: 'plan', plan: [{ k: 'lp', w: .1, x: .6 }] };
+const KNOB = { t1: { w: .1, x: .6, sev: 4, cred: .5, cool: 18 }, t2: { ltv: .5, s1: 1, sev: 4, cred: .5, bonus: .5, s2: 20, u: .9, freeze: true } };
+const knobs = k => ({ ...KNOB[k], ...(S[k].agent && S[k].agent.src === 'here' ? S[k].agent.knobs : null) });
+function policy1(sim, K = knobs('t1')) {                    // a fixed-range LP that steps aside on credible alarms
+  const o = sim.obs(), alarm = o.sig && o.sig.sev >= K.sev && o.sig.cred > K.cred;
+  if (alarm && o.lp) return { type: 'plan', plan: [{ k: 'unlp' }] };
+  if (!o.lp && !(alarm && o.h < sim.w.sig.h + K.cool)) return { type: 'plan', plan: [{ k: 'lp', w: K.w, x: K.x }] };
+  if (o.lp && !o.lp.inr) return { type: 'plan', plan: [{ k: 'lp', w: K.w, x: K.x }] };
   return { type: 'hold' };
 }
 function decide1(sim) {
@@ -66,7 +68,7 @@ function decide1(sim) {
     <ol class="plan" id="${id}p"></ol>
     <p class="dry" id="${id}d" hidden></p>
     ${noteHTML(id)}
-    <footer><button class="btn link" data-x="auto">${T('Let the example agent finish', '交给例子 Agent 跑完')}</button><span class="sp"></span><button class="btn" data-x="dry">${T('Dry-run', '试执行')}</button><button class="btn" data-x="abstain">${T('Abstain', '弃权')}</button><button class="btn" data-x="hold">${T('Hold', '保持')}</button><button class="btn solid" data-x="go">${T('Submit plan', '提交计划')}</button></footer>`, (c, done) => {
+    <footer><button class="btn link" data-x="auto">${T('Hand over to my agent', '交给我的 Agent')}</button><span class="sp"></span><button class="btn" data-x="dry">${T('Dry-run', '试执行')}</button><button class="btn" data-x="abstain">${T('Abstain', '弃权')}</button><button class="btn" data-x="hold">${T('Hold', '保持')}</button><button class="btn solid" data-x="go">${T('Submit plan', '提交计划')}</button></footer>`, (c, done) => {
     applyLang(c);
     const ol = $(`#${id}p`, c), dry = $(`#${id}d`, c), why = () => $(`#${id}r`, c).value.trim();
     const asset = (a, f) => `<select data-f="${f}"><option value="u" ${a[f] === 'u' ? 'selected' : ''}>USDC</option><option value="e" ${a[f] === 'e' ? 'selected' : ''}>WETH</option></select>`;
@@ -90,15 +92,21 @@ function decide1(sim) {
   }, { cls: 'decide' });
 }
 
-function policy2(sim) {                                    // the example steward: tighten once, lean on bonus when alarms are credible
+function policy2(sim, K = knobs('t2')) {                    // a steward: tighten once, lean on the bonus when alarms are credible
   const o = sim.obs(), ch = [], free = k => (o.cool[k] || 0) <= o.h;
-  if (o.n === 1) return { type: 'plan', ch: [{ k: 'ltv', v: o.P.ltv - .5 }, { k: 's1', v: o.P.s1 + 1 }] };
-  if (o.sig && o.sig.sev >= 4 && o.sig.cred > .5) {
-    if (sim.fam === 'F9' && !o.frozen) return { type: 'plan', ch: [], freeze: true };
-    if (free('bonus')) ch.push({ k: 'bonus', v: o.P.bonus + .5 });
-    if (o.U > .9 && free('s2')) ch.push({ k: 's2', v: o.P.s2 + 20 });
+  if (o.n === 1) { if (K.ltv) ch.push({ k: 'ltv', v: o.P.ltv - K.ltv }); if (K.s1) ch.push({ k: 's1', v: o.P.s1 + K.s1 }); return ch.length ? { type: 'plan', ch } : { type: 'hold' }; }
+  if (o.sig && o.sig.sev >= K.sev && o.sig.cred > K.cred) {
+    if (K.freeze && sim.fam === 'F9' && !o.frozen) return { type: 'plan', ch: [], freeze: true };
+    if (K.bonus && free('bonus')) ch.push({ k: 'bonus', v: o.P.bonus + K.bonus });
+    if (K.s2 && o.U > K.u && free('s2')) ch.push({ k: 's2', v: o.P.s2 + K.s2 });
   }
   return ch.length ? { type: 'plan', ch } : { type: 'hold' };
+}
+/* one whole unit under a policy, no interface: what a hosted run or a backtest does */
+function runUnit(k, fam, seed, K = knobs(k)) {
+  const one = k === 't1', sim = one ? new Sim1(fam, seed) : new Sim2(fam, seed);
+  while (!sim.done) { sim.decide(one ? policy1(sim, K) : policy2(sim, K)); if (one && sim.lp && sim.lp.h0 == null) sim.lp.h0 = sim.h; }
+  return { sim, sc: sim.score() };
 }
 function decide2(sim) {
   const o = sim.obs(), id = uid(), next = { ...o.P }, HFL = ['<1', '1–1.1', '–1.25', '–1.5', '–2', '>2'];
@@ -110,7 +118,7 @@ function decide2(sim) {
     <table class="params" id="${id}t">${Object.entries(P2).map(([k, d]) => { const cd = (o.cool[k] || 0) > o.h; return `<tr data-k="${k}" class="${cd ? 'cd' : ''}"><th>${TA(d.n)}</th><td class="cur">${fmtP(k, o.P[k])}</td><td class="st"><button data-d="-1" aria-label="lower">−</button><output>${fmtP(k, o.P[k])}</output><button data-d="1" aria-label="raise">+</button></td><td class="lim">${cd ? `${T('cooling', '冷却')} t+${o.cool[k]}h` : '±' + (d.rel ? d.max * 100 + '%' : d.max + ' pp')}</td></tr>`; }).join('')}</table>
     <div class="switches"><label class="sw"><input type="checkbox" id="${id}f" ${o.frozen ? 'checked' : ''}><i></i><span>${T('Freeze new borrowing', '冻结新增借款')}</span></label><label class="sw"><input type="checkbox" id="${id}g"><i></i><span>${T('Governance channel · takes 5 sim-days · ×10 range', '治理通道 · 5 个模拟日后生效 · 幅度 ×10')}</span></label></div>
     ${noteHTML(id)}
-    <footer><button class="btn link" data-x="auto">${T('Let the example agent finish', '交给例子 Agent 跑完')}</button><span class="sp"></span><button class="btn" data-x="abstain">${T('Abstain', '弃权')}</button><button class="btn" data-x="hold">${T('Hold', '保持')}</button><button class="btn solid" data-x="go">${T('Propose', '提交调参')}</button></footer>`, (c, done) => {
+    <footer><button class="btn link" data-x="auto">${T('Hand over to my agent', '交给我的 Agent')}</button><span class="sp"></span><button class="btn" data-x="abstain">${T('Abstain', '弃权')}</button><button class="btn" data-x="hold">${T('Hold', '保持')}</button><button class="btn solid" data-x="go">${T('Propose', '提交调参')}</button></footer>`, (c, done) => {
     applyLang(c);
     const tb = $(`#${id}t`, c), why = () => $(`#${id}r`, c).value.trim(), gov = () => $(`#${id}g`, c).checked;
     const paint = () => $$('tr', tb).forEach(tr => { const k = tr.dataset.k, d = P2[k], dv = next[k] - o.P[k], lim = (d.rel ? o.P[k] * d.max : d.max) * (gov() ? 10 : 1); $('output', tr).textContent = fmtP(k, next[k]); tr.classList.toggle('ch', Math.abs(dv) > 1e-9); tr.classList.toggle('over', Math.abs(dv) > lim + 1e-9); });
@@ -138,18 +146,18 @@ const TRK = {
     await card(`<div class="formula">${one ? 'S = r − 0.5 × MDD' : 'S = ΔBD + ΔLP + ΔRV − c·ΔW'}</div>
       ${kv(one ? [[T('Decides', '决定'), T('every simulated hour, plus events', '每个模拟小时，另加事件')], [T('Time per decision', '单次决定用时'), '90 s'], [T('Container', '容器'), '2 vCPU · 4 GiB · 10 GiB'], [T('Model budget', '模型预算'), '$0.30 / ' + L('sim-day', '模拟日') + ' · $0.10 / ' + L('decision', '次')], [T('Hard limits', '硬限'), T('debt ≤ 100% of NAV · swaps ≤ 50% of NAV per plan · 10 positions', '债 ≤ 净值 100% · 每份计划换币 ≤ 净值 50% · 仓位 ≤ 10 个')], [T('Gate', '生存门'), T('liquidation · insolvency · bad debt · >5% missed decisions', '被清算 · 破产 · 坏账 · 超过 5% 的决定缺失')]]
         : [[T('Decides', '决定'), T('every 6 simulated hours, plus events', '每 6 个模拟小时，另加事件')], [T('Time per decision', '单次决定用时'), '180 s'], [T('Container', '容器'), '4 vCPU · 8 GiB · 20 GiB'], [T('Model budget', '模型预算'), '$0.30 / ' + L('sim-day', '模拟日') + ' · $0.15 / ' + L('decision', '次')], [T('Bounds', '幅度'), T('LTV, threshold, bonus ±0.5 pp · rates ±1 pp · caps ±100%', 'LTV、阈值、奖励 ±0.5 个百分点 · 利率 ±1 · 上限 ±100%')], [T('Gate', '生存门'), T('excess bad debt · liquidations you caused · >5% missed decisions', '多出的坏账 · 调参直接引发的清算 · 超过 5% 的决定缺失')]])}`, null, { cls: 'spec' });
-    await say(T('Which starter kit?', '用哪个起步包？'));
+    await say(T('Your agent starts from a kit. Which language?', 'Agent 从起步包开始。用哪种语言？'));
     const kit = await choose([O('python', 'Python', 'Python'), O('typescript', 'TypeScript', 'TypeScript')], { def: 'python' });
     mark(k, 'kit', kit); t.kit = kit;
     const file = `holobit-starter-${kit}-1.0.tar.gz`, sum = hx(file, 64);
-    await term([[`$ curl -LO https://starter.holobit.example/${file}`, 'cmd'], [`  ${kit === 'python' ? '4.1' : '2.8'} MB · interface stub · example agent · 90-day history`, 'dim', 380], [`$ sha256sum ${file}`, 'cmd']]);
+    await term([[T(`Starter kit 1.0 · ${kit === 'python' ? '4.1' : '2.8'} MB · interface stub, example agent, 90-day history`, `起步包 1.0 · ${kit === 'python' ? '4.1' : '2.8'} MB · 接口桩、示例 Agent、90 天历史数据`), '', 420], [T('Checking it against the published checksum', '与公布的校验和比对'), '', 380]]);
     if (await fork('sum', ['Does the checksum match the published one?', '校验和与公布的一致吗？'], { def: 'match' }) === 'mismatch') {
-      await say(T(`<code>${short(hx(file + 'x', 64))}</code> is not the published <code>${short(sum)}</code>. Don’t run it. Use the second download address.`, `<code>${short(hx(file + 'x', 64))}</code> 与公布的 <code>${short(sum)}</code> 不符。不要运行它，请用第二个下载地址。`), { cls: 'bad' });
-      await choose([O('m', 'Download from the mirror', '从第二地址下载')]);
-      await term([[`$ curl -LO https://mirror.holobit.example/${file} && sha256sum ${file}`, 'cmd']]);
+      await say(T(`That copy hashed to <code>${short(hx(file + 'x', 64))}</code>, not the published <code>${short(sum)}</code>. I threw it away and fetched the kit from the second address.`, `这份的哈希是 <code>${short(hx(file + 'x', 64))}</code>，与公布的 <code>${short(sum)}</code> 不符。已丢弃，改从第二个地址取回。`), { cls: 'warn' });
+      await term([[T('Fetched from the mirror · checksum matches', '已从镜像地址取回 · 校验和相符'), '', 380]]);
     }
-    await say(T(`<code>${short(sum)}</code> ✓`, `<code>${short(sum)}</code> ✓`));
-    await say(T('Every agent is the same loop: <b>observe → decide → check the result → write the record</b>. Run it by hand before you automate it.', '所有 Agent 都是同一个循环：<b>观察 → 决定 → 核对结果 → 写记录</b>。自动化之前，先手动走一遍。'));
+    Agent.init(k, kit);
+    await say(T(`Your workspace is ready, verified against <code>${short(sum)}</code>. The code is in the <b>Agent</b> tab: change it there, or tell me what to change.`, `工作区已就绪，并已对照 <code>${short(sum)}</code> 校验。代码在<b> Agent </b>标签里：可以在那里改，也可以直接告诉我要改什么。`));
+    await say(T('Every agent is the same loop: <b>observe → decide → check the result → write the record</b>. Walk it by hand once, then let your agent take over.', '所有 Agent 都是同一个循环：<b>观察 → 决定 → 核对结果 → 写记录</b>。先手动走一遍，再交给你的 Agent。'));
   },
 
   /* 08 ─────────────────────────────────────────── */
@@ -163,7 +171,7 @@ const TRK = {
       }, { cls: 'bare' });
       me(`${fam} · ${TA(FAMS[fam].n)}`);
       if (first) {
-        await term([[`→ practice token pt_${hx(S.acct.team + k, 10)}…`, 'dim'], ['POST /v1/practice/units', 'cmd', 300]]);
+        await term([[T(`Practice session opened · token <code>pt_${hx(S.acct.team + k, 10)}…</code>`, `练习会话已开 · 令牌 <code>pt_${hx(S.acct.team + k, 10)}…</code>`), '', 300], [T('Requesting a unit', '申请一个单元'), '', 300]]);
         if (await fork('token', ['Does the remote interface take the call?', '远程接口接受这次调用吗？'], { def: 'ok' }) === 'limited') {
           await say(T('<code>429</code>. Practice calls are rate limited per team. Retrying after the window.', '<code>429</code>。练习调用按队限速，窗口过后重试。'), { cls: 'warn' });
           await pace(900);
@@ -175,7 +183,7 @@ const TRK = {
       let handed = false;
       while (!sim.done) {
         let d = handed ? (one ? policy1(sim) : policy2(sim)) : await (one ? decide1(sim) : decide2(sim));
-        if (d.type === 'auto') { handed = true; me(T('Let the example agent finish.', '交给例子 Agent 跑完。')); d = one ? policy1(sim) : policy2(sim); }
+        if (d.type === 'auto') { handed = true; me(T('Hand over to my agent.', '交给我的 Agent。')); d = one ? policy1(sim) : policy2(sim); }
         if (!handed) me(d.type === 'plan' ? TA(one ? planText(d.plan) : chText(d)) : d.type === 'hold' ? T('Hold.', '保持。') : d.type === 'abstain' ? T('Abstain', '弃权') + ' · ' + esc(d.why) : d.type === 'timeout' ? '…' : T('Abstain.', '弃权。'));
         if (one && d.type === 'plan') d.plan.forEach(a => { if (a.k === 'lp') a._h = sim.h; });
         const out = sim.decide(d);
@@ -203,7 +211,7 @@ const TRK = {
         ${sim.w.dud && fam !== 'F0' ? `<p class="hint">${T('The alarm fired. The event never came. A third to a half of units are like this.', '信号来了，事件没来。每族有三到五成的单元是这样。')}</p>` : ''}`, null, { cls: 'score' });
       t.loop = { fam, S: Math.round(sc.S), gate: sc.gate, n: (t.loop ? t.loop.n : 0) + 1, best: Math.max(Math.round(sc.S), t.loop ? t.loop.best : -1e9) };
       first = false;
-      if (await choose([O('next', 'Package the agent', '去打包 Agent'), O('again', 'Another unit', '再练一个单元')], { def: 'next' }) === 'next') break;
+      if (await choose([O('next', 'Submit a version', '提交一个版本'), O('again', 'Another unit', '再练一个单元')], { def: 'next' }) === 'next') break;
     }
   },
 };
