@@ -183,8 +183,8 @@ const TRK = {
       let handed = false;
       while (!sim.done) {
         let d = handed ? (one ? policy1(sim) : policy2(sim)) : await (one ? decide1(sim) : decide2(sim));
-        if (d.type === 'auto') { handed = true; me(T('Hand over to my agent.', '交给我的 Agent。')); d = one ? policy1(sim) : policy2(sim); }
-        if (!handed) me(d.type === 'plan' ? TA(one ? planText(d.plan) : chText(d)) : d.type === 'hold' ? T('Hold.', '保持。') : d.type === 'abstain' ? T('Abstain', '弃权') + ' · ' + esc(d.why) : d.type === 'timeout' ? '…' : T('Abstain.', '弃权。'));
+        if (d.type === 'auto') { handed = true; me(T('Hand over to my agent.', '交给我的 Agent。'), { think: false }); d = one ? policy1(sim) : policy2(sim); }
+        if (!handed) me(d.type === 'plan' ? TA(one ? planText(d.plan) : chText(d)) : d.type === 'hold' ? T('Hold.', '保持。') : d.type === 'abstain' ? T('Abstain', '弃权') + ' · ' + esc(d.why) : d.type === 'timeout' ? '…' : T('Abstain.', '弃权。'), { think: false });
         if (one && d.type === 'plan') d.plan.forEach(a => { if (a.k === 'lp') a._h = sim.h; });
         const out = sim.decide(d);
         if (one && sim.lp && sim.lp.h0 == null) sim.lp.h0 = out.h;

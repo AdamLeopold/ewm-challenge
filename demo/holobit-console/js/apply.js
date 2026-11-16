@@ -228,6 +228,6 @@ const Apply = (() => {
     if (D && D.done) return enterApp('acct');
     S.draft = null; save(); enterApp();
   }
-  function fill() { if (!D || D.done) return; DEMO[D.step](); redraw(); next(); }
+  function fill() { if (!D || D.done || !$('.a-main', pane)) return; DEMO[D.step](); redraw(); next(); }      // not while it is filing
   return { open, close, fill, relang() { if (!root.hidden && D) render(); } };
 })();

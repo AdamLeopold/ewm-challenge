@@ -42,16 +42,26 @@ const UI = (() => {
   /* every wait ends here: stale scripts stop, live ones take their thread back */
   async function hold(C, tok, ms) { if (ms > 0) await wait(ms); if (tok !== C.run) throw CANCEL; cur = C; }
   async function pace(ms) { const C = cur; await hold(C, C.run, C.fast ? 0 : auto && chal(C.id) ? ms * .7 : ms); }
+  /* what a submitted message gets before its answer: the model, thinking, for about two seconds */
+  const busy = () => document.body.classList.toggle('busy', !!(vis && vis.thinking));
+  async function think(C, tok) {
+    C.think = false; if (C.fast) return;
+    const el = add(`<div class="msg sys thinking in" role="status"><i class="sp"></i><div class="bd">${T('Thinking', '思考中')}<span class="dots"></span></div></div>`);
+    C.thinking = true; busy();
+    try { await hold(C, tok, auto && chal(C.id) ? 700 : 1700 + Math.random() * 600); } finally { el.remove(); C.thinking = false; busy(); }
+  }
   async function say(html, o = {}) {
-    const C = cur, tok = C.run, el = add(`<div class="msg sys ${o.cls || ''}"><i class="gl"></i><div class="bd">${html}</div></div>`);
-    if (!C.fast && !REDUCED) {
+    const C = cur, tok = C.run, thought = C.think && !C.fast;
+    if (C.think) await think(C, tok);
+    const el = add(`<div class="msg sys ${o.cls || ''}"><i class="gl"></i><div class="bd">${html}</div></div>`);
+    if (!C.fast && !REDUCED && !thought) {
       el.classList.add('typing');
       try { await hold(C, tok, o.delay ?? clamp(240 + el.textContent.length * 5, 320, 820)); } catch (e) { el.remove(); throw e; }
       el.classList.remove('typing');
     }
     el.classList.add('in'); cur = C; if (C === vis) toEnd(); return el;
   }
-  function me(html) { const C = cur, el = add(`<div class="msg me in"><div class="bd">${html}</div></div>`); if (C === vis) { pinned = true; toEnd(true); } return el; }
+  function me(html, o = {}) { const C = cur, el = add(`<div class="msg me in"><div class="bd">${html}</div></div>`); C.think = o.think !== false; if (C === vis) { pinned = true; toEnd(true); } return el; }
   function chapter(i, name) { return add(`<div class="sec in" id="sec-${cur.id}-${i}"><span>${TA(name)}</span></div>`); }
   function note(html, tone = '') { return add(`<div class="note in ${tone}">${html}</div>`); }
 
@@ -202,7 +212,7 @@ const UI = (() => {
     const C = id ? ctx(id) : null; vis = C;
     Object.values(ctxs).forEach(x => { x.el.hidden = x !== C; });
     if (C) { C.unread = false; cur = C; }
-    document.body.classList.toggle('fast', !!(C && C.fast));
+    document.body.classList.toggle('fast', !!(C && C.fast)); busy();
     chips(); twin(); pinned = true; requestAnimationFrame(() => toEnd(true));
   }
   const on = id => Object.fromEntries(Object.entries({ say, me, card, choose, term, pace, note }).map(([k, f]) => [k, (...a) => { cur = ctx(id); return f(...a); }]));
@@ -210,6 +220,7 @@ const UI = (() => {
   return {
     say, me, chapter, note, choose, fork, card, term, kv, pill, receipt, toast, mail, inbox, mailHTML, tab, world, idle, twin, record, logRecord, team, pace, toEnd, th, ctx, show, kick, on, chips, pick,
     rail() { typeof App !== 'undefined' && App.rail(); },
+    ponder() { const C = cur; return C.think ? think(C, C.run) : Promise.resolve(); },      // think now, before work that isn't a message
     run(id, fn) { cur = ctx(id); return fn(); },
     suggest(id, list) { S.sugg[id] = list; if (vis && vis.id === id) chips(); },
     reset(id) { const C = ctx(id); C.stack = []; C.pend = []; if (C === vis) chips(); },

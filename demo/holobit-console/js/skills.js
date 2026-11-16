@@ -8,6 +8,7 @@ const Skills = (() => {
     [/stress|scenario|famil|hidden|压力|情景|隐藏|留出/i, ['Thirteen scenario families: eleven published, two held out. Units are generated after the freeze from a public randomness beacon, so nobody can pick the questions. In a third to a half of units the alarm fires and the event never comes.', '13 个情景族：11 个公开，2 个留出。题目在冻结之后用公开随机信标生成，谁也挑不了题。每族有三到五成的单元，信号来了，事件却不来。']],
     [/forward|real week|前向|真实/i, ['The forward window is one week of real markets that happens after the freeze, recorded and replayed at speed. It is a single path, so it is noisy, and it carries 20% of the score.', '前向窗口是冻结之后真实发生的一周行情，录下来高速重放。它只有一条路径，噪声大，所以只占 20%。']],
     [/llm|language model|gpt|claude|gemini|provider|gateway|大模型|密钥|api key/i, ['Your agent may call a language model, through the competition gateway only, on your own provider key. Only dated snapshots on the whitelist; no server-side tools, no stored objects. Every team has the same budget per decision and per simulated day.', 'Agent 可以调用大模型，但只能经比赛网关，用你自己的服务方密钥。只接受白名单里带日期的快照；不许服务端工具，不许服务端保存的对象。各队每次决定、每个模拟日的预算上限相同。']],
+    [/miss|late|skip|too slow|no decision|错过|缺失|来不及|迟到|漏/i, ['A decision that is late, missing or in error is treated as a hold and counted. If more than 5% of a run’s decisions are like that, the run fails the survival gate.', '迟到、缺失或出错的决定一律按保持处理并计数。一次运行里这样的决定超过 5%，这次运行就过不了生存门。']],
     [/limit|size|4 ?gb|timeout|second|cpu|memory|限制|大小|超时|资源/i, ['Image: OCI, linux/amd64, 4 GB at most. Track 1: 90 s per decision, 2 vCPU, 4 GiB. Track 2: 180 s, 4 vCPU, 8 GiB. A late decision is treated as a hold and counted.', '镜像：OCI，linux/amd64，不超过 4 GB。赛道 1：每次决定 90 秒，2 vCPU，4 GiB。赛道 2：180 秒，4 vCPU，8 GiB。超时的决定按保持处理并计数。']],
     [/team|member|both|two tracks|队|成员|两条/i, ['Teams are one to five people. Enter Track 1, Track 2 or both; each is ranked separately. One control group submits one official version per track.', '一支队伍 1 到 5 人。可以参加赛道 1、赛道 2 或两条；各自单独排名。同一控制关系组在每条赛道只交一个正式版本。']],
     [/language|python|typescript|rust|语言/i, ['Any language. The agent is a container that speaks the interface. Starter kits exist for Python and TypeScript.', '语言不限。Agent 是一个按接口说话的容器。起步包有 Python 与 TypeScript 两种。']],
@@ -20,6 +21,9 @@ const Skills = (() => {
   const CUE = /challenge|competition|ewm|track|agent|score|gate|freeze|submit|stress|forward|prize|appeal|比赛|赛道|计分|分数|生存门|冻结|提交|压力|前向|奖|申诉/i;
   const CAN = () => T('Here I can <b>build and run a model</b> (an AMM with arbitrage, a lending market under stress, an epidemic, a bonding curve), <b>set up an experiment</b> on it, <b>write up an insight</b>, <b>find something to fork</b> in the Marketplace, or take you through the <b>Economic World Model Challenge</b>.',
     '在这里我可以<b>搭建并运行模型</b>（带套利的 AMM、压力下的借贷市场、传染病传播、Bonding Curve），在模型上<b>做实验</b>，<b>写一篇洞见</b>，在市场里<b>找一个模型来 Fork</b>，或者带你走一遍<b>经济世界模型挑战赛</b>。');
+
+  const RULES = id => T('I don’t have a rule that answers that. Here I can answer on the <b>score</b>, the <b>survival gate</b>, <b>missed decisions</b>, <b>stress tests</b>, the <b>forward window</b>, <b>model access</b>, <b>limits</b>, <b>teams</b>, <b>prizes</b>, <b>appeals</b> and <b>verification</b>.' + (id === 'acct' ? '' : ' Or tell me how to change your agent: “widen the range to 30%”, “be more careful”, “backtest on F5”.'),
+    '这个问题我手头的规则答不了。在这里我可以回答：<b>计分</b>、<b>生存门</b>、<b>缺失的决定</b>、<b>压力题</b>、<b>前向窗口</b>、<b>模型访问</b>、<b>限制</b>、<b>队伍</b>、<b>奖项</b>、<b>申诉</b>与<b>核实</b>。' + (id === 'acct' ? '' : '也可以直接说要怎么改 Agent：“把区间放宽到 30%”“保守一点”“在 F5 上回测”。'));
 
   /* say something in the thread on screen; from a page, in a fresh chat */
   function reply(s, html, sugg) {
@@ -40,9 +44,11 @@ const Skills = (() => {
     if (/^(hi|hello|hey|你好|嗨)\b/i.test(s)) return reply(s, T('Hello. What do you want to simulate?', '你好。想模拟什么？'), START());
     if (CUE.test(s)) {
       const hit = KB.find(x => x[0].test(s)); if (hit) return reply(s, TA(hit[1]));
+      if (id && chal(id)) return reply(s, RULES(id));
       return reply(s, T('The Economic World Model Challenge has two tracks here: a <b>strategy agent</b> on Uniswap V3 and Aave v3, and a <b>protocol risk agent</b> for Aave’s reserves.', '经济世界模型挑战赛在这里有两条赛道：在 Uniswap V3 与 Aave v3 上运作的<b>策略 Agent</b>，以及管理 Aave 储备的<b>协议风险 Agent</b>。'), [{ do: 'challenge', t: S.acct.app ? ['Open the challenge', '打开比赛'] : ['Join the challenge', '报名参赛'] }]);
     }
-    reply(s, T('That isn’t something I can do in this workspace yet. ', '这件事我在这个工作台里还做不了。') + CAN(), id && chal(id) ? null : START());
+    if (id && chal(id)) return reply(s, RULES(id));
+    reply(s, T('That isn’t something I can do in this workspace yet. ', '这件事我在这个工作台里还做不了。') + CAN(), START());
   }
   function help() { reply('', (UI.vis && chal(UI.vis.id) ? T('Ask about the <b>score</b>, the <b>survival gate</b>, <b>stress tests</b>, the <b>forward window</b>, <b>models</b>, <b>limits</b>, <b>teams</b>, <b>prizes</b> or how to <b>verify</b> a result. In a track, tell me how to change your agent: “widen the range to 30%”, “be more careful”, “backtest on F5”. ', '可以问：<b>计分</b>、<b>生存门</b>、<b>压力题</b>、<b>前向窗口</b>、<b>模型</b>、<b>限制</b>、<b>队伍</b>、<b>奖项</b>，或怎样<b>核实</b>结果。在赛道里，直接说要怎么改 Agent：“把区间放宽到 30%”“保守一点”“在 F5 上回测”。') : CAN()) + T(' Type <code>/</code> for commands.', ' 输入 <code>/</code> 调出命令。')); }
 

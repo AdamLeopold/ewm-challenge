@@ -25,7 +25,7 @@ const App = (() => {
     if (!C.el.children.length) {
       C.el.innerHTML = tget(id);
       $$('.card:not(.done)', C.el).forEach(c => { c.classList.add('done'); $$('input,select,textarea,button', c).forEach(x => { if (!x.hasAttribute('data-keep')) x.disabled = true; }); });
-      $$('.typing', C.el).forEach(x => x.remove()); applyLang(C.el);
+      $$('.typing, .thinking', C.el).forEach(x => x.remove()); applyLang(C.el);
     }
     return C;
   }
@@ -38,7 +38,7 @@ const App = (() => {
       else if (x.type !== 'password' && x.type !== 'file') x.setAttribute('value', x.value);
     });
     const c = live.cloneNode(true);
-    $$('.hero, .typing', c).forEach(x => x.remove()); $$('.in', c).forEach(x => x.classList.remove('in')); $$('.run', c).forEach(x => x.classList.remove('run'));
+    $$('.hero, .typing, .thinking', c).forEach(x => x.remove()); $$('.in', c).forEach(x => x.classList.remove('in')); $$('.run', c).forEach(x => x.classList.remove('run'));
     if (!chal(id)) while (c.innerHTML.length > 150000 && c.children.length > 4) c.firstChild.remove();
     tset(id, c.innerHTML);
   }

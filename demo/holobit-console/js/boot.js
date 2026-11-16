@@ -50,7 +50,7 @@ const Flow = (() => {
     saveSnap(); play(sc);
   }
   async function sideflow(id, fn) {
-    const C = UI.ctx(id); if (C.side) return; C.side = true;
+    const C = UI.ctx(id); if (C.side) { if (C.pend.length) UI.toast(T('Finish or cancel the card above first.', '请先完成或取消上面的卡片。')); return; } C.side = true;
     try { await UI.run(id, fn); } catch (e) { if (e !== CANCEL) console.error(e); } finally { C.side = false; UI.chips(); App.keep(id); }
   }
 
@@ -135,7 +135,7 @@ function slash() {
 }
 $('#in').addEventListener('input', slash);
 $('#slash').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (b) { $('#in').value = ''; $('#slash').hidden = true; Flow.cmd(b.dataset.c); } });
-$('#say').addEventListener('submit', e => { e.preventDefault(); const v = $('#in').value; $('#in').value = ''; $('#slash').hidden = true; Flow.text(v); });
+$('#say').addEventListener('submit', e => { e.preventDefault(); const v = $('#in').value; if (UI.vis && UI.vis.thinking && v.trim()[0] !== '/') return; $('#in').value = ''; $('#slash').hidden = true; Flow.text(v); });
 $('#thread').addEventListener('pointermove', e => { const c = e.target.closest('.card'); if (!c) return; const r = c.getBoundingClientRect(); c.style.setProperty('--mx', e.clientX - r.left + 'px'); c.style.setProperty('--my', e.clientY - r.top + 'px'); }, { passive: true });
 addEventListener('pagehide', () => { const v = UI.vis; if (v && !S[v.id]) App.keep(v.id); save(); });
 

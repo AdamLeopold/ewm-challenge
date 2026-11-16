@@ -109,7 +109,7 @@ const Models = (() => {
   const live = {};                                             // model id → { R, tick, timer } while a run is on screen
 
   /* ── conversation ── */
-  const turn = (t, label, fn) => Flow.sideflow(t.id, async () => { if (label) me(label); UI.suggest(t.id, []); await fn(); App.touch(t.id); });
+  const turn = (t, label, fn, quick) => Flow.sideflow(t.id, async () => { if (label) me(label, { think: !quick }); UI.suggest(t.id, []); await UI.ponder(); await fn(); App.touch(t.id); });
   const match = s => { const t = TPL.find(x => x.rx.test(s)); return t && /model|simulat|build|stress|run|what if|how (much|fast|many)|建模|模拟|搭|仿真|压力|跑/i.test(s) || t && s.length < 40 ? t.id : null; };
   const SUG = { built: m => [{ do: 'm:run', t: [`Run ${of(m).ticks} ticks`, `运行 ${of(m).ticks} 个 tick`] }, { do: 'm:exp', t: ['Set up an experiment', '做一个实验'] }], ran: () => [{ do: 'm:exp', t: ['Set up an experiment', '做一个实验'] }, { do: 'lib:draft', t: ['Draft an insight', '起草一篇洞见'] }, { do: 'lib:publish', t: ['Publish to Marketplace', '发布到市场'] }] };
 
@@ -136,7 +136,7 @@ const Models = (() => {
     });
   }
   /* run the model; `why` is the sentence that leads the result */
-  function run(t, label, why) {
+  function run(t, label, why, quick) {                         // quick: the Run button, which goes straight to the simulator
     const m = S.models[t.model], tp = of(m);
     return turn(t, label, async () => {
       const prev = m.runs[0], R = run1(m);
@@ -146,7 +146,7 @@ const Models = (() => {
       await say((why || '') + T(`${tp.ticks} ticks. <b>${n[0]}: ${f(R.m[k])}</b>${prev && Math.abs(d) > 1e-9 ? (d * good > 0 ? ', better than the last run.' : ', worse than the last run.') : '.'}`, `${tp.ticks} 个 tick。<b>${n[1]}：${f(R.m[k])}</b>${prev && Math.abs(d) > 1e-9 ? (d * good > 0 ? '，比上一次好。' : '，比上一次差。') : '。'}`));
       await say(`<div class="card done res-c">${tp.charts.slice(0, 1).map(c => `<div class="cap"><span>${TA(c.n)}</span></div>` + draw(tp, c, R, tp.ticks, 1)).join('')}${metricsHTML(tp, R.m, prev && prev.m)}</div>`, { cls: 'wide', delay: 300 });
       UI.suggest(t.id, SUG.ran());
-    });
+    }, quick);
   }
   const draw = (tp, c, R, upto, wide) => chart({ W: wide ? 580 : 360, series: c.s.map(([k, col, dash]) => ({ d: R.series[k].slice(0, upto + 1), c: col, dash, w: dash ? 1 : 1.8, fill: !dash && c.s.length === 1 })), xmax: tp.ticks, fmt: c.fmt, zero: c.zero, H: wide ? 150 : 118, xstep: tp.ticks / 4, xfmt: h => String(h) });
 
@@ -216,7 +216,7 @@ const Models = (() => {
     const t = App.thread(UI.vis && UI.vis.id); if (!t) return;
     const [verb, arg] = a.split(/:(.*)/s);
     if (verb === 'build') build(t);
-    else if (verb === 'run') run(t, T('Run it.', '运行。'));
+    else if (verb === 'run') run(t, T('Run it.', '运行。'), null, 1);
     else if (verb === 'exp') arg ? experiment(t, arg, TA(of(S.models[t.model]).params.find(p => p.k === arg).n)) : askWhich(t);
     else if (verb === 'set') { const [k, v] = arg.split('='), p = of(S.models[t.model]).params.find(x => x.k === k); setParam(t, k, p.opts ? v : +v, T(`Set ${p.n[0]} to ${fx(p, p.opts ? v : +v)}.`, `把${p.n[1]}设为 ${fx(p, p.opts ? v : +v)}。`)); }
   }

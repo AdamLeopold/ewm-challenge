@@ -72,6 +72,14 @@ body.no-panel #app { grid-template-columns: 248px minmax(0, 1fr); } body.no-pane
 .pub-s { list-style: none; display: flex; gap: 6px; } .pub-s li { flex: 1; padding-top: 8px; border-top: 2px solid var(--line2); font: 10.5px/1.3 var(--mono); color: var(--dim); } .pub-s .cur { color: var(--ink); border-color: var(--acc); } .pub-s .done { border-color: color-mix(in srgb, var(--acc) 45%, transparent); }
 .pub { display: grid; gap: 14px; } .pub output { color: var(--ink); } .pub input[type=range] { width: 100%; accent-color: var(--acc); }
 
+/* thinking: what shows between a submitted message and its answer */
+.msg.thinking { grid-template-columns: 14px minmax(0, 1fr); gap: 12px; align-items: center; min-height: 26px; }
+.msg.thinking .sp, body.busy .send::after { content: ""; width: 14px; height: 14px; border: 1.5px solid var(--line2); border-top-color: var(--acc); border-radius: 50%; animation: spin .8s linear infinite; }
+.msg.thinking .bd { font: 13px/1.4 var(--mono); color: var(--mut); }
+.dots { display: inline-block; width: 0; overflow: hidden; vertical-align: bottom; white-space: nowrap; animation: dots 1.2s steps(4, jump-none) infinite; } .dots::after { content: "..."; } @keyframes dots { to { width: 3ch; } }
+body.busy .send { pointer-events: none; background: rgba(255, 255, 255, .08) !important; } body.busy .send svg { display: none; } body.busy .send::after { border-color: rgba(255, 255, 255, .25); border-top-color: #fff; }
+@media (prefers-reduced-motion: reduce) { .msg.thinking .sp, body.busy .send::after, .act li.run i { animation-duration: 1.1s !important; } .dots { animation-duration: 1.6s !important; } }
+
 /* ───────── empty chat ───────── */
 .hero { display: grid; gap: 28px; padding-top: clamp(20px, 9vh, 96px); animation: up .6s var(--ease) both; }
 .hero h2 { font-size: clamp(30px, 4.4vw, 52px); line-height: 1.1; }
