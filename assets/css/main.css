@@ -344,9 +344,11 @@ section.block { padding: clamp(72px, 11vw, 140px) 0; position: relative; }
 .countdown .u b { display: block; font-size: 24px; color: var(--accent); font-weight: 500; }
 .countdown .u i { font-style: normal; font-size: 10px; color: var(--muted); letter-spacing: .12em; }
 .countdown-target { flex-basis: 100%; color: var(--muted); font-size: 11px; line-height: 1.6; }
-.research-note { margin-top: 32px; padding: 24px 28px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
-.research-note p { color: var(--muted); font-size: 15px; line-height: 1.8; max-width: 90ch; }
-.research-note a { display: inline-block; margin-top: 12px; color: var(--accent); font-size: 13px; }
+#research .sec-head h2 { font-size: clamp(36px, 5.4vw, 78px); letter-spacing: -.04em; }
+.research-note { margin-top: 40px; padding: 20px 24px; border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius); background: rgba(12,14,16,.4); }
+.research-note p { color: rgba(255,255,255,.4); font-size: 13px; line-height: 1.75; max-width: 96ch; }
+.research-note a { display: inline-block; margin-top: 10px; color: rgba(255,255,255,.5); font-size: 12px; transition: color .3s; }
+.research-note a:hover, .research-note a:focus-visible { color: var(--accent); }
 .data-use-list li { margin: 10px 0; color: var(--muted); line-height: 1.8; }
 
 /* score ring */
