@@ -651,6 +651,7 @@ footer .legal p { margin: 0 0 6px; max-width: 880px; }
 .hero-sw .hero-subtitle .glow { color: var(--accent); }
 .hero-sw .lede { margin-top: 16px; max-width: 54ch; }
 @media (min-width: 761px) { .hero-sw .lede { max-width: min(54ch, 41vw); } }
+.hero-sw .cta-row { max-width: 640px; }
 .hero-sw .wrap { position: relative; }
 .sw-stats { grid-template-columns: repeat(3, 1fr); max-width: 820px; }
 .sw-stats .stat b { font-size: clamp(24px, 2.3vw, 32px); line-height: 1.1; }
