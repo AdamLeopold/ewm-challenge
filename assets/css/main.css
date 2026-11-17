@@ -498,6 +498,18 @@ footer .legal p { margin: 0 0 6px; max-width: 880px; }
 .registration-banner .cta-row { margin-top: 26px; }
 .registration-qr { display: grid; gap: 15px; justify-items: center; text-align: center; font-size: 13px; color: var(--muted); }
 .registration-qr img { width: 224px; height: 224px; background: #fff; border: 10px solid #fff; border-radius: 12px; }
+/* homepage: the card hovers in the middle of the screen, then rises and grows until the reader dives through it */
+.registration-dive { --len: 280vh; --len-m: 230vh; }
+.registration-dive .registration-banner { --q: clamp(0, calc((var(--p) - .28) / .72), 1);
+  transform: translateY(calc(var(--q) * -7vh)) scale(calc(1 + var(--q) * var(--q) * 6));
+  opacity: clamp(0, calc((1 - var(--q)) * 5), 1);
+  box-shadow: 0 50px 90px -50px rgba(0, 255, 136, .35); will-change: transform, opacity;
+  animation: reg-hover 5s ease-in-out infinite; }
+.registration-dive .registration-banner > * { opacity: clamp(0, calc(1 - (var(--q) - .35) * 2.6), 1); }
+@keyframes reg-hover { 0%, 100% { translate: 0 -7px; } 50% { translate: 0 7px; } }
+.calm .registration-dive .registration-banner { transform: none; opacity: 1; animation: none; }
+.calm .registration-dive .registration-banner > * { opacity: 1; }
+@media (max-width: 760px) { .registration-dive .registration-qr { display: none; } }
 .registration-caption { font-size: 13px; line-height: 1.65; color: var(--muted); margin-top: 18px; }
 .registration-hero { padding: clamp(130px, 14vw, 180px) 0 70px; }
 .registration-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(32px, 7vw, 96px); align-items: start; }
