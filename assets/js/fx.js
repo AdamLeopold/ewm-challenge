@@ -828,7 +828,9 @@
         return { sec: sec, ghost: ghost, head: head, body: body };
       });
       var layers = Array.prototype.slice.call(document.querySelectorAll("[data-parallax]")).map(function (el) {
-        el._sec = el.closest("section") || el.parentNode; el._speed = parseFloat(el.dataset.parallax) || 0; return el;
+        el._sec = el.closest("section") || el.parentNode; el._speed = parseFloat(el.dataset.parallax) || 0;
+        el._sm = el.dataset.parallaxSm != null ? parseFloat(el.dataset.parallaxSm) || 0 : el._speed / 2;   // phone-width speed
+        return el;
       });
       var ticking = false;
       var frame = function () {
@@ -851,12 +853,13 @@
         });
         // explicit layers: data-parallax="<px>" is how far the element drifts per viewport of scroll,
         // measured from its section so the movement never feeds back into the measurement
-        var narrow = innerWidth < 760 ? 0.5 : 1;
+        var narrow = innerWidth < 760;
         layers.forEach(function (el) {
           var r = el._sec.getBoundingClientRect();
           if (r.bottom < -200 || r.top > vh + 200) return;
-          var k = Math.max(-1, Math.min(1, ((r.top + Math.min(r.height, vh) / 2) - vh / 2) / vh));
-          el.style.translate = "0 " + (k * el._speed * narrow).toFixed(1) + "px";
+          var k = Math.max(-0.7, Math.min(1, ((r.top + Math.min(r.height, vh) / 2) - vh / 2) / vh));
+          el.style.translate = "0 " + (k * (narrow ? el._sm : el._speed)).toFixed(1) + "px";
+          el.style.setProperty("--pk", k.toFixed(3));
         });
       };
       addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
