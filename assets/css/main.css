@@ -345,7 +345,7 @@ section.block { padding: clamp(72px, 11vw, 140px) 0; position: relative; }
 .countdown .u i { font-style: normal; font-size: 10px; color: var(--muted); letter-spacing: .12em; }
 .countdown-target { flex-basis: 100%; color: var(--muted); font-size: 11px; line-height: 1.6; }
 #research .sec-head h2 { font-size: clamp(36px, 5.4vw, 78px); letter-spacing: -.04em; }
-.research-note { margin-top: 110px; padding: 20px 24px; border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius); background: rgba(12,14,16,.4); }
+.research-note { margin-top: 40px; padding: 20px 24px; border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius); background: rgba(12,14,16,.4); }
 .research-note p { color: rgba(255,255,255,.4); font-size: 13px; line-height: 1.75; max-width: 96ch; }
 .research-note a { display: inline-block; margin-top: 10px; color: rgba(255,255,255,.5); font-size: 12px; transition: color .3s; }
 .research-note a:hover, .research-note a:focus-visible { color: var(--accent); }
@@ -492,7 +492,7 @@ footer .legal p { margin: 0 0 6px; max-width: 880px; }
 
 /* Shared registration entry and the dedicated signup page. */
 .registration-nav { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); color: var(--fg); white-space: nowrap; }
-.registration-banner { display: grid; grid-template-columns: minmax(0, 1fr) 224px; align-items: center; gap: clamp(28px, 6vw, 80px); padding: clamp(26px, 5vw, 60px); border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line)); border-radius: 24px; background: radial-gradient(ellipse at calc(5% + var(--pk, 0) * 30%) calc(var(--pk, 0) * 90%), rgba(0, 255, 136, .11), transparent 65%), var(--card); }
+.registration-banner { display: grid; grid-template-columns: minmax(0, 1fr) 224px; align-items: center; gap: clamp(28px, 6vw, 80px); padding: clamp(26px, 5vw, 60px); border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line)); border-radius: 24px; background: radial-gradient(ellipse at 5% 0, rgba(0, 255, 136, .09), transparent 65%), var(--card); }
 .registration-banner h2 { margin: 16px 0; font-family: var(--font-display); font-size: clamp(30px, 4vw, 48px); line-height: 1.15; letter-spacing: -.03em; }
 .registration-banner p { color: var(--muted); max-width: 60ch; }
 .registration-banner .cta-row { margin-top: 26px; }
