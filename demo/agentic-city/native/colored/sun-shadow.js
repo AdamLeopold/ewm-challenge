@@ -29,7 +29,7 @@ export function configureSunShadow(light,camera,controls){
   const boxPlanes=[new T.Plane(new T.Vector3(1,0,0),-sceneBounds.min.x),new T.Plane(new T.Vector3(-1,0,0),sceneBounds.max.x),new T.Plane(new T.Vector3(0,1,0),-sceneBounds.min.y),new T.Plane(new T.Vector3(0,-1,0),sceneBounds.max.y),new T.Plane(new T.Vector3(0,0,1),-sceneBounds.min.z),new T.Plane(new T.Vector3(0,0,-1),sceneBounds.max.z)];
   for(const face of faces){let poly=face.map(i=>viewCorners[i]);for(const plane of boxPlanes)poly=clip(poly,plane);points.push(...poly);}
   light.target.position.copy(sceneBounds.getCenter(new T.Vector3()));
-  light.position.copy(light.target.position).add(sunOffset);
+  light.position.copy(light.target.position).add(light.userData.sunOffset||sunOffset);
   light.updateMatrixWorld();light.target.updateMatrixWorld();light.shadow.updateMatrices(light);
   const c=light.shadow.camera,fit=new T.Box3();
   for(const p of points)fit.expandByPoint(p.clone().applyMatrix4(c.matrixWorldInverse));
