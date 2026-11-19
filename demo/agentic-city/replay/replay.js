@@ -97,4 +97,21 @@
     }
     return nativeFetch(path + url.search, { signal: init.signal || request?.signal, cache: init.cache || request?.cache });
   };
+
+  // Textures are loaded through <img>; give the demo's own images the same retries as data files.
+  const imageSrc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+  Object.defineProperty(HTMLImageElement.prototype, 'src', {
+    configurable: true, enumerable: true,
+    get() { return imageSrc.get.call(this); },
+    set(value) {
+      let url;
+      try { url = new URL(String(value), location.href); } catch { return imageSrc.set.call(this, value); }
+      if (url.origin !== location.origin || !url.pathname.startsWith(BASE)) return imageSrc.set.call(this, value);
+      const image = this, wanted = url.href;
+      image.dataset.demoSrc = wanted;
+      nativeFetch(wanted).then(r => { if (!r.ok) throw Error(String(r.status)); return r.blob(); })
+        .then(blob => { if (image.dataset.demoSrc === wanted) imageSrc.set.call(image, URL.createObjectURL(blob)); })
+        .catch(() => { if (image.dataset.demoSrc === wanted) imageSrc.set.call(image, wanted); });
+    }
+  });
 })();
