@@ -86,7 +86,7 @@ const ACCT = {
   async model() {
     const a = S.acct;
     const SNAPS = { Anthropic: ['claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-sonnet-latest'], OpenAI: ['gpt-5-mini-2025-08-07', 'gpt-5-2025-08-07', 'gpt-5-latest'], Google: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-flash-latest'] };
-    await say(T('Does your agent call a language model? Calls go through the competition gateway, on your own provider key, under the same budget for every team.', '你的 Agent 调用大模型吗？调用一律经比赛网关，用你自己的服务方密钥，各队预算上限相同。'));
+    await say(T('Does your agent call a language model? Calls go through the competition model gateway, under the same budget for every team. The model access method is announced with the starter kit and rules.', '你的 Agent 调用大模型吗？调用一律经比赛的模型网关，各队预算上限相同；模型接入方式随入门套件和规则公布。'));
     const use = await choose([O('y', 'Yes, register a provider', '用，登记服务方'), O('n', 'No, it’s rule-based', '不用，纯规则')], { def: 'y' });
     if (use === 'n') { mark('acct', 'llm', 'none'); a.llm = { none: true }; await say(T('No model declared. You can add one until the freeze.', '没有登记模型。冻结之前随时可以加。')); }
     else for (;;) {

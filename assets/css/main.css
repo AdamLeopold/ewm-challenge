@@ -433,7 +433,7 @@ section.block { padding: clamp(72px, 11vw, 140px) 0; position: relative; }
 
 /* Agentic City studio: load its map and 3D assets only on request. */
 .city-demo .sec-head { margin-bottom: 30px; }
-.city-demo-cover { min-height: 420px; display: flex; align-items: center; padding: clamp(28px, 6vw, 76px); background: linear-gradient(90deg, rgba(13,5,25,.96), rgba(13,5,25,.8) 46%, rgba(13,5,25,.3)), url(../media/agentic-city-demo-map.svg) center / cover; }
+.city-demo-cover { min-height: 420px; display: flex; align-items: center; padding: clamp(28px, 6vw, 76px); background: linear-gradient(90deg, rgba(13,5,25,.96), rgba(13,5,25,.8) 46%, rgba(13,5,25,.3)), url(../media/agentic-city-demo-map.svg?v=20261120) center / cover; }
 .city-demo-intro { max-width: 620px; }
 .city-demo-intro h3 { margin: 20px 0 16px; font-family: var(--font-display); font-size: clamp(30px, 4vw, 48px); line-height: 1.08; letter-spacing: -.03em; }
 .city-demo-intro p { max-width: 46ch; color: rgba(255,255,255,.76); }

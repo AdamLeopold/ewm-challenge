@@ -139,7 +139,7 @@ const App = (() => {
     $('#r-recent').innerHTML = rec.map(t => `<div class="r-row ${cur === t.id ? 'on' : ''}"><button data-open="${t.id}">${ic(t.model ? 'models' : 'chat', 14)}<span>${title(t)}</span>${UI.ctx(t.id).unread ? '<u></u>' : ''}</button><button class="x" data-del="${t.id}" aria-label="Delete">×</button></div>`).join('');
     $('#r-rec-h').hidden = !rec.length;
     const nm = u.name || u.handle || u.email || '';
-    $('#who').innerHTML = `<div class="ava">${esc((nm || '?')[0].toUpperCase())}</div><div><b>${esc(nm)}</b><span>${esc(u.plan || 'Free')}</span></div>`;
+    $('#who').innerHTML = `<div class="ava">${esc((nm || '?')[0].toUpperCase())}</div><div><b>${esc(nm)}</b><span>${T('Participant', '参赛者')}</span></div>`;
     $('#acct-who').innerHTML = `<b>${esc(nm)}</b><span>${esc(u.auth === 'github' ? '@' + u.handle : u.email || '')}</span>`;
     if (chal(cur)) bar();
   }

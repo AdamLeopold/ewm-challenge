@@ -1,15 +1,13 @@
 'use strict';
-/* Account settings: profile, plan, credentials, developer access. */
+/* Account settings: profile, credentials, developer access. */
 const Settings = (() => {
   const root = $('#settings'), body = $('#set-body');
-  const TABS = [['profile', 'Profile', '资料'], ['plan', 'Plan', '套餐'], ['creds', 'Credentials', '凭据'], ['dev', 'Developer', '开发者']];
-  const PLANS = [['Free', '$0', ['500', '100', '1']], ['Basic', '$39', ['1,000', '300', '1']], ['Plus', '$199', ['10,000', '∞', '2']], ['Pro', '$999', ['40,000', '∞', '4']]];
+  const TABS = [['profile', 'Profile', '资料'], ['creds', 'Credentials', '凭据'], ['dev', 'Developer', '开发者']];
   let tab = 'profile', token = null;
 
   const VIEW = {
     profile: u => `<label class="fld"><span>${T('Name', '姓名')}</span><input data-u="name" value="${esc(u.name || '')}" maxlength="60" autocomplete="off"></label>
       <dl class="kv"><div><dt>${T('Signed in with', '登录方式')}</dt><dd>${u.auth === 'github' ? 'GitHub · @' + esc(u.handle) : T('Email link', '邮箱链接')}</dd></div><div><dt>${T('Email', '邮箱')}</dt><dd>${esc(u.email)}</dd></div><div><dt>${T('Language', '语言')}</dt><dd><button class="lang" data-act="lang" aria-label="Language"><b>EN</b><b>中</b></button></dd></div></dl>`,
-    plan: u => `<div class="tiers">${PLANS.map(p => `<div class="tier ${u.plan === p[0] ? 'on' : ''}"><b>${p[0]}</b><strong>${p[1]}<small>${p[0] === 'Free' ? '' : ' / ' + L('mo', '月')}</small></strong><ul><li><span>${T('Components', '组件')}</span>${p[2][0]}</li><li><span>${T('Simulation steps', '仿真步数')}</span>${p[2][1]}</li><li><span>${T('Workspaces', '工作区')}</span>${p[2][2]}</li></ul>${u.plan === p[0] ? `<em>${T('Current', '当前')}</em>` : `<button class="btn sm" data-plan="${p[0]}">${T('Switch', '切换')}</button>`}</div>`).join('')}</div><p class="hint">${T('Paid plans are billed yearly. Runs in your browser are free on every plan.', '付费套餐按年计费。在浏览器里运行在任何套餐下都免费。')}</p>`,
     creds: () => { const a = S.acct;
       return `<dl class="kv"><div><dt>${T('Signing key', '签名钥匙')}</dt><dd>${a.key ? `<code>SHA256:${a.key.fp.slice(0, 20)}…</code>${a.keyLost ? ' ' + UI.pill(T('lost', '已报失'), 'bad') : ''} <button class="btn sm" data-set="keylost">${T('Report lost', '报失')}</button>` : '—'}</dd></div>
         <div><dt>${T('Model provider', '模型服务方')}</dt><dd>${a.llm && !a.llm.none ? `${esc(a.llm.prov)} · ${esc(a.llm.snap)} · ••••${esc(a.llm.last4)}` : '—'}</dd></div>
@@ -26,9 +24,8 @@ const Settings = (() => {
     body.innerHTML = VIEW[tab](u); applyLang(root);
   }
   root.addEventListener('click', e => {
-    const t = e.target.closest('[data-st]'), p = e.target.closest('[data-plan]'), s = e.target.closest('[data-set]'), c = e.target.closest('[data-copy]');
+    const t = e.target.closest('[data-st]'), s = e.target.closest('[data-set]'), c = e.target.closest('[data-copy]');
     if (t) { tab = t.dataset.st; token = null; render(); }
-    else if (p) { S.user.plan = p.dataset.plan; save(); render(); App.rail(); }
     else if (c) navigator.clipboard && navigator.clipboard.writeText(c.dataset.copy).then(() => UI.toast(T('Copied.', '已复制。')), () => {});
     else if (s && s.dataset.set === 'token') { token = 'hbt_sandbox_' + hx(Math.random() + 't', 28); S.cli = { last4: token.slice(-4), at: Date.now() }; save(); render(); }
     else if (s && s.dataset.set === 'ghx') { Agent.disconnect(); render(); }
