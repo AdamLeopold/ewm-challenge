@@ -5,7 +5,19 @@
   const ROOT_PATH = /^\/(?:(?:three|native|v6|v5|studio|api|aligned_data|road-tiles|road-prebuilt)\/|[\w.\-]+\.(?:js|mjs|json|gz|bin|css|png|jpe?g|webp|svg|html)$)/;
   const UNAVAILABLE = 'This action needs the full local version of Agentic City. The online demo covers the three guided tasks.';
   const VOLATILE = new Set(['name', 'client', 'sequence', 'request_id', 'revision']);
-  const nativeFetch = window.fetch.bind(window);
+  const browserFetch = window.fetch.bind(window);
+  // Static hosting occasionally answers a burst of requests with 5xx; retry those with a short backoff.
+  async function nativeFetch(input, init) {
+    for (let attempt = 0; ; attempt++) {
+      try {
+        const r = await browserFetch(input, init);
+        if (r.status < 500 || attempt >= 4) return r;
+      } catch (e) {
+        if (attempt >= 4 || e.name === 'AbortError') throw e;
+      }
+      await new Promise(done => setTimeout(done, 400 * 2 ** attempt));
+    }
+  }
   let manifestPromise = null;
   const manifest = () => manifestPromise ??= nativeFetch(BASE + 'replay/manifest.json').then(r => r.json());
 
@@ -65,10 +77,10 @@
   window.fetch = async function (input, init = {}) {
     const request = input instanceof Request ? input : null;
     const url = new URL(request ? request.url : String(input), location.href);
-    if (url.origin !== location.origin) return nativeFetch(input, init);
+    if (url.origin !== location.origin) return browserFetch(input, init);
     let path = url.pathname;
     if (!path.startsWith(BASE)) {
-      if (!ROOT_PATH.test(path)) return nativeFetch(input, init);
+      if (!ROOT_PATH.test(path)) return browserFetch(input, init);
       path = BASE + path.slice(1);
     }
     const rel = '/' + path.slice(BASE.length);
