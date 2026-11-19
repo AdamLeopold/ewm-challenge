@@ -1,1 +1,1 @@
-[{"name":"2-SE-9A__T27000402000106E10__0","model_id":"T27000402000106E10","kind":"TERRAIN","min":[1000.0,700.0,3.5979886054992676],"max":[1497.8690185546875,1300.0,91.11227416992188],"position_offset":0,"vertex_count":45095,"index_offset":541140,"index_count":47469}]
+[{"index_count":52899,"index_offset":549936,"kind":"TERRAIN","max":[1497.8690185546875,1300.03125,91.11227416992188],"min":[1000.0,700.0,3.5979886054992676],"model_id":"T27000402000106E10","name":"2-SE-9A__T27000402000106E10__0","position_offset":0,"source_record_index":0,"vertex_count":45828}]
