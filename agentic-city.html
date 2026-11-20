@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css?v=20261120151456">
+<link rel="stylesheet" href="assets/css/main.css?v=20261120162156">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050608'/%3E%3Cpath d='M6 16h10V6' stroke='%2300ff88' stroke-width='4' fill='none'/%3E%3Cpath d='M26 16H16v10' stroke='%23b06bff' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 <style>
   /* builder mock */
@@ -289,25 +289,26 @@
     <div class="wrap">
       <div class="sec-head">
         <div><div class="sec-num">04 / EVALUATION</div><h2 data-en="Evaluate the city through how it works.">从城市如何运转来评估方案</h2></div>
-        <p data-en="Every plan is rebuilt from its two files and tested under the same map, policy and scenario settings. The ranking combines scenario results, AI-agent ratings and expert review.">每份方案都从两份文件重建，在统一的地图、政策和场景参数下测试。名次综合场景模拟的量化指标、社会模拟 Agent 的评价和专家评审确定。</p>
+        <p data-en="Before you submit, the studio lets you self-assess your plan across seven groups of measures. After submission, the committee checks the files and rules, then evaluates every proposal under common conditions; stronger entries go on to multi-agent social simulation powered by the Economic World Model.">提交前，你可以在平台里按七组指标自评方案。提交后，评审委员会先校验文件和规则，再在统一条件下评估每份方案；较强的方案进入由经济世界模型驱动的多智能体社会仿真。</p>
       </div>
-      <div class="flow" style="--n:3">
-        <div class="step reveal"><h4 data-en="Scenario simulation">场景模拟</h4><p data-en="Agents playing residents, firms and investors act inside your city; spatial analysis adds accessibility and coverage.">由 Agent 扮演居民、企业和投资者在你的城市里行动，并结合空间分析评估可达性与覆盖。</p></div>
-        <div class="step reveal d1"><h4 data-en="Agent rating">Agent 评价</h4><p data-en="After the scenarios, the simulated agents score the city as a whole: overall satisfaction.">场景跑完后，社会模拟 Agent 根据自己的体验给城市整体打分，形成总体满意度。</p></div>
-        <div class="step reveal d2"><h4 data-en="Expert review">专家评审</h4><p data-en="Planning, economics, public policy and AI experts judge innovation, soundness, feasibility and social value.">城市规划、经济、公共政策和人工智能领域的专家，评审创新性、合理性、可实施性与社会价值。</p></div>
+      <div class="flow" style="--n:4">
+        <div class="step reveal"><h4 data-en="Self-assessment">自评</h4><p data-en="Before you submit, check capacity, travel times and costs in the studio, and use the results to refine the plan.">提交前在平台里查看容量、出行时间和费用，用结果来调整方案。</p></div>
+        <div class="step reveal d1"><h4 data-en="Validate">校验</h4><p data-en="The committee checks file formats, object identifiers, planning constraints and budget compliance.">评审委员会检查文件格式、对象编号、规划约束和预算是否合规。</p></div>
+        <div class="step reveal d2"><h4 data-en="Common conditions">统一条件评估</h4><p data-en="Every proposal is evaluated under the same assessment scenarios and competition rules.">每份方案按统一的评估情景和比赛规则评估。</p></div>
+        <div class="step reveal d3"><h4 data-en="Social simulation">社会仿真</h4><p data-en="Stronger entries go on to multi-agent social simulation powered by the Economic World Model.">较强的方案进入由经济世界模型驱动的多智能体社会仿真。</p></div>
       </div>
 
       <div class="radar-wrap" style="margin-top:72px">
-        <svg class="radar" viewBox="-210 -160 420 320" aria-label="evaluation dimensions">
+        <svg class="radar" viewBox="-210 -160 420 320" aria-label="seven groups of measures">
           <g id="radar-grid"></g>
           <polygon class="shape" id="radar-shape"/>
           <g id="radar-labels"></g>
         </svg>
         <div style="min-width:0">
-          <h3 style="font-family:var(--font-display);font-size:26px;margin-bottom:12px" data-en="Nine dimensions">九个评估维度</h3>
+          <h3 style="font-family:var(--font-display);font-size:26px;margin-bottom:12px" data-en="Seven groups of measures">七组评估指标</h3>
           <div class="table-wrap">
             <table class="dims">
-              <thead><tr><th data-en="Dimension">维度</th><th data-en="Core indicators">核心指标</th><th data-en="How it's measured">评估方式</th></tr></thead>
+              <thead><tr><th data-en="Group">指标组</th><th data-en="Core measures">核心指标</th><th data-en="How it's measured">怎么算</th></tr></thead>
               <tbody id="dims-body"></tbody>
             </table>
           </div>
@@ -315,8 +316,8 @@
       </div>
 
       <div class="sec-head" style="margin-top:96px;margin-bottom:32px">
-        <div><h2 style="font-size:clamp(26px,3vw,40px)" data-en="The scenarios we run.">我们会跑哪些场景</h2></div>
-        <p data-en="Seven scenario categories generate the measurable outcomes used across nine dimensions. Social agents contribute overall satisfaction; expert review adds innovation, feasibility and social value alongside the scenario results.">七类场景产生可量化结果，汇入九个评估维度。社会 Agent 提供总体满意度，专家结合场景结果评审创新性、可实施性与社会价值。</p>
+        <div><h2 style="font-size:clamp(26px,3vw,40px)" data-en="Stronger entries: a city agents can live in.">较强的方案：一座 Agent 生活其中的城市</h2></div>
+        <p data-en="The submitted spatial plan and policies become the simulation environment. Households, residents, businesses and service organisations make their choices inside it. The committee looks for plans that make sense on the map and also support strong social and economic outcomes as they interact.">提交的空间规划和政策共同构成仿真环境，家庭、居民、企业和服务机构在其中做出选择。评审看的是：方案在地图上说得通，也能在他们的互动中带来良好的社会与经济结果。</p>
       </div>
       <div class="grid g4" id="shocks"></div>
     </div>
@@ -327,7 +328,7 @@
     <div class="wrap">
       <div class="sec-head">
         <div><div class="sec-num">05 / WHO CAN PLAY</div><h2 data-en="One set of rules. Open to everyone.">一套规则，人人可参加</h2></div>
-        <p data-en="Students, university teams, professionals, overseas youth teams and the public all follow the same process, submit the same two files and are evaluated by the same scenario rules. Shenzhen–Hong Kong cross-border teams are especially welcome.">青少年、大学生、专业团队、海外青年团队和公众，都走同一套流程、提交同样的两份文件、按同样的场景规则评估。特别欢迎深港跨境组队。</p>
+        <p data-en="Students, university teams, professionals, overseas youth teams and the public all follow the same process, submit the same two files and are evaluated under the same conditions. Shenzhen–Hong Kong cross-border teams are especially welcome.">青少年、大学生、专业团队、海外青年团队和公众，都走同一套流程、提交同样的两份文件、在同样的条件下评估。特别欢迎深港跨境组队。</p>
       </div>
       <div class="grid g3">
         <div class="card reveal"><span class="k" data-en="New to planning">新手</span><h3 data-en="Talk, tap, build">说话、点选、搭积木</h3><p data-en="Plan with natural language, cards and visual blocks. The agent helps generate and check everything.">用自然语言、卡片和可视化积木完成规划，Agent 帮你生成和检查。</p></div>
@@ -395,7 +396,7 @@
         <details class="reveal"><summary data-en="Which area am I planning, and for what year?">规划哪里？面向哪一年？</summary><p data-en="A continuous district of about 24.30 km² in the Northern Metropolis: the Lok Ma Chau Loop, San Tin and Ngau Tam Mei, with parts of Mai Po and Fairview Park. Your plan targets 2035.">北部都会区内的一片连续区域，约 24.30 平方公里，包括落马洲河套、新田和牛潭尾，以及米埔和锦绣花园的部分地区。方案面向 2035 年。</p></details>
         <details class="reveal"><summary data-en="What exactly do I submit?">到底提交什么？</summary><p data-en="Prepare two deliverables: <code>spatial_plan.zip</code> (manifest.json, plan.gpkg and 3d/) and <code>policies.yaml</code>.">准备两份交付物：<code>spatial_plan.zip</code>（含 manifest.json、plan.gpkg 和 3d/）以及 <code>policies.yaml</code>。</p></details>
         <details class="reveal"><summary data-en="Is there a budget limit?">有预算限制吗？</summary><p data-en="Yes. Everyone starts with the same fixed funds; construction and policies both spend them.">有。每个人起始资金相同，建设和政策都要花钱。</p></details>
-        <details class="reveal"><summary data-en="Are the basic checks my score?">基础检查的结果就是我的成绩吗？</summary><p data-en="Basic checks are your guide while you build. Your ranking comes from scenario simulation, agent ratings and expert review.">基础检查是你搭建过程中的参考，名次由场景模拟、Agent 评价和专家评审综合确定。</p></details>
+        <details class="reveal"><summary data-en="Are the basic checks my score?">基础检查的结果就是我的成绩吗？</summary><p data-en="Basic checks and self-assessment guide you while you build. After submission, the committee validates each entry and evaluates it under common conditions; stronger entries also go through social simulation in the Economic World Model.">基础检查和平台自评是你搭建过程中的参考。提交后，评审委员会会校验每份方案，并在统一条件下评估；较强的方案还会进入经济世界模型的社会仿真。</p></details>
         <details class="reveal"><summary data-en="Is there a separate track for school students?">青少年有单独的赛道吗？</summary><p data-en="Everyone follows the same process and rules. Dialogue, visual cards and checks help newcomers build their proposals.">所有人走同一套流程和规则。对话、可视化卡片和检查流程帮助新手完成方案。</p></details>
         <details class="reveal"><summary data-en="Can I team up across Shenzhen and Hong Kong, or join from overseas?">可以深港跨境组队、或者从海外参加吗？</summary><p data-en="Yes to both. Cross-border teams are especially encouraged, and overseas youth teams are welcome.">都可以。特别鼓励深港跨境组队，也欢迎海外青年团队。</p></details>
         <details class="reveal"><summary data-en="When can I start building?">什么时候可以开始搭？</summary><p data-en="The <a href=&quot;demo/agentic-city/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;>interactive demo is available now ↗</a>. Explore the city and try the three guided planning tasks. Track 3 opens in December 2026, alongside Tracks 1–2."><a href="demo/agentic-city/" target="_blank" rel="noopener">交互 Demo 现已开放 ↗</a>，可浏览城市并体验三个引导规划任务；Track 3 与 Track 1–2 统一于 2026 年 12 月开启。</p></details>
@@ -439,32 +440,27 @@
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261120151456"></script>
-<script src="assets/js/i18n.js?v=20261120151456"></script>
-<script src="assets/js/pages.js?v=20261120151456"></script>
-<script src="assets/js/fx.js?v=20261120151456"></script>
+<script src="assets/js/config.js?v=20261120162156"></script>
+<script src="assets/js/i18n.js?v=20261120162156"></script>
+<script src="assets/js/pages.js?v=20261120162156"></script>
+<script src="assets/js/fx.js?v=20261120162156"></script>
 <script>
 (function () {
   var t = function (zh, en) { return window.SW_t(zh, en); };
   var DIMS = [
-    ["交通通勤", "Commuting", "口岸跨境通勤、上下班、上下学与购物出行", "Cross-border commuting; trips to work, school and shops", "交通场景模拟", "Traffic scenario simulation"],
-    ["城市容纳", "Capacity", "居民安置、公司选址", "Housing residents; where firms locate", "社会与经济场景模拟", "Social & economic simulation"],
-    ["公共服务", "Public services", "学校容量、医院床位与急救、垃圾回收站选址与运输、消防站选址与救援", "School places, hospital beds & ambulances, waste stations, fire stations", "公共服务场景模拟 + 空间可达性分析", "Service simulation + spatial accessibility"],
-    ["环境可持续", "Sustainability", "人均绿化面积、生活与生产碳排放、绿色出行率", "Green space per person, emissions, green-travel share", "环境指标计算 + 场景模拟", "Environmental metrics + simulation"],
-    ["自然灾害", "Disasters", "火灾、洪涝情景下的城市表现", "How the city copes with fire and floods", "灾害场景模拟", "Disaster scenario simulation"],
-    ["经济指标", "Economy", "GDP、就业率、商业消费", "GDP, employment, consumer spending", "经济场景模拟", "Economic scenario simulation"],
-    ["科技创新", "Innovation", "Agent 创业、VC 投资与创新活动", "Agent start-ups, VC investment, innovation", "创新创业场景模拟 + Agent 评估", "Start-up simulation + agent assessment"],
-    ["深港交流", "SZ–HK exchange", "经济互通、人口流动", "Economic links, movement of people", "跨境场景模拟", "Cross-border scenario simulation"],
-    ["总体满意度", "Satisfaction", "Agent 对城市整体评分", "Agents' overall rating of the city", "社会模拟 Agent 完成场景后评分", "Rated by simulated agents after the scenarios"]
+    ["住房与包容", "Housing & inclusion", "住房", "Housing", "居住容量、自住与租赁户比例、住房可负担性", "Resident capacity, owner and rental households, affordability", "按建筑记录计算容量；可负担性需要房价与家庭收入情景", "Capacity from building records; affordability needs price and income scenarios"],
+    ["出行与可达", "Mobility & access", "出行", "Mobility", "上学、上班与购物出行，跨境通勤", "Trips to school, work and shops; cross-border commuting", "起点到终点的平均出行时间；上学出行已可在平台中计算", "Mean origin-to-destination time; school journeys already run in the studio"],
+    ["公共服务容量", "Public service capacity", "公共服务", "Services", "学位、医院床位、垃圾收运", "School places, hospital beds, waste collection", "设施容量对照分配到的需求；垃圾收运按收集点到设施计算", "Facility capacity against assigned demand; waste from collection points to facilities"],
+    ["安全与韧性", "Safety & resilience", "安全韧性", "Resilience", "消防到场时间、救护响应、防洪", "Fire travel time, ambulance response, flood resilience", "消防站到固定火情建筑的行车时间；救护和防洪需要相应情景", "Drive time from stations to fixed incident buildings; ambulance and flood need their own scenarios"],
+    ["环境与气候", "Environment & climate", "环境", "Environment", "人均可达绿地、生活与生产碳排放、绿色出行比例", "Green space per resident, household and production carbon, green-travel share", "在明确的人口范围和统计期内计算", "Calculated for a defined population and accounting period"],
+    ["经济与就业", "Economy & employment", "经济", "Economy", "就业岗位容量、企业与产业结构、地区生产总值、就业率", "Job capacity, firms and industry mix, regional GDP, employment rate", "岗位容量来自建筑记录；生产总值与就业率由委员会的经济仿真得出", "Job capacity from building records; GDP and employment from the committee's economic simulation"],
+    ["深港交流", "Shenzhen–Hong Kong exchange", "深港交流", "SZ–HK", "跨境经济往来、人员流动", "Cross-border economic value, movements of people", "委员会的情景结果，按规定时段统计；口岸出行时间计入“出行与可达”", "Committee scenario results for a stated period; border travel time counts under Mobility"]
   ];
   var SHOCKS = [
-    ["口岸跨境通勤与深港交流", "Cross-border commuting", "深港之间的人员往来、跨境通勤与交流。", "People crossing between Shenzhen and Hong Kong to work and meet."],
-    ["与香港其他地区的往来", "Links to the rest of HK", "规划区与香港其他地区之间的交通、人口和经济交流。", "Traffic, people and money moving between the district and the rest of Hong Kong."],
-    ["上下班、上下学与购物", "Daily trips", "居民每天上班、上学和购物的出行。", "Residents' daily trips to work, school and the shops."],
-    ["安置、选址与消费", "Homes, firms, shopping", "居民安置、公司选址与商业消费。", "Where people live, where firms set up, and what people buy."],
-    ["Agent 创业与 VC 投资", "Start-ups & VC", "模拟创业者和投资机构是否在这里落地。", "Whether simulated founders and investors choose your district."],
-    ["火灾与洪涝", "Fire & flood", "自然灾害下的响应与恢复。", "Response and recovery in fires and floods."],
-    ["公共卫生及其他突发情景", "Public health & emergencies", "公共卫生事件和其他突发情况。", "Public-health events and other emergencies."]
+    ["人与机构", "People and organisations", "家庭、居民、企业和服务机构，各有不同的需求、资源和行为特点。", "Households, residents, businesses and service organisations, each with different needs, resources and behaviour."],
+    ["日常活动", "Daily activities", "选择住在哪里、找工作、安排出行、使用公共服务，参与生产和消费。", "They choose where to live, look for work, plan journeys, use public services, and produce and consume."],
+    ["空间决策", "Spatial decisions", "住房位置与成本影响人们在哪落脚，交通连接影响就业与服务的可达，企业选址塑造就业和经济活动。", "Housing locations and costs shape where people settle; transport links shape access to jobs and services; business locations shape employment."],
+    ["政策决策", "Policy decisions", "政策改变不同群体面临的机会、成本和激励。", "Policies change the opportunities, costs and incentives facing different groups."]
   ];
   function draw() {
     var R = 110, n = DIMS.length, pt = function (i, r) { var a = -Math.PI / 2 + i * 2 * Math.PI / n; return [Math.cos(a) * r, Math.sin(a) * r]; };
@@ -475,12 +471,12 @@
     document.getElementById("radar-shape").setAttribute("points", DIMS.map(function (d, i) { return pt(i, R * .78).join(","); }).join(" "));
     document.getElementById("radar-labels").innerHTML = DIMS.map(function (d, i) {
       var p = pt(i, R + 22), anchor = Math.abs(p[0]) < 10 ? "middle" : p[0] > 0 ? "start" : "end";
-      return '<text x="' + p[0] + '" y="' + (p[1] + 4) + '" text-anchor="' + anchor + '">' + t(d[0], d[1]) + "</text>";
+      return '<text x="' + p[0] + '" y="' + (p[1] + 4) + '" text-anchor="' + anchor + '">' + t(d[2], d[3]) + "</text>";
     }).join("");
-    document.getElementById("dims-body").innerHTML = DIMS.map(function (d) { return "<tr><td>" + t(d[0], d[1]) + "</td><td>" + t(d[2], d[3]) + "</td><td>" + t(d[4], d[5]) + "</td></tr>"; }).join("");
+    document.getElementById("dims-body").innerHTML = DIMS.map(function (d) { return "<tr><td>" + t(d[0], d[1]) + "</td><td>" + t(d[4], d[5]) + "</td><td>" + t(d[6], d[7]) + "</td></tr>"; }).join("");
     document.getElementById("shocks").innerHTML = SHOCKS.map(function (s, i) {
-      return '<div class="flip reveal in" tabindex="0"><div class="flip-inner"><div class="flip-face"><span class="n">SCENARIO ' + String(i + 1).padStart(2, "0") + '</span><h4>' + t(s[0], s[1]) + '</h4></div><div class="flip-face back"><span class="n">SCENARIO ' + String(i + 1).padStart(2, "0") + "</span><p>" + t(s[2], s[3]) + "</p></div></div></div>";
-    }).join("") + '<div class="flip"><div class="flip-inner"><div class="flip-face" style="justify-content:center;align-items:center;text-align:center"><h4 style="color:var(--accent)">' + t("你的城市表现如何？", "How will your city do?") + "</h4></div></div></div>";
+      return '<div class="flip reveal in" tabindex="0"><div class="flip-inner"><div class="flip-face"><span class="n">EWM ' + String(i + 1).padStart(2, "0") + '</span><h4>' + t(s[0], s[1]) + '</h4></div><div class="flip-face back"><span class="n">EWM ' + String(i + 1).padStart(2, "0") + "</span><p>" + t(s[2], s[3]) + "</p></div></div></div>";
+    }).join("");
   }
   document.addEventListener("sw:lang", draw);
 
