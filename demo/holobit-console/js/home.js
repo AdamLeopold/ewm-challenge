@@ -41,7 +41,7 @@ const Home = (() => {
   $('#h-foot-cols').innerHTML = FOOT.map(([t, v]) => `<div><h4>${t}</h4><ul>${v.map(([a, h]) => `<li>${ext(h, a)}</li>`).join('')}</ul></div>`).join('');
 
   // an asset that fails to arrive leaves a quiet gap, never a broken-image icon
-  home.addEventListener('error', e => { const t = e.target; if (t.tagName === 'IMG') t.classList.add('gone'); else if (t.tagName === 'VIDEO') $('.h-video').classList.add('gone'); }, true);
+  home.addEventListener('error', e => { const t = e.target; if (t.tagName === 'IMG') t.classList.add('gone'); else if (t.tagName === 'VIDEO') (t.closest('.h-video, .h-demo') || t).classList.add('gone'); }, true);
   home.addEventListener('scroll', () => home.classList.toggle('scrolled', home.scrollTop > 8), { passive: true });
   $('#h-burger').onclick = () => { const d = $('#h-drawer'); d.hidden = !d.hidden; $('#h-burger').setAttribute('aria-expanded', String(!d.hidden)); home.classList.toggle('menu', !d.hidden); };
 

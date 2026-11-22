@@ -67,6 +67,20 @@
         </div>
       </section>
       <section class="h-video"><div><video id="h-vid" autoplay muted loop playsinline controls preload="metadata"></video></div></section>
+      <section class="h-sec h-demo" id="h-demo" aria-labelledby="h-demo-h">
+        <div class="h-in">
+          <p class="h-demo-k" data-i data-en="Walkthrough · official HoloBit" data-zh="演示 · 官方 HoloBit">Walkthrough · official HoloBit</p>
+          <h2 class="h-h2" id="h-demo-h"><span data-i data-en="From an empty canvas to results" data-zh="从空白画布到结果">From an empty canvas to results</span></h2>
+          <p class="h-demo-lead" data-i data-en="An AMM arbitrage model built from scratch in the official HoloBit app: variables hold the state, a timer-driven process runs Python-style formulas every tick, and a chart shows the results. Then one parameter changes and the model runs again." data-zh="在官方 HoloBit 里从零搭一个 AMM 套利模型：变量存放状态，定时触发的流程每个 tick 执行一组类 Python 公式，图表显示结果。最后改一个参数，再跑一次做对比。">An AMM arbitrage model built from scratch in the official HoloBit app: variables hold the state, a timer-driven process runs Python-style formulas every tick, and a chart shows the results. Then one parameter changes and the model runs again.</p>
+          <div class="h-demo-v"><video id="h-demo-vid" controls playsinline preload="none" poster="assets/media/holobit-build-demo-poster.jpg" src="assets/media/holobit-build-demo.mp4"></video></div>
+          <ol class="h-demo-steps">
+            <li><b>01</b><span data-i data-en="Variables: a Pool dict with reserves, fee and market price" data-zh="变量：字典 Pool，存储备、手续费和市场价">Variables: a Pool dict with reserves, fee and market price</span></li>
+            <li><b>02</b><span data-i data-en="Process: a timer start event fires a Compute step every tick" data-zh="流程：定时器开始事件，每个 tick 触发一次计算步骤">Process: a timer start event fires a Compute step every tick</span></li>
+            <li><b>03</b><span data-i data-en="Formulas: price path, arbitrage along x·y = k, fees and profit" data-zh="公式：价格路径、按 x·y = k 套利、手续费与利润">Formulas: price path, arbitrage along x·y = k, fees and profit</span></li>
+            <li><b>04</b><span data-i data-en="Run and compare: 100 ticks at a 0.3% fee, then again at 1%" data-zh="运行与对比：手续费 0.3% 跑 100 个 tick，再改成 1% 重跑">Run and compare: 100 ticks at a 0.3% fee, then again at 1%</span></li>
+          </ol>
+        </div>
+      </section>
       <div id="h-sections"></div>
     </div>
   </main>
