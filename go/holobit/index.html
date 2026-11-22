@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sign up for HoloBit</title>
+<style>html,body{margin:0;height:100%;background:#161616;color:#fff;font:15px/1.5 system-ui,sans-serif}body{display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;box-sizing:border-box}a{color:#5bc426}</style>
+<script src="../../assets/js/config.js"></script>
+</head>
+<body>
+<p>Opening HoloBit sign-up…<br><a id="go" href="https://app.holobit.xyz/register/">Continue</a></p>
+<script>
+  var u = (window.SW_CONFIG && SW_CONFIG.holobitSignupUrl) || 'https://app.holobit.xyz/register/';
+  document.getElementById('go').href = u;
+  location.replace(u);
+</script>
+</body>
+</html>
