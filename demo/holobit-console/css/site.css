@@ -47,6 +47,19 @@ img.gone { visibility: hidden; }
 .h-h1 { display: inline-block; padding: 0 8px; animation: up 1s .05s var(--ease) both; }
 .h-lead { padding-top: 40px; font-size: 20px; line-height: 1.3; animation: up 1s .15s var(--ease) both; }
 .h-cta { width: 100%; display: flex; gap: 24px; justify-content: center; animation: up 1s .25s var(--ease) both; }
+.h-qr { flex: none; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px 16px 14px; border-radius: 16px; background: rgba(255, 255, 255, .04); border: 1px solid rgba(91, 196, 38, .35); box-shadow: 0 0 0 1px rgba(255, 255, 255, .03) inset, 0 18px 60px -18px rgba(91, 196, 38, .45); backdrop-filter: blur(8px); animation: up 1s .35s var(--ease) both; transition: border-color .2s, translate .25s var(--ease); }
+.h-qr:hover { border-color: var(--t1); translate: 0 -2px; }
+.h-qr-img { display: block; width: 200px; aspect-ratio: 1; padding: 8px; border-radius: 10px; background: #fff; } .h-qr-img img { display: block; width: 100%; height: 100%; }
+.h-qr b { font: 400 15px/1.3 var(--mono); letter-spacing: .06em; text-align: center; } .h-qr small { font: 300 12px/1 var(--mono); letter-spacing: .08em; opacity: .5; }
+@media (min-width: 1024px) {
+  .h-hero { gap: 64px; justify-content: center; padding-inline: 48px; }
+  .h-hero .h-wrap { max-width: 1000px; align-items: flex-start; text-align: left; gap: 32px; }
+  .h-hero .h-h1 { padding: 0; font-size: clamp(40px, 3.4vw, 54px); }
+  .h-hero .h-lead { padding-top: 16px; font-size: 18px; } .h-hero .h-lead br { display: none; }
+  .h-hero .h-cta { justify-content: flex-start; gap: 16px; flex-wrap: wrap; }
+  .h-qr { align-self: center; margin-top: 24px; }
+}
+@media (max-width: 1023px) { .h-hero { flex-direction: column; gap: 40px; } .h-qr-img { width: 168px; } }
 .h-video { padding: 80px 0; display: flex; justify-content: center; } .h-video > div { width: min(1280px, 100%); } .h-video.gone { display: none; }
 .h-video video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; background: #181818; }
 
