@@ -7,9 +7,8 @@ window.SW_CONFIG = {
   contactEmail: "YLU063@e.ntu.edu.sg",
   registerUrl: "register.html", // stable public entry shared by all QR codes
   registrationFormUrl: "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=SJPOFSq-K0aPwOF2WpsgSh36z_V7kpxKobXwnxZyIJ9UNTZCWUhGU0VMTU0yMFZMTE5HRjZCR0NRQi4u",
-  // HoloBit sign-up with the current invitation code. The printed QR points to go/holobit/, which forwards here,
-  // so when the code changes only this line changes. Leave the code off to send people to plain sign-up.
-  holobitSignupUrl: "https://app.holobit.xyz/register/?referralCode=z8T3FK2FVd",
+  // Where the HoloBit QR (go/holobit/) sends people. The printed QR never changes; edit only this line.
+  holobitQrUrl: "https://holobit.xyz/",
   rulesUrl: "",
   starterKitUrl: "",
 
